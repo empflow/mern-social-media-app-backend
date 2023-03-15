@@ -1,13 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 import "express-async-errors";
-import express from "express";
+import express, { Request } from "express";
 import multer from "multer";
 import multerDiskStorageConf from "./config/multer";
 const app = express();
 import globalMiddleware from "./routes/globalMiddleware";
 import connectDB from "./utils/connectDB";
 import authRoute from "./routes/auth";
+import errHandler from "./middleware/errHandler";
 const PORT = process.env.PORT || 3000;
 
 app.use(globalMiddleware);
@@ -18,6 +19,8 @@ const upload = multer({ storage });
 app.use("/auth", authRoute);
 
 app.get("/", (req, res) => { res.send("hello this is a test") });
+
+app.use(errHandler);
 
 (async () => {
   try {

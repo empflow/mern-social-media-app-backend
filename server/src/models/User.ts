@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -24,9 +26,9 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: true,
     minlength: 10,
-    maxlength: 50,
-    required: true
+    maxlength: 50
   },
   pictureUrl50px: {
     type: String,
@@ -43,6 +45,10 @@ const UserSchema = new mongoose.Schema({
     default: "assets/pictures/default400.png",
     maxlength: 1000
   },
+  friends: {
+    type: Array,
+    default: []
+  },
   birthday: {
     type: Date
   },
@@ -58,11 +64,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     maxlength: 300 
   },
-  friends: {
-    type: Array,
-    default: []
-  }
 }, { timestamps: true })
+
+UserSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+})
+
 
 const UserModel = mongoose.model("User", UserSchema);
 export default UserModel;
