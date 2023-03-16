@@ -10,12 +10,14 @@ export const upload = multer({ storage });
 import globalMiddleware from "./routes/globalMiddleware";
 import connectDB from "./utils/connectDB";
 import authRoute from "./routes/auth";
+import usersRoute from "./routes/users";
 import errHandler from "./middleware/errHandler";
 const PORT = process.env.PORT || 3000;
 
 app.use(globalMiddleware);
 
 app.use("/auth", authRoute);
+app.use("/users", usersRoute);
 
 app.get("/", (req, res) => { res.send("hello this is a test") });
 

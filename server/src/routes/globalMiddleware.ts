@@ -13,7 +13,7 @@ router.use(express.urlencoded({ limit: "5mb", extended: true }));
 router.use(cors(corsConf));
 router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-router.use(morgan("common"))
-router.use("/assets", express.static(path.join(__dirname, "public/assets")));
+router.use(morgan("common"));
+router.use("/assets", express.static(path.join(__dirname, "../public/assets")));
 
 export default router;
