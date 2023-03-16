@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -71,6 +74,19 @@ UserSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 })
+
+UserSchema.methods.comparePasswords = async function (candidatePassword: string) {
+  console.log(candidatePassword, this.password);
+  return await bcrypt.compare(candidatePassword, this.password);
+}
+
+UserSchema.methods.createJwt = async function () {
+  return jwt.sign(
+    { userId: this._id },
+    process.env.JWT_SECRET as string,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  )
+}
 
 
 const UserModel = mongoose.model("User", UserSchema);

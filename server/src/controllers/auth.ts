@@ -10,5 +10,7 @@ export async function signUp(req: Request, res: Response) {
 }
 
 export async function signIn(req: Request, res: Response) {
-  console.log("sign in");
+  const user = (req as any).user;
+  const token = await user.createJwt();
+  res.json({ token });
 }
