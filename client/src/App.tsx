@@ -1,9 +1,25 @@
-import { useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
+import axios from "axios";
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+
+  async function sendRequest() {
+    try {
+      const { data } = await axios.post("http://localhost:3000/auth/sign-up", {
+        "firstName": "matvey",
+        "lastName": "morozov",
+        "email": `gmail${count}@gmail.com`,
+        "password": "1234567890"
+      });
+      console.log(data);
+      console.log(data.token);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <div className="App">
@@ -16,6 +32,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <button onClick={sendRequest}>Send Request</button>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}

@@ -3,7 +3,8 @@ import User from "../models/User";
 
 export async function signUp(req: Request, res: Response) {
   const user = await User.create(req.body);
-  res.status(201).json(user);
+  const token = await (user as any).createJwt();
+  res.status(201).json({ user, token });
 }
 
 export async function signIn(req: Request, res: Response) {
