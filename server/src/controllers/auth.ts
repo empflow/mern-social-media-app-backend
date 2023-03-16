@@ -6,11 +6,11 @@ import { InternalServerErr, NotFoundErr, UnauthorizedErr, BadRequestErr } from "
 
 export async function signUp(req: Request, res: Response) {
   const user = await User.create(req.body);
-  res.send(user);
+  res.status(201).json(user);
 }
 
 export async function signIn(req: Request, res: Response) {
   const user = (req as any).user;
   const token = await user.createJwt();
-  res.json({ token });
+  res.status(200).json({ token });
 }
