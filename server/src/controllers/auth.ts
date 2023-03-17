@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
+import getRandomUserId from "../utils/getRandomUserId";
 import User from "../models/User";
 
 export async function signUp(req: Request, res: Response) {
-  const user = await User.create(req.body);
+  const idLength = 9;
+  const profileId = `user${getRandomUserId(idLength)}`;
+  const user = await User.create({ ...req.body, profileId });
   const token = await (user as any).createJwt();
   res.status(201).json({ user, token });
 }

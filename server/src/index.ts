@@ -30,4 +30,4 @@ app.use(errHandler);
   } catch (err) {
     console.error(err);
   }
-  })();
+})();

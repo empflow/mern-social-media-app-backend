@@ -35,18 +35,24 @@ const UserSchema = new mongoose.Schema({
   },
   pictureUrl50px: {
     type: String,
-    default: "assets/pictures/default50.png",
+    default: "assets/pictures/default.svg",
     maxlength: 1000
   },
   pictureUrl100px: {
     type: String,
-    default: "assets/pictures/default100.png",
+    default: "assets/pictures/default.svg",
     maxlength: 1000
   },
   pictureUrl400px: {
     type: String,
-    default: "assets/pictures/default400.png",
+    default: "assets/pictures/default.svg",
     maxlength: 1000
+  },
+  // website.com/:profileId
+  profileId: {
+    type: String,
+    required: true,
+    maxlength: 100
   },
   friends: {
     type: Array,

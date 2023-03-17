@@ -6,15 +6,15 @@ export async function validateSignInCredentials(req: Request, res: Response, nex
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new BadRequestErr("Both email and password must be provided");
+    throw new BadRequestErr("both email and password must be provided");
   }
 
   const user: any = await User.findOne({ email });
-  if (!user) throw new NotFoundErr("User not found");
+  if (!user) throw new NotFoundErr("user not found");
 
   const doPasswordsMatch = await user.comparePasswords(password);
   if (!doPasswordsMatch) {
-    throw new UnauthorizedErr("Wrong password");
+    throw new UnauthorizedErr("wrong password");
   }
 
   (req as any).user = user;
