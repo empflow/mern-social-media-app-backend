@@ -11,15 +11,19 @@ import globalMiddleware from "./routes/globalMiddleware";
 import connectDB from "./utils/connectDB";
 import authRoute from "./routes/auth";
 import usersRoute from "./routes/users";
+import accountRoute from "./routes/account";
 import errHandler from "./middleware/errHandler";
+import authorize from "./middleware/authorize";
 const PORT = process.env.PORT || 3000;
 
 app.use(globalMiddleware);
 
 app.use("/auth", authRoute);
-app.use("/users", usersRoute);
 
-app.get("/", (req, res) => { res.send("hello this is a test") });
+// all routes that require authorization
+app.use(authorize)
+app.use("/users", usersRoute);
+app.use("/account", accountRoute);
 
 app.use(errHandler);
 

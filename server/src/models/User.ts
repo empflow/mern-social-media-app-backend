@@ -48,12 +48,11 @@ const UserSchema = new mongoose.Schema({
     default: "assets/pictures/default.svg",
     maxlength: 1000
   },
-  // website.com/:profileId
   profileId: {
     type: String,
+    maxlength: 100,
     required: true,
-    unique: true,
-    maxlength: 100
+    unique: true
   },
   friends: {
     type: Array,
@@ -89,7 +88,7 @@ UserSchema.methods.comparePasswords = async function (candidatePassword: string)
 
 UserSchema.methods.createJwt = async function () {
   return jwt.sign(
-    { userId: this._id, profileId: this.profileId },
+    { userId: this._id },
     process.env.JWT_SECRET as string,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   )
