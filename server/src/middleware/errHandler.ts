@@ -14,6 +14,7 @@ interface IErrObject {
 export default function errHandler(
   err: TErr, req: Request, res: Response, next: NextFunction
 ) {
+  console.log("err handler ran");
   const errObj: IErrObject = {
     message: err.message || "No error message was provided"
   }

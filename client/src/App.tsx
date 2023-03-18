@@ -33,17 +33,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <button onClick={sendRequest}>Send Request</button>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div id='rg_embed_link_371096' className='rg_embed_link' data-song-id='371096'>Read <a href='https://genius.com/Bones-parkinglotwitness-lyrics'>“ParkingLotWitness” by BONES</a> on Genius</div> <script crossOrigin="" src='//genius.com/songs/371096/embed.js'></script>
     </div>
   )
 }

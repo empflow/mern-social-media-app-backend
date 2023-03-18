@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, request, Request, Response } from "express";
 import User from "../models/User";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 
@@ -19,12 +19,23 @@ export async function deleteUser(req: Request, res: Response) {
 
   const userToDelete = await User.findOne({ profileId: profileIdToDelete });
   if (!userToDelete) throw new NotFoundErr("user not found");
-  const deleterId = (req as any).user.userId;
+  const requesterId = (req as any).user.userId;
+  const userToDeleteId = userToDelete._id.toString();
 
-  if (userToDelete._id.toString() !== deleterId) {
+  if (userToDeleteId !== requesterId) {
     throw new ForbiddenErr("you can only delete your own account");
   }
 
   await User.deleteOne({ profileId: profileIdToDelete });
   res.status(200).json({ message: "user deleted" });
+}
+
+export async function patchUser(req: Request, res: Response) {
+  const { profileId: profileIdOfUserToPatch } = req.params;
+  const patchedUser = await User.findOneAndUpdate(
+    { profileId: profileIdOfUserToPatch },
+    req.body,
+    { runValidators: true, new: true }
+  )
+  res.status(200).json(patchedUser);
 }

@@ -52,6 +52,7 @@ const UserSchema = new mongoose.Schema({
   profileId: {
     type: String,
     required: true,
+    unique: true,
     maxlength: 100
   },
   friends: {
@@ -88,7 +89,7 @@ UserSchema.methods.comparePasswords = async function (candidatePassword: string)
 
 UserSchema.methods.createJwt = async function () {
   return jwt.sign(
-    { userId: this._id },
+    { userId: this._id, profileId: this.profileId },
     process.env.JWT_SECRET as string,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   )
