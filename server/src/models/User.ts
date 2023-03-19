@@ -1,8 +1,7 @@
-import dotenv from "dotenv";
-dotenv.config();
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { friendsValidator, profileIdValidator } from "./validators";
 
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -10,25 +9,35 @@ const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true, minlength: 3, maxlength: 30 },
   lastName: { type: String, required: true, minlength: 3, maxlength: 30 },
-  email: { type: String, match: emailRegex, maxlength: 255, required: true, unique: true },
-  password: { type: String, required: true, minlength: 10, maxlength: 50 },
+  email: { type: String, unique: true, match: emailRegex, maxlength: 255, required: true },
+  password: { type: String, required: true, minlength: 10, maxlength: 100 },
   pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
-  profileId: { type: String, maxlength: 30, required: true, unique: true, validate: profileIdValidator },
-  friends: { type: Array, default: [] },
-  birthday: { type: Date },
-  address: { type: String, maxlength: 300 },
+  profileId: {
+    type: String,
+    maxlength: 30,
+    required: true,
+    unique: true,
+    validate: profileIdValidator
+  },
+  friends: {
+    type: [{ type: Types.ObjectId, ref: "User" }],
+    sparse: true,
+    validate: {
+      validator: friendsValidator,
+      message: "this person already exists in the list of your friends"
+    }
+  },
+  birthday: Date,
+  city: { type: String, maxlength: 300 },
   occupation: { type: String, maxlength: 100 },
   status: { type: String, maxlength: 300 },
 }, { timestamps: true })
 
-function profileIdValidator(val: string) {
-  const urlRegex = /^[a-z0-9-_]+$/i;
-  return urlRegex.test(val);
-}
 
 UserSchema.pre("save", async function (next) {
+  if (!this.isNew) return; // only run on initial creation of the document
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();

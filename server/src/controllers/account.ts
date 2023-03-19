@@ -17,3 +17,11 @@ export async function patchAccount(req: Request, res: Response) {
   if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
+
+export async function addFriend(req: Request, res: Response) {
+  const account = await User.findById((req as any).user.userId);
+  if (!account) throw new NotFoundErr("account not found");
+  account.friends.push(req.body);
+  await account.save();
+  res.status(200).json(account);
+}

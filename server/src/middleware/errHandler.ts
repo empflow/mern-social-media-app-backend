@@ -18,10 +18,10 @@ export default function errHandler(
     message: err.message || "No error message was provided"
   }
   let code = 500;
-
+  
   if (err instanceof ApiErr) {
     code = (err as ApiErr).code;
-  } else if (err instanceof MongoError) {
+  } else if (err instanceof MongoError || err.name === "ValidationError") {
     code = ErrCodes.BadRequest;
   } else {
     console.error(err);
