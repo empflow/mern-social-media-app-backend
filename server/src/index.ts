@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import "express-async-errors";
-import express, { Request } from "express";
+import express from "express";
 const app = express();
 import multer from "multer";
 import multerDiskStorageConf from "./config/multer";
@@ -21,7 +21,7 @@ app.use(globalMiddleware);
 app.use("/auth", authRoute);
 
 // all routes that require authorization
-app.use(authorize)
+app.use(authorize);
 app.use("/users", usersRoute);
 app.use("/account", accountRoute);
 

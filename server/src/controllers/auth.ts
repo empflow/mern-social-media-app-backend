@@ -3,8 +3,8 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export async function signUp(req: IReq, res: IRes) {
-  const idLength = 9;
-  const profilePath = getRandomProfilePath(idLength);
+  const profilePathLength = 9;
+  const profilePath = getRandomProfilePath(profilePathLength);
   const user = await User.create({ ...req.body, profilePath });
   const token = await (user as any).createJwt();
   res.status(201).json({ user, token });
