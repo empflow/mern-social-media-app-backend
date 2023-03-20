@@ -1,15 +1,15 @@
-import { NextFunction, request, Request, Response } from "express";
 import User from "../models/User";
-import { ForbiddenErr, NotFoundErr } from "../utils/errs";
+import { NotFoundErr } from "../utils/errs";
+import { IReq, IRes } from "../utils/ReqResInterfaces";
 
-export async function getUsers(req: Request, res: Response) {
+export async function getUsers(req: IReq, res: IRes) {
   const users = await User.find({});
   res.status(200).json(users);
 }
 
-export async function getUser(req: Request, res: Response) {
-  const { profileId } = req.params;
-  const user = await User.findOne({ profileId });
+export async function getUser(req: IReq, res: IRes) {
+  const { profilePath } = req.params;
+  const user = await User.findOne({ profilePath });
   if (!user) throw new NotFoundErr("user not found");
   res.status(200).json(user);
 }

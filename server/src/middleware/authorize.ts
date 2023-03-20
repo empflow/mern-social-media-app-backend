@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction } from "express";
 import { UnauthorizedErr } from "../utils/errs";
 import jwt from "jsonwebtoken";
+import { IReq, IRes } from "../utils/ReqResInterfaces";
 
-export default function authorize(req: Request, res: Response, next: NextFunction) {
+export default function authorize(req: IReq, res: IRes, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -11,9 +12,9 @@ export default function authorize(req: Request, res: Response, next: NextFunctio
 
   const token = authHeader.split(" ")[1];
   try {
-    (req as any).user = jwt.verify(token, process.env.JWT_SECRET as string);
+    req.data.user = jwt.verify(token, process.env.JWT_SECRET as string);
   } catch (err) {
-    throw new UnauthorizedErr("invalid jwt signature");
+    throw new UnauthorizedErr("jwt verification failed");
   }
   next();
 }

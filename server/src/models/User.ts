@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { friendsValidator, profileIdValidator } from "./validators";
+import { friendsValidator, profilePathValidator } from "./validators";
 
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -14,12 +14,12 @@ const UserSchema = new mongoose.Schema({
   pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
-  profileId: {
+  profilePath: {
     type: String,
     maxlength: 30,
     required: true,
     unique: true,
-    validate: profileIdValidator
+    validate: profilePathValidator
   },
   friends: {
     type: [{ type: Types.ObjectId, ref: "User" }],

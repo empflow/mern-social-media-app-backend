@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User";
 import { BadRequestErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
+import { IReq, IRes } from "../utils/ReqResInterfaces";
 
-export async function validateSignInCredentials(req: Request, res: Response, next: NextFunction) {
+export async function validateSignInCredentials(req: IReq, res: IRes, next: NextFunction) {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -17,6 +18,6 @@ export async function validateSignInCredentials(req: Request, res: Response, nex
     throw new UnauthorizedErr("wrong password");
   }
 
-  (req as any).user = user;
+  req.data.user = user;
   next();
 }

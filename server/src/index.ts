@@ -7,7 +7,7 @@ import multer from "multer";
 import multerDiskStorageConf from "./config/multer";
 const storage = multer.diskStorage(multerDiskStorageConf);
 export const upload = multer({ storage });
-import globalMiddleware from "./routes/globalMiddleware";
+import globalMiddleware from "./middleware/globalMiddleware";
 import connectDB from "./utils/connectDB";
 import authRoute from "./routes/auth";
 import usersRoute from "./routes/users";

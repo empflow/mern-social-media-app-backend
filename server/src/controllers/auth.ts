@@ -1,17 +1,17 @@
-import { Request, Response } from "express";
-import getRandomUserId from "../utils/getRandomUserId";
+import getRandomProfilePath from "../utils/getRandomProfilePath";
 import User from "../models/User";
+import { IReq, IRes } from "../utils/ReqResInterfaces";
 
-export async function signUp(req: Request, res: Response) {
+export async function signUp(req: IReq, res: IRes) {
   const idLength = 9;
-  const profileId = `user${getRandomUserId(idLength)}`;
-  const user = await User.create({ ...req.body, profileId });
+  const profilePath = getRandomProfilePath(idLength);
+  const user = await User.create({ ...req.body, profilePath });
   const token = await (user as any).createJwt();
   res.status(201).json({ user, token });
 }
 
-export async function signIn(req: Request, res: Response) {
-  const user = (req as any).user;
+export async function signIn(req: IReq, res: IRes) {
+  const user = req.data.user;
   const token = await user.createJwt();
   res.status(200).json({ token });
 }
