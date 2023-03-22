@@ -1,3 +1,4 @@
+import PostModel from "../models/Post";
 import User from "../models/User";
 import { NotFoundErr } from "../utils/errs";
 import friendDocProjection from "../utils/projections/friendDocProjection";

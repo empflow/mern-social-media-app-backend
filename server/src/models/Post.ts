@@ -8,9 +8,13 @@ const PostSchema = new mongoose.Schema({
     required: true
   },
   body: {
-    type: String
+    type: String,
+    required: true
   },
-  pictureUrls: {
+  imageUrls: {
+    type: Array
+  },
+  videoUrls: {
     type: Array
   },
   viewCount: {
@@ -30,7 +34,8 @@ const PostSchema = new mongoose.Schema({
     default: 0
   },
   comments: {
-    type: [{ type: Types.ObjectId, ref: "Comment" }]
+    type: [{ type: Types.ObjectId, ref: "Comment" }],
+    default: []
   }
 }, { timestamps: true });
 
