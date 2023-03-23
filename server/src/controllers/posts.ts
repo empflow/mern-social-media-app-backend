@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import Post from "../models/Post";
 import User from "../models/User";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
@@ -26,7 +26,12 @@ export async function addPost(req: IReq, res: IRes) {
 }
 
 export async function getUserPosts(req: IReq, res: IRes) {
-  const { profilePath } = req.params;
-  const posts = User.findOne({ profilePath }, { posts: 1 });
-  res.status(200).json(posts);
+  const { profilePath: profilePathToGetPostsFrom } = req.params;
+
+  const user = await User.findOne({ profilePath: profilePathToGetPostsFrom }, { posts: 1 });
+  if (!user) throw new NotFoundErr("user not found");
+  const posts = user.posts;
+
+  const postsDocs = await Post.find({ _id: { $in: posts }});
+  res.status(200).json(postsDocs);
 }
