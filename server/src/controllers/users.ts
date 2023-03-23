@@ -20,7 +20,6 @@ export async function getUser(req: IReq, res: IRes) {
 export async function getUserById(req: IReq, res: IRes) {
   const { userId } = req.params;
   const user = await User.findById(userId, userDocProjection);
-  console.log(user);
   if (!user) throw new NotFoundErr("user not found");
   res.status(200).json(user);
 }
