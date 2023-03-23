@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true, minlength: 3, maxlength: 30 },
   lastName: { type: String, required: true, minlength: 3, maxlength: 30 },
   email: { type: String, unique: true, match: emailRegex, maxlength: 255, required: true },
-  password: { type: String, required: true, minlength: 10, maxlength: 100 },
+  password: { type: String, required: true },
   pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
   pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
