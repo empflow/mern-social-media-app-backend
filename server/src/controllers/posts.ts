@@ -5,32 +5,12 @@ import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export async function addPost(req: IReq, res: IRes) {
-  //  const { profilePath } = req.params;
-  //  const posterId = req.data.user.userId;
-  //  const userToPostTo = await User.findOne({ profilePath }, { canAnyonePost: 1 });
-   
-  //  if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-  //  if (!userToPostTo.canAnyonePost) {
-  //   throw new ForbiddenErr("posting to this user's wall is not allowed");
-  //  }
-  //  const post = new Post({ ...req.body, user: posterId });
-  //  const poster = await Post.findByIdAndUpdate(posterId, { $push: { posts: post._id }});
-  //  const posterTest = await Post.findOne({ _id: posterId });
-  //  console.log(posterTest);
-  //  console.log(poster);
-  //  if (!poster) throw new NotFoundErr("poster not found");
-  //  await post.save();
-
-  //  res.status(201).json(post);
-
   const { profilePath: profilePathToPostTo } = req.params;
   const posterId = req.data.user.userId;
   const userToPostTo = await User.findOne(
     { profilePath: profilePathToPostTo }, { canAnyonePost: 1 }
   );
-  console.log(posterId);
-  console.log(profilePathToPostTo);
-  console.log(userToPostTo);
+  
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
   if (!userToPostTo.canAnyonePost) {
     throw new ForbiddenErr("posting to this user's wall is not allowed");
