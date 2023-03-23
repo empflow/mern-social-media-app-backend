@@ -17,7 +17,7 @@ const PostSchema = new mongoose.Schema({
   videoUrls: {
     type: Array
   },
-  viewCount: {
+  viewsCount: {
     type: Number,
     default: 0
   },
