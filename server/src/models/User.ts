@@ -33,11 +33,20 @@ const UserSchema = new mongoose.Schema({
   city: { type: String, maxlength: 300 },
   occupation: { type: String, maxlength: 100 },
   status: { type: String, maxlength: 300 },
+  canAnyonePost: {
+    type: Boolean,
+    default: true
+  },
+  posts: {
+    type: [{ type: Types.ObjectId, ref: "Post" }],
+    sparse: true,
+    default: []
+  }
 }, { timestamps: true })
 
 
 UserSchema.pre("save", async function (next) {
-  if (!this.isNew) return; // only run on initial creation of the document
+  if (!this.isNew) return; // only run on the initial creation of the document
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();

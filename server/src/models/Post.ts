@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Types } from "mongoose";
+import { imageUrlsValidator, videoUrlsValidator } from "./validators";
 
 const PostSchema = new mongoose.Schema({
   user: {
@@ -12,10 +13,19 @@ const PostSchema = new mongoose.Schema({
     required: true
   },
   imageUrls: {
-    type: Array
+    type: Array,
+    maxlength: 10,
+    validate: {
+      validator: imageUrlsValidator,
+      message: "you cannot upload more than 10 images in a single comment"
+    }
   },
   videoUrls: {
-    type: Array
+    type: Array,
+    validate: {
+      validator: videoUrlsValidator,
+      message: "you cannot upload more than 2 videos in a single comment"
+    }
   },
   viewsCount: {
     type: Number,

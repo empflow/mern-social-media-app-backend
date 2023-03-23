@@ -15,3 +15,11 @@ export function friendsValidator(friends: object[]) {
   }
   return true;
 }
+
+export function imageUrlsValidator(urls: string[]) {
+  return urls.length <= 10;
+}
+
+export function videoUrlsValidator(urls: string[]) {
+  return urls.length <= 2;
+}
