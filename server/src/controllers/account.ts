@@ -27,11 +27,17 @@ export async function addFriend(req: IReq, res: IRes) {
 }
 
 export async function deleteFriend(req: IReq, res: IRes) {
-  const { friendId: friendToDeleteId } = req.params;
-  const account = req.data.account;
-  account.friends = account.friends.filter((friendObjectId: ObjectId) => (
-    friendObjectId.toString() !== friendToDeleteId
-  ));
-  await account.save();
+  const { friendProfilePath: friendToDeleteProfilePath } = req.params;
+  const accountToDeleteFromId = req.data.user.userId;
+
+  const friend = await User.findOne({ profilePath: friendToDeleteProfilePath }, { _id: 1 });
+  if (!friend) throw new NotFoundErr("friend not found");
+
+  const account = await User.findOneAndUpdate(
+    { _id: accountToDeleteFromId },
+    { $pull: { friends: friend._id }},
+    { runValidators: true, new: true }
+  )
+  if (!account) throw new NotFoundErr("account not found");
   res.status(200).json(account);
 }

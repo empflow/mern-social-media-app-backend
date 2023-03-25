@@ -6,12 +6,11 @@ const router = express.Router();
 router.patch("/", patchAccount);
 router.delete("/", deleteAccount);
 
-router.use(getOwnAccount);
+router.route("/friends/:friendProfilePath")
+  .delete(deleteFriend);
 
 router.route("/friends")
-  .post(addFriend);
+  .post(getOwnAccount, addFriend);
 
-router.route("/friends/:friendId")
-  .delete(deleteFriend);
 
 export default router;

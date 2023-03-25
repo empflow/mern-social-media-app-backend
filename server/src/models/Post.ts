@@ -1,5 +1,7 @@
+import { NextFunction } from "express";
 import mongoose from "mongoose";
 import { Types } from "mongoose";
+import User from "./User";
 import { imageUrlsValidator, videoUrlsValidator } from "./validators";
 
 const PostSchema = new mongoose.Schema({
@@ -9,6 +11,10 @@ const PostSchema = new mongoose.Schema({
     required: true
   },
   body: {
+    type: String,
+    required: true
+  },
+  postPath: {
     type: String,
     required: true
   },
