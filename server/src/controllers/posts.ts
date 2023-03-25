@@ -15,7 +15,10 @@ export async function addPost(req: IReq, res: IRes) {
   const posterId = req.data.user.userId;
   
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-  if (!userToPostTo.canAnyonePost) {
+  console.log(`posterId ${posterId}`)
+  console.log(`userToPostToId ${userToPostTo._id}`)
+  const userToPostToId = userToPostTo._id.toString();
+  if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
     throw new ForbiddenErr("posting to this user's wall is not allowed");
   }
 
@@ -53,7 +56,7 @@ export async function deleteUserPost(req: IReq, res: IRes) {
   )
   const deletedPostPromise = Post.deleteOne({ _id: post._id });
   const promiseResults = await Promise.allSettled([updatedUserPromise, deletedPostPromise]);
-  
+
   if (!areAllPromiseResultsFulfilled(promiseResults)) {
     const msg = "could not update the user's list of posts and/or delete the post";
     throw new Error(msg);
