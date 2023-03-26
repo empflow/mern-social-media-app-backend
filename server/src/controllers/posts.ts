@@ -48,19 +48,25 @@ export async function getUserPosts(req: IReq, res: IRes) {
 }
 
 export async function deleteUserPost(req: IReq, res: IRes) {
-  const user = req.data.fetchedUser;
-  const post = req.data.fetchedPost;
-  
-  const updatedUserPromise = User.findByIdAndUpdate(
-    user._id, { $pull: { posts: post._id }}, { new: true, runValidators: true }
+  const { postPath } = req.params;
+  const userId = req.data.user.userId;
+
+  const post = await Post.findOne({ postPath }, { _id: 1 });
+  if (!post) throw new NotFoundErr("post not found");
+
+  const updatedUserPromise = User.updateOne(
+    { _id: userId }, { $pull: { posts: post._id }}, { runValidators: true }
   )
-  const deletedPostPromise = Post.deleteOne({ _id: post._id });
-  const promiseResults = await Promise.allSettled([updatedUserPromise, deletedPostPromise]);
+  const postDeletionPromise = Post.deleteOne({ _id: post._id });
 
-  if (!areAllPromiseResultsFulfilled(promiseResults)) {
-    const msg = "could not update the user's list of posts and/or delete the post";
-    throw new Error(msg);
+  try {
+    await Promise.all([updatedUserPromise, postDeletionPromise]);
+    res.status(200).json({ msg: "post deleted successfully" });
+  } catch (err) {
+    throw new Error("could not properly delete post");
   }
+}
 
-  res.status(200).json({ msg: "post deleted successfully" });
+export async function patchPost(req: IReq, res: IRes) {
+  
 }
