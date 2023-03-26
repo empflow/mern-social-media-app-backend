@@ -1,7 +1,5 @@
-import { NextFunction } from "express";
 import mongoose from "mongoose";
 import { Types } from "mongoose";
-import User from "./User";
 import { imageUrlsValidator, videoUrlsValidator } from "./validators";
 
 const PostSchema = new mongoose.Schema({

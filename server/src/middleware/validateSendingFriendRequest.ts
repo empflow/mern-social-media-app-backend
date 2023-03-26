@@ -4,7 +4,7 @@ import { ConflictErr, NotFoundErr } from "../utils/errs";
 import idAlreadyExistsInArrayOfIds from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
-export async function validateSendingFriendReq(req: IReq, res: IRes, next: NextFunction) {
+export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId } = req.params;
   const userId = req.data.user.userId;
 

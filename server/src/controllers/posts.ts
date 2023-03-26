@@ -1,8 +1,5 @@
-import mongoose, { Types } from "mongoose";
-import { nanoid } from "nanoid";
 import Post from "../models/Post";
 import User from "../models/User";
-import areAllPromiseResultsFulfilled from "../utils/areAllPromiseResultsFulfilled";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/ReqResInterfaces";

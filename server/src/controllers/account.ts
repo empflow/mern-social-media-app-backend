@@ -1,7 +1,6 @@
-import { Types } from "mongoose";
 import Post from "../models/Post";
 import User from "../models/User";
-import { ConflictErr, NotFoundErr } from "../utils/errs";
+import { NotFoundErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
@@ -41,6 +40,10 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
   ])
 
   res.status(200).json({ updatedSender, updatedReceiver });
+}
+
+export async function acceptFriendRequest(req: IReq, res: IRes) {
+  
 }
 
 export async function deleteFriend(req: IReq, res: IRes) {
