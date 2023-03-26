@@ -23,11 +23,19 @@ const UserSchema = new mongoose.Schema({
   },
   friends: {
     type: [{ type: Types.ObjectId, ref: "User" }],
-    sparse: true,
+    default: [],
     validate: {
       validator: friendsValidator,
       message: "this person already exists in the list of your friends"
     }
+  },
+  friendRequestsReceived: {
+    type: [{ type: Types.ObjectId, ref: "User" }],
+    default: []
+  },
+  friendRequestsSent: {
+    type: [{ type: Types.ObjectId, ref: "User" }],
+    default: []
   },
   birthday: Date,
   city: { type: String, maxlength: 300 },

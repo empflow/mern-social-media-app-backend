@@ -3,6 +3,7 @@ export enum ErrCodes {
   Unauthorized = 401,
   Forbidden = 403,
   NotFound = 404,
+  Conflict = 409,
   InternalServer = 500
 }
 

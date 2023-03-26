@@ -1,6 +1,7 @@
 import express from "express";
-import { addFriend, deleteAccount, deleteFriend, patchAccount } from "../controllers/account";
+import { deleteAccount, deleteFriend, patchAccount, sendFriendRequest } from "../controllers/account";
 import getOwnAccount from "../middleware/getOwnAccount";
+import { validateSendingFriendReq } from "../middleware/validateSendingFriendReq";
 const router = express.Router();
 
 router.patch("/", patchAccount);
@@ -9,8 +10,12 @@ router.delete("/", deleteAccount);
 router.route("/friends/:friendProfilePath")
   .delete(deleteFriend);
 
-router.route("/friends")
-  .post(getOwnAccount, addFriend);
+router.post(
+  "/friends/sendFriendRequest/:friendId",
+  validateSendingFriendReq,
+  sendFriendRequest
+);
+router.post("/friends/acceptFriendRequest/:friendId");
 
 
 export default router;

@@ -1,6 +1,7 @@
+import { Types } from "mongoose";
 import Post from "../models/Post";
 import User from "../models/User";
-import { NotFoundErr } from "../utils/errs";
+import { ConflictErr, NotFoundErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
@@ -20,11 +21,26 @@ export async function deleteAccount(req: IReq, res: IRes) {
   res.status(200).json(deletedAccount);
 }
 
-export async function addFriend(req: IReq, res: IRes) {
-  const account = req.data.account;
-  account.friends.push(req.body);
-  await account.save();
-  res.status(200).json(account);
+export async function sendFriendRequest(req: IReq, res: IRes) {
+  const { friendId } = req.params;
+  const userId = req.data.user.userId;
+
+  const updatedSenderPromise = User.findByIdAndUpdate(
+    userId,
+    { $push: { friendRequestsSent: friendId }},
+    { new: true }
+  )
+  const updatedReceiverPromise = User.findByIdAndUpdate(
+    friendId,
+    { $push: { friendRequestsReceived: userId }},
+    { new: true }
+  )
+
+  const [updatedSender, updatedReceiver] = await Promise.all([
+    updatedSenderPromise, updatedReceiverPromise
+  ])
+
+  res.status(200).json({ updatedSender, updatedReceiver });
 }
 
 export async function deleteFriend(req: IReq, res: IRes) {
