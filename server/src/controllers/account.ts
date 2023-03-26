@@ -43,7 +43,26 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
 }
 
 export async function acceptFriendRequest(req: IReq, res: IRes) {
-  
+  const { friendId } = req.params;
+  const userId = req.data.user.userId;
+
+  const updatedSender = await User.findByIdAndUpdate(
+    friendId,
+    {
+      $pull: { friendRequestsSent: userId },
+      $push: { friends: userId }
+    },
+    { new: true, runValidators: true }
+  )
+  const updatedReceiver = await User.findByIdAndUpdate(
+    userId,
+    {
+      $pull: { friendRequestsReceived: friendId },
+      $push: { friends: friendId }
+    },
+    { new: true, runValidators: true }
+  )
+  res.send({ updatedSender, updatedReceiver });
 }
 
 export async function deleteFriend(req: IReq, res: IRes) {

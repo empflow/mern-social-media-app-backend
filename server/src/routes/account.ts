@@ -1,5 +1,6 @@
 import express from "express";
 import { acceptFriendRequest, deleteAccount, deleteFriend, patchAccount, sendFriendRequest } from "../controllers/account";
+import validateAcceptingFriendRequest from "../middleware/validateAcceptingFriendRequest";
 import { validateSendingFriendRequest } from "../middleware/validateSendingFriendRequest";
 const router = express.Router();
 
@@ -14,8 +15,10 @@ router.post(
   validateSendingFriendRequest,
   sendFriendRequest
 );
+
 router.post(
   "/friends/acceptFriendRequest/:friendId",
+  validateAcceptingFriendRequest,
   acceptFriendRequest
 );
 

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction } from "express";
 import User from "../models/User";
 import { BadRequestErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
