@@ -42,7 +42,7 @@ export async function getUserPosts(req: IReq, res: IRes) {
   );
   if (!user) throw new NotFoundErr("user not found");
   const posts = user.posts;
-
+  console.log("get user posts");
   const postsDocs = await Post.find({ _id: { $in: posts }});
   res.status(200).json(postsDocs);
 }
@@ -68,5 +68,12 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 }
 
 export async function patchPost(req: IReq, res: IRes) {
+  const { postPath } = req.params;
   
+  const updatedPost = await Post.findOneAndUpdate(
+    { postPath }, req.body, { new: true, runValidators: true }
+  )
+  if (!updatedPost) throw new NotFoundErr("post not found");
+
+  res.status(200).json(updatedPost);
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { addPost, deleteUserPost, getUserPosts } from "../controllers/posts";
+import { addPost, deleteUserPost, getUserPosts, patchPost } from "../controllers/posts";
 const router = express.Router();
 
 router.route("/:profilePath")
@@ -7,6 +7,7 @@ router.route("/:profilePath")
   .post(addPost);
 
 router.route("/:postPath")
+  .patch(patchPost)
   .delete(deleteUserPost);
 
 export default router;
