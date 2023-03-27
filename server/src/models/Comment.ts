@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Types } from "mongoose";
 
 const CommentSchema = new mongoose.Schema({
-  user: {
+  createdBy: {
     type: Types.ObjectId,
     ref: "User",
     required: true
@@ -11,26 +11,25 @@ const CommentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  likesCount: {
-    type: Number,
-    default: 0
-  },
-  dislikesCount: {
-    type: Number,
-    default: 0
-  },
-  isReply: {
+  likes: { type: Number, default: 0 },
+  dislikes: { type: Number, default: 0 },
+  replyTo: {
+    default: null,
     type: {
-      status: Boolean,
-      replyTo: { type: Types.ObjectId, ref: "Comment" }
-    },
-    required: true
+      commentId: {
+        type: Types.ObjectId,
+        ref: "Comment",
+        required: true
+      },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true }
+    }
   },
-  imageUrls: {
-    type: Array
+  imageAttachments: {
+    type: [{ type: String }]
   },
-  videoUrls: {
-    type: Array
+  videoAttachments: {
+    type: [{ type: String }]
   }
 }, { timestamps: true });
 

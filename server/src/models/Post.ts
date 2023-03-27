@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { imageUrlsValidator, videoUrlsValidator } from "./validators";
 
 const PostSchema = new mongoose.Schema({
-  user: {
+  createdBy: {
     type: Types.ObjectId,
     ref: "User",
     required: true

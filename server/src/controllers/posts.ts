@@ -21,7 +21,7 @@ export async function addPost(req: IReq, res: IRes) {
 
   const postBody = req.body.body;
   const postPath = getPostPath(postBody);
-  const post = new Post({ body: postBody, user: posterId, postPath });
+  const post = new Post({ body: postBody, createdBy: posterId, postPath });
   const poster = await User.findByIdAndUpdate(
     posterId, { $push: { posts: post._id }}, { runValidators: true, new: true }
   );
