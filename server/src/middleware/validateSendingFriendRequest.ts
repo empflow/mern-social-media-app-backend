@@ -28,5 +28,8 @@ export async function validateSendingFriendRequest(req: IReq, res: IRes, next: N
     throw new ConflictErr("friend already added");
   }
 
+  req.data.sender = sender;
+  req.data.receiver = receiver;
+
   next();
 }

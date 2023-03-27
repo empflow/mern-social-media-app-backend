@@ -24,16 +24,14 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
   const { friendId } = req.params;
   const userId = req.data.user.userId;
 
-  const updatedSenderPromise = User.findByIdAndUpdate(
-    userId,
-    { $push: { friendRequestsSent: friendId }},
-    { new: true }
-  )
-  const updatedReceiverPromise = User.findByIdAndUpdate(
-    friendId,
-    { $push: { friendRequestsReceived: userId }},
-    { new: true }
-  )
+  const sender = req.data.sender;
+  const receiver = req.data.receiver;
+
+  sender.friendRequestsSent.push(friendId);
+  receiver.friendRequestsReceived.push(userId);
+
+  const updatedSenderPromise = sender.save();
+  const updatedReceiverPromise = receiver.save();
 
   const [updatedSender, updatedReceiver] = await Promise.all([
     updatedSenderPromise, updatedReceiverPromise

@@ -12,6 +12,7 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
     throw new ForbiddenErr("you cannot accept a friend request from yourself");
   }
 
+  // TODO: improve this, e.g use projections
   const senderPromise = User.findById(friendId);
   const receiverPromise = User.findById(userId);
   const [sender, receiver] = await Promise.all([senderPromise, receiverPromise]);
