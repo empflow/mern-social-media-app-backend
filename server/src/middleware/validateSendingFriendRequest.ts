@@ -1,12 +1,16 @@
 import { NextFunction } from "express";
 import User from "../models/User";
-import { ConflictErr, NotFoundErr } from "../utils/errs";
+import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import idAlreadyExistsInArrayOfIds from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId } = req.params;
   const userId = req.data.user.userId;
+
+  if (friendId === userId) {
+    throw new ForbiddenErr("you cannot send a friend request to yourself");
+  }
 
   const senderPromise = User.findById(userId);
   const receiverPromise = User.findById(friendId);
