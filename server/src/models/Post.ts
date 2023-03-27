@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Types } from "mongoose";
-import { imageUrlsValidator, videoUrlsValidator } from "./validators";
+import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
 const PostSchema = new mongoose.Schema({
   createdBy: {
@@ -8,45 +8,22 @@ const PostSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  body: {
-    type: String,
-    required: true
-  },
-  postPath: {
-    type: String,
-    required: true
-  },
-  imageUrls: {
+  body: { type: String, default: null },
+  postPath: { type: String, required: true },
+  imageAttachments: {
     type: Array,
-    maxlength: 10,
-    validate: {
-      validator: imageUrlsValidator,
-      message: "you cannot upload more than 10 images in a single comment"
-    }
+    validate: imageAttachmentsValidator,
+    default: null
   },
-  videoUrls: {
+  videoAttachments: {
     type: Array,
-    validate: {
-      validator: videoUrlsValidator,
-      message: "you cannot upload more than 2 videos in a single comment"
-    }
+    validate: videoAttachmentsValidator,
+    default: null
   },
-  viewsCount: {
-    type: Number,
-    default: 0
-  },
-  likesCount: {
-    type: Number,
-    default: 0
-  },
-  dislikesCount: {
-    type: Number,
-    default: 0
-  },
-  sharesCount: {
-    type: Number,
-    default: 0
-  },
+  views: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
+  dislikes: { type: Number, default: 0 },
+  shares: { type: Number, default: 0 },
   comments: {
     type: [{ type: Types.ObjectId, ref: "Comment" }],
     default: []
