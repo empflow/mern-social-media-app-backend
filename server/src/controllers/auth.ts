@@ -12,5 +12,11 @@ export async function signUp(req: IReq, res: IRes) {
 export async function signIn(req: IReq, res: IRes) {
   const user = req.data.user;
   const token = await user.createJwt();
-  res.status(200).json({ token });
+  res.status(200).json({
+    token,
+    user: {
+      _id: user._id,
+      profilePath: user.profilePath
+    }
+  });
 }

@@ -19,10 +19,19 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
   if (!sender) throw new NotFoundErr("request sender not found");
   if (!receiver) throw new NotFoundErr("request receiver not found");
 
+  const receiverId = receiver._id.toString();
+  const senderFriendRequestsSentStrings = sender.friendRequestsSent.map(req => req.toString());
+  if (!senderFriendRequestsSentStrings.includes(receiverId)) {
+    throw new ForbiddenErr("this user has not sent you a friend request");
+  }
+
   const isFriendAlreadyAdded = idAlreadyExistsInArrayOfIds(receiver.friends, sender._id);
   if (isFriendAlreadyAdded) {
     throw new ConflictErr("friend already added");
   }
+
+  req.data.sender = sender;
+  req.data.receiver = receiver;
 
   next();
 }
