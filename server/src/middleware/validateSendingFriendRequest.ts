@@ -4,13 +4,14 @@ import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 import { IUser } from "../models/User";
+import { findDocsById, findDocs } from "../utils/findDocs";
 
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: receiverId } = req.params;
-  const senderId = req.data.user.userId;
+  const senderId: string = req.data.user.userId;
   validateIds(senderId, receiverId);
 
-  const [sender, receiver] = await getSenderAndReceiver(senderId, receiverId);
+  const [sender, receiver] = await findDocsById(User, [senderId, receiverId]);
   validateSenderAndReceiver(sender, receiver);
 
   req.data.sender = sender;
@@ -62,11 +63,4 @@ function throwIfNeeded(
   if (isFriendAlreadyAdded) {
     throw new ConflictErr("friend already added");
   }
-}
-
-async function getSenderAndReceiver(senderId: string, receiverId: string) {
-  const senderPromise = User.findById(senderId);
-  const receiverPromise = User.findById(receiverId);
-  const result = await Promise.all([senderPromise, receiverPromise]);
-  return result;
 }

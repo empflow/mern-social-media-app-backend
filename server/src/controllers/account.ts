@@ -21,18 +21,17 @@ export async function deleteAccount(req: IReq, res: IRes) {
 }
 
 export async function sendFriendRequest(req: IReq, res: IRes) {
-  const { friendId } = req.params;
-  const userId = req.data.user.userId;
+  const { friendId: receiverId } = req.params;
+  const senderId = req.data.user.userId;
 
   const sender = req.data.sender;
   const receiver = req.data.receiver;
 
-  sender.friendRequestsSent.push(friendId);
-  receiver.friendRequestsReceived.push(userId);
+  sender.friendRequestsSent.push(receiverId);
+  receiver.friendRequestsReceived.push(senderId);
 
   const updatedSenderPromise = sender.save();
   const updatedReceiverPromise = receiver.save();
-
   const [updatedSender, updatedReceiver] = await Promise.all([
     updatedSenderPromise, updatedReceiverPromise
   ])
@@ -41,17 +40,17 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
 }
 
 export async function acceptFriendRequest(req: IReq, res: IRes) {
-  const { friendId } = req.params;
-  const userId = req.data.user.userId;
+  const { friendId: senderId } = req.params;
+  const receiverId = req.data.user.userId;
 
   const sender = req.data.sender;
   const receiver = req.data.receiver;
   
-  sender.friendRequestsSent.pull(userId);
-  sender.friends.push(userId);
+  sender.friendRequestsSent.pull(receiverId);
+  sender.friends.push(receiverId);
 
-  receiver.friendRequestsReceived.pull(friendId);
-  receiver.friends.push(friendId);
+  receiver.friendRequestsReceived.pull(senderId);
+  receiver.friends.push(senderId);
 
   const updatedSenderPromise = sender.save();
   const updatedReceiverPromise = receiver.save();
@@ -63,10 +62,10 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
 }
 
 export async function deleteFriend(req: IReq, res: IRes) {
-  const { friendProfilePath: friendToDeleteProfilePath } = req.params;
+  const { friendId: friendToDeleteId } = req.params;
   const accountToDeleteFromId = req.data.user.userId;
 
-  const friend = await User.findOne({ profilePath: friendToDeleteProfilePath }, { _id: 1 });
+  const friend = await User.findById(friendToDeleteId);
   if (!friend) throw new NotFoundErr("friend not found");
 
   const account = await User.findOneAndUpdate(

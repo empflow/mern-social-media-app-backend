@@ -7,7 +7,7 @@ const router = express.Router();
 router.patch("/", patchAccount);
 router.delete("/", deleteAccount);
 
-router.route("/friends/:friendProfilePath")
+router.route("/friends/:friendId")
   .delete(deleteFriend);
 
 router.post(

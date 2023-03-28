@@ -12,8 +12,6 @@ export async function addPost(req: IReq, res: IRes) {
   const posterId = req.data.user.userId;
   
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-  console.log(`posterId ${posterId}`)
-  console.log(`userToPostToId ${userToPostTo._id}`)
   const userToPostToId = userToPostTo._id.toString();
   if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
     throw new ForbiddenErr("posting to this user's wall is not allowed");
