@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export default function idAlreadyExistsInArrayOfIds(
+export default function idExistsInIdsArr(
   idsArr: object[], id: string | ObjectId
 ) {
   const idString = id.toString();

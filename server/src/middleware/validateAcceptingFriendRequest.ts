@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import User from "../models/User";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
-import idAlreadyExistsInArrayOfIds from "../utils/idAlreadyExistsInArrayOfIds";
+import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
 export default async function validateAcceptingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
@@ -12,7 +12,6 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
     throw new ForbiddenErr("you cannot accept a friend request from yourself");
   }
 
-  // TODO: improve this, e.g use projections
   const senderPromise = User.findById(friendId);
   const receiverPromise = User.findById(userId);
   const [sender, receiver] = await Promise.all([senderPromise, receiverPromise]);
@@ -26,7 +25,7 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
     throw new ForbiddenErr("this user has not sent you a friend request");
   }
 
-  const isFriendAlreadyAdded = idAlreadyExistsInArrayOfIds(receiver.friends, sender._id);
+  const isFriendAlreadyAdded = idExistsInIdsArr(receiver.friends, sender._id);
   if (isFriendAlreadyAdded) {
     throw new ConflictErr("friend already added");
   }

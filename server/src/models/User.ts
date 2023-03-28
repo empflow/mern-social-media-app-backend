@@ -1,12 +1,34 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { Types, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { friendsValidator, profilePathValidator } from "./validators";
 
-
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-const UserSchema = new mongoose.Schema({
+export interface IUser {
+  _id: Types.ObjectId,
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string,
+  pictureUrl50px: string,
+  pictureUrl100px: string,
+  pictureUrl400px: string,
+  profilePath: string,
+  friends: object[],
+  friendRequestsReceived: object[],
+  friendRequestsSent: object[],
+  birthday: Date,
+  city: string | null,
+  occupation: string | null,
+  status: string | null,
+  canAnyonePost: boolean,
+  posts: object[],
+  createdAt: string,
+  updatedAt: string
+}
+
+const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: 3, maxlength: 30 },
   lastName: { type: String, required: true, minlength: 3, maxlength: 30 },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: 255 },
@@ -22,19 +44,19 @@ const UserSchema = new mongoose.Schema({
     validate: profilePathValidator
   },
   friends: {
-    type: [{ type: Types.ObjectId, ref: "User" }],
+    type: [{ type: Schema.Types.ObjectId, ref: "User" }],
     default: [],
     validate: friendsValidator
   },
   friendRequestsReceived: {
-    type: [{ type: Types.ObjectId, ref: "User" }],
+    type: [{ type: Schema.Types.ObjectId, ref: "User" }],
     default: []
   },
   friendRequestsSent: {
-    type: [{ type: Types.ObjectId, ref: "User" }],
+    type: [{ type: Schema.Types.ObjectId, ref: "User" }],
     default: []
   },
-  birthday: Date,
+  birthday: { type: Date, default: null },
   city: { type: String, maxlength: 300, default: null },
   occupation: { type: String, maxlength: 100, default: null },
   status: { type: String, maxlength: 300, default: null },
@@ -43,7 +65,7 @@ const UserSchema = new mongoose.Schema({
     default: true
   },
   posts: {
-    type: [{ type: Types.ObjectId, ref: "Post" }],
+    type: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     default: []
   }
 }, { timestamps: true })
@@ -70,5 +92,5 @@ UserSchema.methods.createJwt = async function () {
 }
 
 
-const UserModel = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model<IUser>("User", UserSchema);
 export default UserModel;

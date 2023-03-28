@@ -44,22 +44,21 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
   const { friendId } = req.params;
   const userId = req.data.user.userId;
 
-  const updatedSender = await User.findByIdAndUpdate(
-    friendId,
-    {
-      $pull: { friendRequestsSent: userId },
-      $push: { friends: userId }
-    },
-    { new: true, runValidators: true }
-  )
-  const updatedReceiver = await User.findByIdAndUpdate(
-    userId,
-    {
-      $pull: { friendRequestsReceived: friendId },
-      $push: { friends: friendId }
-    },
-    { new: true, runValidators: true }
-  )
+  const sender = req.data.sender;
+  const receiver = req.data.receiver;
+  
+  sender.friendRequestsSent.pull(userId);
+  sender.friends.push(userId);
+
+  receiver.friendRequestsReceived.pull(friendId);
+  receiver.friends.push(friendId);
+
+  const updatedSenderPromise = sender.save();
+  const updatedReceiverPromise = receiver.save();
+  const [updatedSender, updatedReceiver] = await Promise.all([
+    updatedSenderPromise, updatedReceiverPromise
+  ]);
+
   res.send({ updatedSender, updatedReceiver });
 }
 
