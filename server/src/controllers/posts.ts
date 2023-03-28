@@ -29,6 +29,15 @@ export async function addPost(req: IReq, res: IRes) {
   res.status(201).json(post);
 }
 
+export async function getPost(req: IReq, res: IRes) {
+  const { postPath } = req.params;
+
+  const post = await Post.findOne({ postPath });
+  if (!post) throw new NotFoundErr("post not found");
+
+  res.status(200).json(post);
+}
+
 export async function getUserPosts(req: IReq, res: IRes) {
   const { profilePath: profilePathToGetPostsFrom } = req.params;
 
