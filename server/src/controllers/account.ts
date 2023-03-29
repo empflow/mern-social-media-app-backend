@@ -1,5 +1,6 @@
+import { HydratedDocument } from "mongoose";
 import Post from "../models/Post";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 import { NotFoundErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
@@ -62,15 +63,16 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
 }
 
 export async function rejectFriendRequest(req: IReq, res: IRes) {
-  const { friendId: senderId } = req.params;
-  const receiverId = req.data.user.userId;
+  const sender: HydratedDocument<IUser> = req.data.sender;
+  const receiver: HydratedDocument<IUser> = req.data.receiver;
 
-  const updatedSenderPromise = User.findByIdAndUpdate(senderId, {
-    $pull: { friendRequestsSent: receiverId }
+  const updatedSenderPromise = User.findByIdAndUpdate(sender._id, {
+    $pull: { friendRequestsSent: receiver._id }
   }, { new: true, runValidators: true });
-  const updatedReceiverPromise = User.findByIdAndUpdate(receiverId, {
-    $pull: { friendRequestsReceived: senderId }
+  const updatedReceiverPromise = User.findByIdAndUpdate(receiver._id, {
+    $pull: { friendRequestsReceived: sender._id }
   }, { new: true, runValidators: true });
+
   const [updatedSender, updatedReceiver] = await Promise.all([
     updatedSenderPromise, updatedReceiverPromise
   ]);
