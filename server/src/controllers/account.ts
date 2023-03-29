@@ -61,6 +61,23 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
   res.send({ updatedSender, updatedReceiver });
 }
 
+export async function rejectFriendRequest(req: IReq, res: IRes) {
+  const { friendId: senderId } = req.params;
+  const receiverId = req.data.user.userId;
+
+  const updatedSenderPromise = User.findByIdAndUpdate(senderId, {
+    $pull: { friendRequestsSent: receiverId }
+  }, { new: true, runValidators: true });
+  const updatedReceiverPromise = User.findByIdAndUpdate(receiverId, {
+    $pull: { friendRequestsReceived: senderId }
+  }, { new: true, runValidators: true });
+  const [updatedSender, updatedReceiver] = await Promise.all([
+    updatedSenderPromise, updatedReceiverPromise
+  ]);
+
+  res.status(200).json({ updatedSender, updatedReceiver });
+}
+
 export async function deleteFriend(req: IReq, res: IRes) {
   const { friendId: friendToDeleteId } = req.params;
   const accountToDeleteFromId = req.data.user.userId;
