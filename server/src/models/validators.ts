@@ -1,6 +1,6 @@
 export function profilePathValidator(path: string) {
   const urlRegex = /^[a-z0-9-_]+$/i;
-  return urlRegex.test(path);
+  return (urlRegex.test(path) && path.length > 3);
 }
 
 export function friendsValidator(friends: object[]) {
