@@ -27,8 +27,8 @@ function validateIds(senderId: string, receiverId: string) {
 }
 
 function validateSenderAndReceiver(sender: IUser | null, receiver: IUser | null) {
-  if (!sender) throw new NotFoundErr("request sender not found");
-  if (!receiver) throw new NotFoundErr("request receiver not found");
+  if (!sender) throw new NotFoundErr("sender not found");
+  if (!receiver) throw new NotFoundErr("receiver not found");
 
   const senderId = sender._id;
   const receiverId = receiver._id;

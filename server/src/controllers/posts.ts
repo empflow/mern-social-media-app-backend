@@ -1,6 +1,7 @@
 import Post from "../models/Post";
 import User from "../models/User";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
+import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/ReqResInterfaces";
 
@@ -9,7 +10,7 @@ export async function addPost(req: IReq, res: IRes) {
   const userToPostTo = await User.findOne(
     { profilePath }, { canAnyonePost: 1 }
   );
-  const posterId = req.data.user.userId;
+  const posterId: string = req.data.user.userId;
   
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
   const userToPostToId = userToPostTo._id.toString();
@@ -20,8 +21,8 @@ export async function addPost(req: IReq, res: IRes) {
   const postBody = req.body.body;
   const postPath = getPostPath(postBody);
   const post = new Post({ body: postBody, createdBy: posterId, postPath });
-  const poster = await User.findByIdAndUpdate(
-    posterId, { $push: { posts: post._id }}, { runValidators: true, new: true }
+  const poster = await findDocByIdAndUpdate(
+    User, posterId, { $push: { posts: post._id }}
   );
   if (!poster) throw new NotFoundErr("poster not found");
 
@@ -74,8 +75,8 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
   
-  const updatedPost = await Post.findOneAndUpdate(
-    { postPath }, req.body, { new: true, runValidators: true }
+  const updatedPost = await findDocAndUpdate(
+    Post, { postPath }, req.body
   )
   if (!updatedPost) throw new NotFoundErr("post not found");
 
