@@ -5,7 +5,7 @@ import corsConf from "../config/cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 router.use(setDataPropertyOnReqObject);
 router.use(express.json({ limit: "5mb" }));

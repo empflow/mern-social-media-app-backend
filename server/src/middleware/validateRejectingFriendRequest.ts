@@ -1,6 +1,6 @@
 import { findDocsById } from "../utils/findDocs";
 import User from "../models/User";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 import { NextFunction } from "express";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 

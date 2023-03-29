@@ -4,7 +4,7 @@ import arrToString from "../utils/arrToString";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { findDocsById } from "../utils/findDocs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export default async function validateAcceptingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: senderId } = req.params;

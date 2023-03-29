@@ -2,7 +2,7 @@ import { NextFunction } from "express";
 import ApiErr, { ErrCodes } from "../utils/errs/ApiErr";
 import { TApiErrs } from "../utils/errs";
 import { MongoError } from "mongodb";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 import isErrCausedByUser from "../utils/isErrCausedByUser";
 
 export type TErr = TApiErrs | Error | MongoError;

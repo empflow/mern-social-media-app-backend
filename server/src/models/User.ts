@@ -92,5 +92,5 @@ UserSchema.methods.createJwt = async function () {
 }
 
 
-const UserModel = mongoose.model<IUser>("User", UserSchema);
-export default UserModel;
+const User = mongoose.model<IUser>("User", UserSchema);
+export default User;

@@ -2,7 +2,7 @@ import User from "../models/User";
 import { NotFoundErr } from "../utils/errs";
 import friendDocProjection from "../utils/projections/friendDocProjection";
 import userDocProjection from "../utils/projections/userDocProjection";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function getUsers(req: IReq, res: IRes) {
   const users = await User.find({});

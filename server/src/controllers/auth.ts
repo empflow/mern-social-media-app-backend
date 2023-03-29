@@ -1,6 +1,6 @@
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import User from "../models/User";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function signUp(req: IReq, res: IRes) {
   const profilePath = getRandomProfilePath();

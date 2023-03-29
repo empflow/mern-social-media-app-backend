@@ -3,7 +3,7 @@ import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
   const userId: string = req.data.user.userId;

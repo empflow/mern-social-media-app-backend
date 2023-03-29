@@ -2,7 +2,7 @@ import { NextFunction } from "express";
 import User from "../models/User";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 import { IUser } from "../models/User";
 import { findDocsById, findDocs } from "../utils/findDocs";
 

@@ -3,7 +3,7 @@ import User from "../models/User";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import { getPostPath } from "../utils/pathsGenerators";
-import { IReq, IRes } from "../utils/ReqResInterfaces";
+import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
