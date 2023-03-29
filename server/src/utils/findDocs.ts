@@ -22,7 +22,7 @@ export async function findDocByIdAndUpdate<T>(
 export async function findDocAndUpdate<T>(
   model: Model<T>, filter: FilterQuery<T>, update: UpdateQuery<T>
 ) {
-  const result = await model.findOne(
+  const result = await model.findOneAndUpdate(
     filter, update, { new: true, runValidators: true }
   );
   return result;
