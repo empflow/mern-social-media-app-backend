@@ -5,6 +5,7 @@ import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { IUser } from "../models/User";
 import { findDocsById, findDocs } from "../utils/findDocs";
+import { HydratedDocument } from "mongoose";
 
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: receiverId } = req.params;
@@ -26,21 +27,20 @@ function validateIds(senderId: string, receiverId: string) {
   }
 }
 
-function validateSenderAndReceiver(sender: IUser | null, receiver: IUser | null) {
+function validateSenderAndReceiver(
+  sender: HydratedDocument<IUser> | null, receiver: HydratedDocument<IUser> | null
+) {
   if (!sender) throw new NotFoundErr("sender not found");
   if (!receiver) throw new NotFoundErr("receiver not found");
 
-  const senderId = sender._id;
-  const receiverId = receiver._id;
-
   const isReqAlreadySent = idExistsInIdsArr(
-    sender.friendRequestsSent, receiverId
+    sender.friendRequestsSent, receiver.id
   );
   const isReqAlreadySentByReceiver = idExistsInIdsArr(
-    receiver.friendRequestsSent, senderId
+    receiver.friendRequestsSent, sender.id
   );
   const isFriendAlreadyAdded = idExistsInIdsArr(
-    sender.friends, receiverId
+    sender.friends, receiver.id
   );
 
   throwIfNeeded(

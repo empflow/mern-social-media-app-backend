@@ -1,24 +1,38 @@
-import mongoose from "mongoose";
-import { Types } from "mongoose";
+import mongoose, { Types, Schema, HydratedDocument } from "mongoose";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
-const PostSchema = new mongoose.Schema({
+export interface IPost {
+  createdBy: Types.ObjectId,
+  body: null | string,
+  postPath: string,
+  imageAttachments: string[],
+  videoAttachments: string[],
+  views: number,
+  likes: number,
+  dislikes: number,
+  shares: number,
+  comments: Types.ObjectId[],
+  createdAt: Date,
+  updatedAt: Date
+}
+
+const PostSchema = new Schema<IPost>({
   createdBy: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
     required: true
   },
   body: { type: String, default: null },
   postPath: { type: String, required: true },
   imageAttachments: {
-    type: Array,
+    type: [String],
     validate: imageAttachmentsValidator,
-    default: null
+    default: []
   },
   videoAttachments: {
-    type: Array,
+    type: [String],
     validate: videoAttachmentsValidator,
-    default: null
+    default: []
   },
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
@@ -30,5 +44,5 @@ const PostSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-const Post = mongoose.model("Post", PostSchema);
+const Post = mongoose.model<IPost>("Post", PostSchema);
 export default Post;

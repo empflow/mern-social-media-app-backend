@@ -1,10 +1,28 @@
-import mongoose from "mongoose";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
+import { Schema } from "mongoose";
 
-const CommentSchema = new mongoose.Schema({
+export interface IComment {
+  createdBy: Types.ObjectId,
+  onPost: Types.ObjectId,
+  body: string,
+  likes: number,
+  dislikes: number,
+  replyTo: null | Types.ObjectId,
+  imageAttachments: string[],
+  videoAttachments: string[],
+  createdAt: Date,
+  updatedAt: Date
+}
+
+const CommentSchema = new Schema<IComment>({
   createdBy: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
+    required: true
+  },
+  onPost: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
     required: true
   },
   body: {
@@ -15,23 +33,18 @@ const CommentSchema = new mongoose.Schema({
   dislikes: { type: Number, default: 0 },
   replyTo: {
     default: null,
-    type: {
-      commentId: {
-        type: Types.ObjectId,
-        ref: "Comment",
-        required: true
-      },
-      firstName: { type: String, required: true },
-      lastName: { type: String, required: true }
-    }
+    type: Schema.Types.ObjectId,
+    ref: "Comment"
   },
   imageAttachments: {
-    type: [{ type: String }]
+    type: [String],
+    default: []
   },
   videoAttachments: {
-    type: [{ type: String }]
+    type: [String],
+    default: []
   }
 }, { timestamps: true });
 
-const Comment = mongoose.model("Comment", CommentSchema);
+const Comment = mongoose.model<IComment>("Comment", CommentSchema);
 export default Comment;

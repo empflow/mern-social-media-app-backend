@@ -15,7 +15,7 @@ export async function patchAccount(req: IReq, res: IRes) {
 export async function deleteAccount(req: IReq, res: IRes) {
   const deletedAccount = await User.findByIdAndDelete(req.data.user.userId);
   if (!deletedAccount) throw new NotFoundErr("account not found");
-  await Post.deleteMany({ _id: { $in: deletedAccount.posts }});
+  await Post.deleteMany({ createdBy: deletedAccount.id });
   res.status(200).json(deletedAccount);
 }
 

@@ -46,37 +46,32 @@ export async function getUserPosts(req: IReq, res: IRes) {
     { profilePath: profilePathToGetPostsFrom }, { posts: 1 }
   );
   if (!user) throw new NotFoundErr("user not found");
-  const posts = user.posts;
-  console.log("get user posts");
-  const postsDocs = await Post.find({ _id: { $in: posts }});
-  res.status(200).json(postsDocs);
+
+  const posts = await Post.find({ createdBy: user.id });
+  res.status(200).json(posts);
 }
 
 export async function deleteUserPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const userId = req.data.user.userId;
 
-  const post = await Post.findOne({ postPath }, { _id: 1 });
+  const post = await Post.findOne({ postPath });
   if (!post) throw new NotFoundErr("post not found");
 
-  const updatedUserPromise = User.updateOne(
-    { _id: userId }, { $pull: { posts: post._id }}, { runValidators: true }
-  )
-  const postDeletionPromise = Post.deleteOne({ _id: post._id });
-
-  try {
-    await Promise.all([updatedUserPromise, postDeletionPromise]);
-    res.status(200).json({ msg: "post deleted successfully" });
-  } catch (err) {
-    throw new Error("could not properly delete post");
+  if (userId !== post.createdBy) {
+    throw new ForbiddenErr("you can only delete your own posts");
   }
+
+  const deletedPost = await Post.findByIdAndDelete(post.id);
+  res.status(200).json(deletedPost);
 }
 
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
+  const { body } = req.body;
   
   const updatedPost = await findDocAndUpdate(
-    Post, { postPath }, req.body
+    Post, { postPath }, { body }
   )
   if (!updatedPost) throw new NotFoundErr("post not found");
 

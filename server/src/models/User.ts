@@ -6,7 +6,6 @@ import { friendsValidator, profilePathValidator } from "./validators";
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export interface IUser {
-  _id: Types.ObjectId,
   firstName: string,
   lastName: string,
   email: string,
@@ -23,7 +22,6 @@ export interface IUser {
   occupation: string | null,
   status: string | null,
   canAnyonePost: boolean,
-  posts: object[],
   createdAt: string,
   updatedAt: string
 }
@@ -63,10 +61,6 @@ const UserSchema = new Schema<IUser>({
   canAnyonePost: {
     type: Boolean,
     default: true
-  },
-  posts: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    default: []
   }
 }, { timestamps: true })
 

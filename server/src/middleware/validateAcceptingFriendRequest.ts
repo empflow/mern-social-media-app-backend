@@ -1,4 +1,5 @@
 import { NextFunction } from "express";
+import { HydratedDocument } from "mongoose";
 import User, { IUser } from "../models/User";
 import arrToString from "../utils/arrToString";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
@@ -26,13 +27,14 @@ function validateIds(senderId: string, receiverId: string) {
   }
 }
 
-function validateSenderAndReceiver(sender: IUser | null, receiver: IUser | null) {
+function validateSenderAndReceiver(
+  sender: HydratedDocument<IUser> | null, receiver: HydratedDocument<IUser> | null
+) {
   if (!sender) throw new NotFoundErr("sender not found");
   if (!receiver) throw new NotFoundErr("receiver not found");
 
-  const receiverId = receiver._id.toString();
   const senderFriendReqsSent = arrToString(sender.friendRequestsSent);
-  if (!senderFriendReqsSent.includes(receiverId)) {
+  if (!senderFriendReqsSent.includes(receiver.id)) {
     throw new ForbiddenErr("this user has not sent you a friend request");
   }
 
