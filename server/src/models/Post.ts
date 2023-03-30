@@ -3,7 +3,7 @@ import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validato
 
 export interface IPost {
   createdBy: Types.ObjectId,
-  body: null | string,
+  postBody: null | string,
   postPath: string,
   imageAttachments: string[],
   videoAttachments: string[],
@@ -22,7 +22,7 @@ const PostSchema = new Schema<IPost>({
     ref: "User",
     required: true
   },
-  body: { type: String, default: null },
+  postBody: { type: String, default: null },
   postPath: { type: String, required: true },
   imageAttachments: {
     type: [String],

@@ -1,6 +1,6 @@
 import Post from "../models/Post";
 import User from "../models/User";
-import { ForbiddenErr, NotFoundErr } from "../utils/errs";
+import { ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/reqResInterfaces";
@@ -18,9 +18,9 @@ export async function addPost(req: IReq, res: IRes) {
     throw new ForbiddenErr("posting to this user's wall is not allowed");
   }
 
-  const postBody = req.body.body;
+  const { postBody } = req.body;
   const postPath = getPostPath(postBody);
-  const post = new Post({ body: postBody, createdBy: posterId, postPath });
+  const post = new Post({ postBody, createdBy: posterId, postPath });
   const poster = await findDocByIdAndUpdate(
     User, posterId, { $push: { posts: post._id }}
   );
@@ -58,7 +58,8 @@ export async function deleteUserPost(req: IReq, res: IRes) {
   const post = await Post.findOne({ postPath });
   if (!post) throw new NotFoundErr("post not found");
 
-  if (userId !== post.createdBy) {
+  const postCreatedBy = post.createdBy.toString();
+  if (userId !== postCreatedBy) {
     throw new ForbiddenErr("you can only delete your own posts");
   }
 
@@ -68,12 +69,19 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
-  const { body } = req.body;
-  
-  const updatedPost = await findDocAndUpdate(
-    Post, { postPath }, { body }
-  )
-  if (!updatedPost) throw new NotFoundErr("post not found");
+  const { postBody } = req.body;
+  const userId = req.data.user.userId;
+
+  const updateQuery = { postBody }
+  const updatedPost = await Post.findOneAndUpdate(
+    { postPath, createdBy: userId },
+    updateQuery,
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedPost) {
+    throw new NotFoundErr("this post was not created by you or may not exist");
+  }
 
   res.status(200).json(updatedPost);
 }

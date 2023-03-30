@@ -5,17 +5,18 @@ export function getRandomProfilePath() {
   return `user${nanoid(randomCharsLength)}`
 }
 
-export function getPostPath(postBody: string) {
-  postBody = toLowerCaseAndSlice(postBody);
-  postBody = removeSpecialChars(postBody);  
-  postBody = removeLastWord(postBody);
-  postBody = replaceSpacesWithDashes(postBody);
+export function getPostPath(postBody: string | undefined | null) {
+  if (typeof postBody === "string") {
+    postBody = toLowerCaseAndSlice(postBody);
+    postBody = removeSpecialChars(postBody);  
+    postBody = removeLastWord(postBody);
+    postBody = replaceSpacesWithDashes(postBody);
 
-  if (isUrlFriendly(postBody)) {
-    return `${postBody}-${nanoid(10)}`;
-  } else {
-    return nanoid();
+    if (isUrlFriendly(postBody)) {
+      return `${postBody}-${nanoid(10)}`;
+    }
   }
+  return nanoid();
 }
 
 function toLowerCaseAndSlice(str: string) {
@@ -35,7 +36,8 @@ function removeLastWord(str: string) {
 }
 
 function replaceSpacesWithDashes(str: string) {
-  return str.replace(/\s/g, "-");
+  str = str.replace(/\s/g, "-");
+  return str;
 }
 
 function isUrlFriendly(str: string) {
