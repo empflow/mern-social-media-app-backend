@@ -6,8 +6,10 @@ import { findDocByIdAndUpdate } from "../utils/findDocs";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
+  const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
+  const changeableValues = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
   const userId: string = req.data.user.userId;
-  const patchedAccount = await findDocByIdAndUpdate(User, userId, req.body);
+  const patchedAccount = await findDocByIdAndUpdate(User, userId, changeableValues);
   if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
