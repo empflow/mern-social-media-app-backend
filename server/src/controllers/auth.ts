@@ -1,8 +1,14 @@
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
+import { BadRequestErr } from "../utils/errs";
 
 export async function signUp(req: IReq, res: IRes) {
+  const { password } = req.body;
+  if (password.length < 10) {
+    throw new BadRequestErr("password must be at least 10 characters long");
+  }
+  
   const profilePath = getRandomProfilePath();
   const user = await User.create({ ...req.body, profilePath });
   const token = await (user as any).createJwt();
