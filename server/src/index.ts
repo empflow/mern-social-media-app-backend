@@ -13,7 +13,6 @@ import authRoute from "./routes/auth";
 import usersRoute from "./routes/users";
 import accountRoute from "./routes/account";
 import postsRoute from "./routes/posts";
-import commentsRoute from "./routes/comments";
 import errHandler from "./middleware/errHandler";
 import authorize from "./middleware/authorize";
 const PORT = process.env.PORT || 3000;
@@ -27,7 +26,6 @@ app.use(authorize);
 app.use("/users", usersRoute);
 app.use("/account", accountRoute);
 app.use("/posts", postsRoute);
-app.use("/comments", commentsRoute);
 
 app.use(errHandler);
 

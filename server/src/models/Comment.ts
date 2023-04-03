@@ -3,8 +3,8 @@ import { Schema } from "mongoose";
 
 export interface IComment {
   createdBy: Types.ObjectId,
-  onPost: Types.ObjectId,
-  body: string,
+  onPost: string,
+  commentBody: string,
   likes: number,
   dislikes: number,
   replyTo: null | Types.ObjectId,
@@ -21,11 +21,10 @@ const CommentSchema = new Schema<IComment>({
     required: true
   },
   onPost: {
-    type: Schema.Types.ObjectId,
-    ref: "Post",
+    type: String,
     required: true
   },
-  body: {
+  commentBody: {
     type: String,
     required: true
   },
