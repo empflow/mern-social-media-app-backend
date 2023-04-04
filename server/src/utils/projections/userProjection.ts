@@ -1,4 +1,4 @@
-const userDocProjection = {
+const userProjection = {
   firstName: 1,
   lastName: 1,
   pictureUrl50px: 1,
@@ -8,4 +8,4 @@ const userDocProjection = {
   friends: 1
 }
 
-export default userDocProjection;
+export default userProjection;

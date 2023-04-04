@@ -1,7 +1,7 @@
 import Comment from "../models/Comment";
 import Post from "../models/Post";
 import { NotFoundErr } from "../utils/errs";
-import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
+import { findDocByIdAndUpdate } from "../utils/findDocs";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function getComments(req: IReq, res: IRes) {

@@ -3,19 +3,23 @@ import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
+import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
   const changeableValues = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
   const userId: string = req.data.user.userId;
+  // add projection
   const patchedAccount = await findDocByIdAndUpdate(User, userId, changeableValues);
   if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
 
 export async function deleteAccount(req: IReq, res: IRes) {
-  const deletedAccount = await User.findByIdAndDelete(req.data.user.userId);
+  const deletedAccount = await User.findByIdAndDelete(
+    req.data.user.userId, { projection: userProjection }
+  );
   if (!deletedAccount) throw new NotFoundErr("account not found");
   await Post.deleteMany({ createdBy: deletedAccount.id });
   res.status(200).json(deletedAccount);

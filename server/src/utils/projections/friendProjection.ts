@@ -1,4 +1,4 @@
-const friendDocProjection = {
+const friendProjection = {
   firstName: 1,
   lastName: 1,
   pictureUrl50px: 1,
@@ -6,4 +6,4 @@ const friendDocProjection = {
   profilePath: 1
 }
 
-export default friendDocProjection;
+export default friendProjection;
