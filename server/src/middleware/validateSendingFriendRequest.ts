@@ -6,13 +6,15 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 import { IUser } from "../models/User";
 import { findDocsById, findDocs } from "../utils/findDocs";
 import { HydratedDocument } from "mongoose";
+import userProjection from "../utils/projections/userProjection";
+import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
 
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: receiverId } = req.params;
   const senderId: string = req.data.user.userId;
   validateIds(senderId, receiverId);
 
-  const [sender, receiver] = await findDocsById(User, [senderId, receiverId]);
+  const [sender, receiver] = await findFriendInFriendRequestsContext(senderId, receiverId);
   validateSenderAndReceiver(sender, receiver);
 
   req.data.sender = sender;

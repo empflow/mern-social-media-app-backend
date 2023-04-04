@@ -10,13 +10,15 @@ export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
   const changeableValues = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
   const userId: string = req.data.user.userId;
-  // add projection
-  const patchedAccount = await findDocByIdAndUpdate(User, userId, changeableValues);
+  const patchedAccount = await findDocByIdAndUpdate(
+    User, userId, changeableValues, userProjection
+  );
   if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
 
 export async function deleteAccount(req: IReq, res: IRes) {
+  // TODO: add custom deleteDoc function
   const deletedAccount = await User.findByIdAndDelete(
     req.data.user.userId, { projection: userProjection }
   );
@@ -70,13 +72,20 @@ export async function rejectFriendRequest(req: IReq, res: IRes) {
   const sender: HydratedDocument<IUser> = req.data.sender;
   const receiver: HydratedDocument<IUser> = req.data.receiver;
 
+  // TODO: use user and sender objects from validation middleware
   // "id" is the string version of "_id"
   const updatedSenderPromise = findDocByIdAndUpdate(
-    User, sender.id, { $pull: { friendRequestsSent: receiver._id } }
+    User,
+    sender.id,
+    { $pull: { friendRequestsSent: receiver._id } },
+    { ...userProjection, friends: 1, friendRequestsSent: 1, friendRequestsReceived: 1 }
   )
   const updatedReceiverPromise = findDocByIdAndUpdate(
-    User, receiver.id, { $pull: { friendRequestsReceived: sender._id }
-  });
+    User,
+    receiver.id,
+    { $pull: { friendRequestsReceived: sender._id } },
+    { ...userProjection, friends: 1, friendRequestsSent: 1, friendRequestsReceived: 1 }
+  );
 
   const [updatedSender, updatedReceiver] = await Promise.all([
     updatedSenderPromise, updatedReceiverPromise
@@ -92,7 +101,8 @@ export async function deleteFriend(req: IReq, res: IRes) {
   const account = await findDocByIdAndUpdate(
     User,
     accountToDeleteFromId,
-    { $pull: { friends: friendToDeleteId }}
+    { $pull: { friends: friendToDeleteId }},
+    { ...userProjection, friends: 1 , friendRequestsSent: 1, friendRequestsReceived: 1 }
   )
   if (!account) throw new NotFoundErr("account not found");
   res.status(200).json(account);

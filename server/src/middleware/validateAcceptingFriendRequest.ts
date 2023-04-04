@@ -6,13 +6,14 @@ import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { findDocsById } from "../utils/findDocs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/reqResInterfaces";
+import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
 
 export default async function validateAcceptingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: senderId } = req.params;
   const receiverId = req.data.user.userId;
   validateIds(senderId, receiverId);
 
-  const [sender, receiver] = await findDocsById(User, [senderId, receiverId]);
+  const [sender, receiver] = await findFriendInFriendRequestsContext(senderId, receiverId);
   validateSenderAndReceiver(sender, receiver);
 
   req.data.sender = sender;
