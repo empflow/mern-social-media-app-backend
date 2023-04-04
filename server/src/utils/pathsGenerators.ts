@@ -5,15 +5,15 @@ export function getRandomProfilePath() {
   return `user${nanoid(randomCharsLength)}`
 }
 
-export function getPostPath(postBody: string | undefined | null) {
-  if (typeof postBody === "string") {
-    postBody = toLowerCaseAndSlice(postBody);
-    postBody = removeSpecialChars(postBody);  
-    postBody = removeLastWord(postBody);
-    postBody = replaceSpacesWithDashes(postBody);
+export function getPostPath(content: string | undefined | null) {
+  if (typeof content === "string") {
+    content = toLowerCaseAndSlice(content);
+    content = removeSpecialChars(content);
+    content = removeLastWord(content);
+    content = replaceSpacesWithDashes(content);
 
-    if (isUrlFriendly(postBody)) {
-      return `${postBody}-${nanoid(10)}`;
+    if (isUrlFriendly(content)) {
+      return `${content}-${nanoid(10)}`;
     }
   }
   return nanoid();

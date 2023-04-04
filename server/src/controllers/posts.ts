@@ -18,9 +18,9 @@ export async function addPost(req: IReq, res: IRes) {
     throw new ForbiddenErr("posting to this user's wall is not allowed");
   }
 
-  const { postBody } = req.body;
-  const postPath = getPostPath(postBody);
-  const post = new Post({ postBody, createdBy: posterId, postPath });
+  const { content } = req.body;
+  const postPath = getPostPath(content);
+  const post = new Post({ content, createdBy: posterId, postPath });
   const poster = await findDocByIdAndUpdate(
     User, posterId, { $push: { posts: post._id }}
   );
@@ -69,10 +69,10 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
-  const { postBody } = req.body;
+  const { content } = req.body;
   const userId = req.data.user.userId;
 
-  const updateQuery = { postBody }
+  const updateQuery = { content }
   const updatedPost = await Post.findOneAndUpdate(
     { postPath, createdBy: userId },
     updateQuery,

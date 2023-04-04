@@ -4,7 +4,7 @@ import { Schema } from "mongoose";
 export interface IComment {
   createdBy: Types.ObjectId,
   onPost: string,
-  commentBody: string,
+  content: string,
   likes: number,
   dislikes: number,
   replyTo: null | Types.ObjectId,
@@ -24,7 +24,7 @@ const CommentSchema = new Schema<IComment>({
     type: String,
     required: true
   },
-  commentBody: {
+  content: {
     type: String,
     required: true
   },
