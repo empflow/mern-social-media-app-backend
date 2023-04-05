@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import Post from "../models/Post";
 import User, { IUser } from "../models/User";
-import { NotFoundErr } from "../utils/errs";
+import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
 import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
@@ -18,7 +18,6 @@ export async function patchAccount(req: IReq, res: IRes) {
 }
 
 export async function deleteAccount(req: IReq, res: IRes) {
-  // TODO: add custom deleteDoc function
   const deletedAccount = await User.findByIdAndDelete(
     req.data.user.userId, { projection: userProjection }
   );
@@ -72,24 +71,20 @@ export async function rejectFriendRequest(req: IReq, res: IRes) {
   const sender: HydratedDocument<IUser> = req.data.sender;
   const receiver: HydratedDocument<IUser> = req.data.receiver;
 
-  // TODO: use user and sender objects from validation middleware
-  // "id" is the string version of "_id"
-  const updatedSenderPromise = findDocByIdAndUpdate(
-    User,
-    sender.id,
-    { $pull: { friendRequestsSent: receiver._id } },
-    { ...userProjection, friends: 1, friendRequestsSent: 1, friendRequestsReceived: 1 }
-  )
-  const updatedReceiverPromise = findDocByIdAndUpdate(
-    User,
-    receiver.id,
-    { $pull: { friendRequestsReceived: sender._id } },
-    { ...userProjection, friends: 1, friendRequestsSent: 1, friendRequestsReceived: 1 }
-  );
+  const hasReqBeenSent = receiver.friendRequestsReceived.indexOf(sender.id) !== -1;
+  if (!hasReqBeenSent) {
+    const msg = "this user did not send you a friend request or you may have already rejected it";
+    throw new ForbiddenErr(msg);
+  }
 
-  const [updatedSender, updatedReceiver] = await Promise.all([
-    updatedSenderPromise, updatedReceiverPromise
-  ]);
+  // "id" is the string version of "_id"
+  sender.friendRequestsSent = sender.friendRequestsSent.filter(
+    req => req === receiver.id
+  );
+  receiver.friendRequestsReceived = receiver.friendRequestsReceived.filter(
+    req => req === sender.id
+  );
+  const [updatedSender, updatedReceiver] = await Promise.all([sender.save(), receiver.save()]);
 
   res.status(200).json({ updatedSender, updatedReceiver });
 }
