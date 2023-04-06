@@ -17,7 +17,13 @@ export async function patchAccount(req: IReq, res: IRes) {
   res.status(200).json(patchedAccount);
 }
 
-// TODO: add getOwnAccount controller
+export async function getOwnAccount(req: IReq, res: IRes) {
+  const userId = req.data.user.userId;
+  // { password: -1 } projection didn't work here :/
+  const user = await User.findById(userId, "-password");
+  if (!user) throw new NotFoundErr("user not found");
+  res.status(200).json(user);
+}
 
 export async function deleteAccount(req: IReq, res: IRes) {
   const deletedAccount = await User.findByIdAndDelete(

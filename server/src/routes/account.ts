@@ -1,10 +1,11 @@
 import express from "express";
-import { acceptFriendRequest, deleteAccount, deleteFriend, patchAccount, rejectFriendRequest, sendFriendRequest } from "../controllers/account";
+import { acceptFriendRequest, deleteAccount, deleteFriend, getOwnAccount, patchAccount, rejectFriendRequest, sendFriendRequest } from "../controllers/account";
 import validateAcceptingFriendRequest from "../middleware/validateAcceptingFriendRequest";
 import validateRejectingFriendRequest from "../middleware/validateRejectingFriendRequest";
 import { validateSendingFriendRequest } from "../middleware/validateSendingFriendRequest";
 const router = express.Router();
 
+router.get("/", getOwnAccount);
 router.patch("/", patchAccount);
 router.delete("/", deleteAccount);
 
