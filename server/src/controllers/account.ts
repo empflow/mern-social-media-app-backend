@@ -17,6 +17,8 @@ export async function patchAccount(req: IReq, res: IRes) {
   res.status(200).json(patchedAccount);
 }
 
+// TODO: add getOwnAccount controller
+
 export async function deleteAccount(req: IReq, res: IRes) {
   const deletedAccount = await User.findByIdAndDelete(
     req.data.user.userId, { projection: userProjection }
