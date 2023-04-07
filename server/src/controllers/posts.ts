@@ -5,6 +5,8 @@ import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+// TODO: add getFeed
+
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
   const userToPostTo = await User.findOne(
