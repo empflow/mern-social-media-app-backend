@@ -39,3 +39,5 @@ app.use(errHandler);
     console.error(err);
   }
 })();
+
+export default app;
