@@ -16,7 +16,7 @@ export async function addComment(req: IReq, res: IRes) {
   const userId: string = req.data.user.userId
   if (replyTo) {
     const hostComment = await Comment.findById(replyTo)
-    const msg = "Comment you're trying to reply to does not exist";
+    const msg = "the comment you're trying to reply to does not exist";
     if (!hostComment) throw new NotFoundErr(msg)
   };
 
