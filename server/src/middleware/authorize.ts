@@ -7,7 +7,7 @@ export default function authorize(req: IReq, res: IRes, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new UnauthorizedErr("invalid authorization header");
+    throw new UnauthorizedErr("unauthorized");
   }
 
   const token = authHeader.split(" ")[1];

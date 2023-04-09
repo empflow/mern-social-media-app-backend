@@ -16,19 +16,22 @@ import postsRoute from "./routes/posts";
 import commentsRoute from "./routes/comments";
 import errHandler from "./middleware/errHandler";
 import authorize from "./middleware/authorize";
+import notFound from "./middleware/notFound";
 const PORT = process.env.PORT || 3000;
+
 
 app.use(globalMiddleware);
 
+// routes that don't require authorization
 app.use("/auth", authRoute);
 
-// all routes that require authorization
-app.use(authorize);
-app.use("/users", usersRoute);
-app.use("/account", accountRoute);
-app.use("/posts", postsRoute);
-app.use("/comments", commentsRoute);
+// routes that require authorization
+app.use("/users", authorize, usersRoute);
+app.use("/account", authorize, accountRoute);
+app.use("/posts", authorize, postsRoute);
+app.use("/comments", authorize, commentsRoute);
 
+app.use(notFound);
 app.use(errHandler);
 
 (async () => {
@@ -39,5 +42,6 @@ app.use(errHandler);
     console.error(err);
   }
 })();
+
 
 export default app;
