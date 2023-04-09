@@ -13,5 +13,6 @@ export default class ApiErr extends Error {
     public readonly code: ErrCodes
   ) {
     super(message);
+    this.name = "ApiErr"
   }
 }
