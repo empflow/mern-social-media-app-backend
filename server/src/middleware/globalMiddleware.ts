@@ -9,9 +9,9 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 
 router.use(setDataPropertyOnReqObject);
 router.use(express.json({ limit: "5mb" }));
-// extended allows the values in req.body to be of any type
+// { extended: true } allows the values in req.body to be of any type
 // only strings and arrays are allowed if extended is set to false
-router.use(express.urlencoded({ limit: "5mb", extended: true }));
+router.use(express.urlencoded({ extended: true }));
 router.use(cors(corsConf));
 router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));

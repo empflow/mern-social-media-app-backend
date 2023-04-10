@@ -1,11 +1,17 @@
 import { DiskStorageOptions } from "multer";
+import path from "node:path";
+import mkdirIfDoesntExist from "../utils/mkdirIfDoesntExist";
+
+const uploadPath = path.join(__dirname, "../../uploads");
 
 const multerDiskStorageConf: DiskStorageOptions = {
-  destination(req, file, callback) {
-    callback(null, "public/assets");
+  destination(req, file, cb) {
+    mkdirIfDoesntExist(uploadPath);
+    cb(null, uploadPath);
   },
-  filename(req, file, callback) {
-    callback(null, file.originalname);
+  filename(req, file, cb) {
+    const fileName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, fileName);
   },
 }
 
