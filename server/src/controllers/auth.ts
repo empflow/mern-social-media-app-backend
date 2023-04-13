@@ -2,6 +2,7 @@ import { getRandomProfilePath } from "../utils/pathsGenerators";
 import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ForbiddenErr } from "../utils/errs";
+import { omit } from "lodash";
 
 export async function signUp(req: IReq, res: IRes) {
   // req.body contains other properties like `firstName` and `email` as well
@@ -14,8 +15,9 @@ export async function signUp(req: IReq, res: IRes) {
   
   const profilePath = getRandomProfilePath();
   const user = await User.create({ ...req.body, profilePath });
+  const userNoPwd = omit(user.toJSON(), "password");
   const token = await (user as any).createJwt();
-  res.status(201).json({ user, token });
+  res.status(201).json({ user: userNoPwd, token });
 }
 
 export async function signIn(req: IReq, res: IRes) {

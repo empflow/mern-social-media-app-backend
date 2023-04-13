@@ -7,6 +7,7 @@
     "express-async-errors": "^3.1.1",
     "gridfs-stream": "^1.1.1",
     "helmet": "^6.0.1",
+    "lodash": "^4.17.21",
     "mongoose": "^7.0.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
@@ -17,6 +18,7 @@
     "@types/cors": "^2.8.13",
     "@types/jest": "^29.5.0",
     "@types/jsonwebtoken": "^9.0.1",
+    "@types/lodash": "^4.14.192",
     "@types/morgan": "^1.9.4",
     "@types/multer": "^1.4.7",
     "@types/supertest": "^2.0.12",
@@ -32,7 +34,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev ./src/index.ts --respawn",
-    "test": "jest --detectOpenHandles"
+    "test": "jest",
+    "test--coverage": "jest --coverage",
+    "test--detectOpenHandles": "jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
