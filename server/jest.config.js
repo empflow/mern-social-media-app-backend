@@ -3,5 +3,6 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ["**/**/*.test.ts"],
-  forceExit: true
+  forceExit: true,
+  setupFiles: ["dotenv/config"]
 };

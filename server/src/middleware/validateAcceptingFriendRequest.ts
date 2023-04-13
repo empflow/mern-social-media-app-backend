@@ -39,7 +39,7 @@ function validateSenderAndReceiver(
     throw new ForbiddenErr("this user has not sent you a friend request");
   }
 
-  const isFriendAlreadyAdded = idExistsInIdsArr(receiver.friends, sender._id);
+  const isFriendAlreadyAdded = idExistsInIdsArr(receiver.friends, sender.id);
   if (isFriendAlreadyAdded) {
     throw new ConflictErr("friend already added");
   }
