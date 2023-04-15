@@ -11,6 +11,7 @@ export default function authorize(req: IReq, res: IRes, next: NextFunction) {
   }
 
   const token = authHeader.split(" ")[1];
+  
   try {
     req.data.user = jwt.verify(token, process.env.JWT_SECRET as string);
   } catch (err) {
