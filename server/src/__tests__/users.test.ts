@@ -43,7 +43,21 @@ describe("auth", () => {
           .post("/auth/sign-up")
           .send(signUpData);
 
+        expect(headers["content-type"]).toMatch(/json/);
+        expect(body.message).toBeDefined();
         expect(statusCode).toBe(409);
+      })
+    })
+
+    describe("given the firstName is missing", () => {
+      it("returns 400 error", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-up")
+          .send({ ...signUpData, firstName: undefined });
+
+        expect(headers["content-type"]).toMatch(/json/);
+        expect(statusCode).toBe(400);
+        expect(body.message).toBeDefined();
       })
     })
   })
