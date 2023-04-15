@@ -33,7 +33,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev ./src/index.ts --respawn",
+    "dev": "NODE_ENV=dev ts-node-dev ./src/index.ts",
     "test": "jest",
     "test--coverage": "jest --coverage",
     "test--detectOpenHandles": "jest --detectOpenHandles"

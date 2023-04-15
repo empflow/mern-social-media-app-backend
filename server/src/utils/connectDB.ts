@@ -2,10 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 
-export default function connectDB() {
-  const uri = process.env.MONGO_URI as string;
-
-  return mongoose.connect(uri, {
+export default function connectDB(mongoUri: string) {
+  return mongoose.connect(mongoUri, {
     dbName: "social-media-app"
   })
 }
