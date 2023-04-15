@@ -8,7 +8,7 @@ export async function signUp(req: IReq, res: IRes) {
   // req.body contains other properties like `firstName` and `lastName` as well
   const { password, email } = req.body;
 
-  if (!password) throw new ForbiddenErr("password is required");
+  if (!password) throw new BadRequestErr("password is required");
   if (password.length < 10) {
     throw new BadRequestErr("password must be at least 10 characters long");
   }
