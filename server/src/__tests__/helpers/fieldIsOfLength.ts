@@ -18,11 +18,13 @@ export default function signUpFieldIsOfLength(
     length, maxAllowedLength, minAllowedLength
   );
 
+  const payload = getPayload(field, length);
+  
   describe(describeContent, () => {
     it(itContent, async () => {
       const { body, statusCode, headers } = await requests(app)
         .post("/auth/sign-up")
-        .send({ ...signUpData, [field]: getStrOfLength(length) });
+        .send(payload);
 
         expectJson(headers);
         expect(statusCode).toBe(expectedStatusCode);
@@ -77,4 +79,17 @@ function getTestContentBasedOnFieldLength(
   }
 
   return [describeContent, itContent];
+}
+
+function getPayload(field: string, length: number) {
+  const payload = { ...signUpData };
+  
+  if (field === "email") {
+    const emailPartAfterUsername = "@in.io";
+    payload.email = `${getStrOfLength(length - emailPartAfterUsername.length)}${emailPartAfterUsername}`;
+  } else {
+    payload[field] = getStrOfLength(length);
+  }
+
+  return payload;
 }

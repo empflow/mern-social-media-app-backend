@@ -12,7 +12,7 @@ beforeEach(async () => {
   await User.deleteMany({});
 });
 
-export const signUpData = {
+export const signUpData: Record<string, any> = {
   firstName: "john",
   lastName: "doe",
   email: "johndoe@gmail.com",
@@ -81,6 +81,12 @@ describe("auth", () => {
     signUpFieldIsOfLength("lastName", 31);
     signUpFieldIsOfLength("lastName", 3);
     signUpFieldIsOfLength("lastName", 2);
+
+    signUpFieldIsOfLength("email", 255);
+    signUpFieldIsOfLength("email", 6);
+    signUpFieldIsOfLength("email", 254);
+    signUpFieldIsOfLength("email", 7);
+    signUpFieldIsOfLength("email", 8);
 
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
