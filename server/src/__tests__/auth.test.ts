@@ -75,5 +75,11 @@ describe("auth", () => {
     fieldIsOfLength("firstName", 31, maxLengths.firstName, minLengths.firstName);
     fieldIsOfLength("firstName", 3, maxLengths.firstName, minLengths.firstName);
     fieldIsOfLength("firstName", 2, maxLengths.firstName, minLengths.firstName);
+
+    fieldIsOfLength("lastName", 30, maxLengths.lastName, minLengths.lastName);
+    fieldIsOfLength("lastName", 29, maxLengths.lastName, minLengths.lastName);
+    fieldIsOfLength("lastName", 31, maxLengths.lastName, minLengths.lastName);
+    fieldIsOfLength("lastName", 3, maxLengths.lastName, minLengths.lastName);
+    fieldIsOfLength("lastName", 2, maxLengths.lastName, minLengths.lastName);
   })
 })
