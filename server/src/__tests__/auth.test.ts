@@ -57,18 +57,7 @@ describe("auth", () => {
     missingSignUpData("firstName");
     missingSignUpData("lastName");
     missingSignUpData("email");
-
-    describe("password is missing", () => {
-      it("returns password missing error", async () => {
-        const { body, statusCode, headers } = await requests(app)
-          .post("/auth/sign-up")
-          .send({ ...signUpData, password: undefined });
-        
-        expectJson(headers);
-        expect(body.message).toMatch(/password is required/i);
-        expect(statusCode).toBe(400);
-      })
-    })
+    missingSignUpData("password");
 
     signUpFieldIsOfLength("firstName", 30);
     signUpFieldIsOfLength("firstName", 29);

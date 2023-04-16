@@ -10,10 +10,15 @@ export default function missingSignUpData(missingData: string) {
         .post("/auth/sign-up")
         .send({ ...signUpData, [missingData]: undefined });
 
-      const regexMatch = `Path \`${missingData}\` is required`;
-      const regex = new RegExp(regexMatch);
+      const normalResponseRegexMatch = `Path \`${missingData}\` is required`;
+      const normalResponseRegex = new RegExp(normalResponseRegexMatch);
+      const passwordResponseRegex = /password is required/;
 
-      expect(body.message).toMatch(regex);
+      if (missingData === "password") {
+        expect(body.message).toMatch(passwordResponseRegex);
+      } else {
+        expect(body.message).toMatch(normalResponseRegex);
+      }
       expectJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBeDefined();
