@@ -2,7 +2,7 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import { signUpData } from "../auth.test";
 import requests from "supertest";
 import app from "../../index";
-import assertJson from "./assertJson";
+import expectJson from "./assertJson";
 
 export default function fieldIsOfLength(
   field: string, length: number, maxAllowedLength: number, minAllowedLength: number = 0
@@ -20,7 +20,7 @@ export default function fieldIsOfLength(
         .post("/auth/sign-up")
         .send({ ...signUpData, firstName: getStrOfLength(length) });
       
-        assertJson(headers);
+        expectJson(headers);
         expect(statusCode).toBe(expectedStatusCode);
 
         if (expectedStatusCode === 201) {
@@ -54,9 +54,6 @@ function getTestContentBasedOnFieldLength(
   const matchesMinAllowed = length === minAllowedLength;
   const isOverMaxAllowed = length > maxAllowedLength;
   const isLessThanMinAllowed = length < minAllowedLength;
-
-  console.log(`${length} === ${minAllowedLength}`);
-  console.log(matchesMinAllowed);
 
   if (matchesMaxAllowed) {
     describeContent = `${field} length matches max allowed length (${maxAllowedLength})`;

@@ -1,7 +1,7 @@
 import mongoose, { Types, Schema, Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { friendsValidator, profilePathValidator } from "./validators";
+import { friendsValidator } from "./validators";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -18,7 +18,8 @@ export const maxLengths = {
 
 export const minLengths = {
   firstName: 3,
-  lastName: 3
+  lastName: 3,
+  profilePath: 3
 }
 
 export interface IUser {
@@ -53,9 +54,10 @@ const UserSchema = new Schema<IUser>({
   profilePath: {
     type: String,
     maxlength: maxLengths.profilePath,
+    minlength: minLengths.profilePath,
     required: true,
     unique: true,
-    validate: profilePathValidator
+    match: /^[a-z0-9-_]+$/i
   },
   friends: {
     type: [{ type: Schema.Types.ObjectId, ref: "User" }],

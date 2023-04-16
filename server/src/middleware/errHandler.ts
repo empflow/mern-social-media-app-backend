@@ -27,7 +27,7 @@ export default function errHandler(
   } else if (isErrCausedByUser(err)) {
     code = ErrCodes.BadRequest;
   } else {
-    console.error(err);
+    // console.error(err);
   }
 
   res.status(code).json(errObj);

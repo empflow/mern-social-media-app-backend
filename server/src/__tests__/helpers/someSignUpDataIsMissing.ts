@@ -1,5 +1,5 @@
 import { signUpData } from "../auth.test";
-import assertJson from "./assertJson";
+import expectJson from "./assertJson";
 import requests from "supertest";
 import app from "../../index";
 
@@ -14,7 +14,7 @@ export default function missingSignUpData(missingData: string) {
       const regex = new RegExp(regexMatch);
 
       expect(body.message).toMatch(regex);
-      assertJson(headers);
+      expectJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBeDefined();
     })

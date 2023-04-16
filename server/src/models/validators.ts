@@ -1,8 +1,3 @@
-export function profilePathValidator(path: string) {
-  const urlRegex = /^[a-z0-9-_]+$/i;
-  return (urlRegex.test(path) && path.length > 3);
-}
-
 export function friendsValidator(friends: object[]) {
   const len = friends.length;
   const msg = "this person already exists in the list of your friends";
