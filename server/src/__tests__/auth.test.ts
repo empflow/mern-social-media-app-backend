@@ -71,23 +71,23 @@ describe("auth", () => {
       })
     })
 
-    fieldIsOfLength("firstName", 30, maxLengths.firstName, minLengths.firstName);
-    fieldIsOfLength("firstName", 29, maxLengths.firstName, minLengths.firstName);
-    fieldIsOfLength("firstName", 31, maxLengths.firstName, minLengths.firstName);
-    fieldIsOfLength("firstName", 3, maxLengths.firstName, minLengths.firstName);
-    fieldIsOfLength("firstName", 2, maxLengths.firstName, minLengths.firstName);
+    fieldIsOfLength("firstName", 30);
+    fieldIsOfLength("firstName", 29);
+    fieldIsOfLength("firstName", 31);
+    fieldIsOfLength("firstName", 3);
+    fieldIsOfLength("firstName", 2);
 
-    fieldIsOfLength("lastName", 30, maxLengths.lastName, minLengths.lastName);
-    fieldIsOfLength("lastName", 29, maxLengths.lastName, minLengths.lastName);
-    fieldIsOfLength("lastName", 31, maxLengths.lastName, minLengths.lastName);
-    fieldIsOfLength("lastName", 3, maxLengths.lastName, minLengths.lastName);
-    fieldIsOfLength("lastName", 2, maxLengths.lastName, minLengths.lastName);
+    fieldIsOfLength("lastName", 30);
+    fieldIsOfLength("lastName", 29);
+    fieldIsOfLength("lastName", 31);
+    fieldIsOfLength("lastName", 3);
+    fieldIsOfLength("lastName", 2);
 
-    fieldIsOfLength("profilePath", 30, maxLengths.profilePath, minLengths.profilePath);
-    fieldIsOfLength("profilePath", 29, maxLengths.profilePath, minLengths.profilePath);
-    fieldIsOfLength("profilePath", 31, maxLengths.profilePath, minLengths.profilePath);
-    fieldIsOfLength("profilePath", 3, maxLengths.profilePath, minLengths.profilePath);
-    fieldIsOfLength("profilePath", 2, maxLengths.profilePath, minLengths.profilePath);
+    fieldIsOfLength("profilePath", 30);
+    fieldIsOfLength("profilePath", 29);
+    fieldIsOfLength("profilePath", 31);
+    fieldIsOfLength("profilePath", 3);
+    fieldIsOfLength("profilePath", 2);
 
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {

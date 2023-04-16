@@ -3,10 +3,14 @@ import { signUpData } from "../auth.test";
 import requests from "supertest";
 import app from "../../index";
 import expectJson from "./assertJson";
+import { maxLengths, minLengths } from "../../models/User";
 
 export default function fieldIsOfLength(
-  field: string, length: number, maxAllowedLength: number, minAllowedLength: number = 0
+  field: string, length: number
 ) {
+  const maxAllowedLength = maxLengths[field];
+  const minAllowedLength = minLengths[field] ?? 0;
+
   const [describeContent, itContent] = getTestContentBasedOnFieldLength(
     field, length, maxAllowedLength, minAllowedLength
   );

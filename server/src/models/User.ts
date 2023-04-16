@@ -5,7 +5,7 @@ import { friendsValidator } from "./validators";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-export const maxLengths = {
+export const maxLengths: { [key: string]: number } = {
   firstName: 30,
   lastName: 30,
   profilePath: 30,
@@ -16,7 +16,7 @@ export const maxLengths = {
   status: 300
 }
 
-export const minLengths = {
+export const minLengths: { [key: string]: number } = {
   firstName: 3,
   lastName: 3,
   profilePath: 3
