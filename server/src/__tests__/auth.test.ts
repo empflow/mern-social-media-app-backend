@@ -52,8 +52,9 @@ describe("auth", () => {
 
     givenSignUpDataIsMissing("firstName");
     givenSignUpDataIsMissing("lastName");
+    givenSignUpDataIsMissing("email");
 
-    describe("give the password is missing", () => {
+    describe("given the password is missing", () => {
       it("returns password missing error", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-up")
