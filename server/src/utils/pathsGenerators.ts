@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 
 export function getRandomProfilePath() {
   const randomCharsLength = 9;
-  return `user-${nanoid(randomCharsLength)}`
+  return `user-${nanoid(randomCharsLength)}`;
 }
 
 export function getPostPath(content: string | undefined | null) {

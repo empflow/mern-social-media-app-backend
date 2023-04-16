@@ -5,6 +5,22 @@ import { friendsValidator, profilePathValidator } from "./validators";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
+export const maxLengths = {
+  firstName: 30,
+  lastName: 30,
+  profilePath: 30,
+  email: 255,
+  pictureUrl: 1000,
+  city: 100,
+  occupation: 300,
+  status: 300
+}
+
+export const minLengths = {
+  firstName: 3,
+  lastName: 3
+}
+
 export interface IUser {
   firstName: string,
   lastName: string,
@@ -27,16 +43,16 @@ export interface IUser {
 }
 
 const UserSchema = new Schema<IUser>({
-  firstName: { type: String, required: true, minlength: 3, maxlength: 30 },
-  lastName: { type: String, required: true, minlength: 3, maxlength: 30 },
-  email: { type: String, required: true, unique: true, match: emailRegex, maxlength: 255 },
+  firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
+  lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
+  email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
-  pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
-  pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: 1000 },
+  pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
+  pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
+  pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
   profilePath: {
     type: String,
-    maxlength: 30,
+    maxlength: maxLengths.profilePath,
     required: true,
     unique: true,
     validate: profilePathValidator
@@ -55,14 +71,14 @@ const UserSchema = new Schema<IUser>({
     default: []
   },
   birthday: { type: Date, default: null },
-  city: { type: String, maxlength: 300, default: null },
-  occupation: { type: String, maxlength: 100, default: null },
-  status: { type: String, maxlength: 300, default: null },
+  city: { type: String, maxlength: maxLengths.city, default: null },
+  occupation: { type: String, maxlength: maxLengths.occupation, default: null },
+  status: { type: String, maxlength: maxLengths.status, default: null },
   canAnyonePost: {
     type: Boolean,
     default: true
   }
-}, { timestamps: true })
+}, { timestamps: true });
 
 
 UserSchema.pre("save", async function (next) {

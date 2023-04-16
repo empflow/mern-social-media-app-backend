@@ -1,22 +1,24 @@
 import requests from "supertest";
 import mongoose from "mongoose";
-import User from "../models/User";
+import User, { maxLengths, minLengths } from "../models/User";
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
+import getStrOfLength from "../utils/getStrOfLength";
+import fieldIsOfLength from "./helpers/fieldIsOfLength";
 
 
 beforeEach(async () => {
   await User.deleteMany({});
 });
 
-const signUpData = {
+export const signUpData = {
   firstName: "john",
   lastName: "doe",
   email: "johndoe@gmail.com",
   password: "1234567890"
 };
 
-const userDataForModel = {
+export const userDataForModel = {
   ...signUpData,
   profilePath: getRandomProfilePath()
 }
@@ -24,7 +26,7 @@ const userDataForModel = {
 describe("auth", () => {
   describe("sing-up", () => {
     describe("given all correct sign-up data", () => {
-      it("returns created user and token", async () => {
+      it("returns 201 created user and token", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-up")
           .send(signUpData);
@@ -65,13 +67,19 @@ describe("auth", () => {
         expect(statusCode).toBe(400);
       })
     })
+
+    fieldIsOfLength("firstName", 30, maxLengths.firstName, minLengths.firstName);
+    fieldIsOfLength("firstName", 29, maxLengths.firstName, minLengths.firstName);
+    fieldIsOfLength("firstName", 31, maxLengths.firstName, minLengths.firstName);
+    fieldIsOfLength("firstName", 3, maxLengths.firstName, minLengths.firstName);
+    fieldIsOfLength("firstName", 2, maxLengths.firstName, minLengths.firstName);
   })
 })
 
 
 function givenSignUpDataIsMissing(missingData: string) {
   describe(`given the ${missingData} is missing`, () => {
-    it("returns 400 error", async () => {
+    it("returns 400 BadRequest error", async () => {
       const { body, statusCode, headers } = await requests(app)
         .post("/auth/sign-up")
         .send({ ...signUpData, [missingData]: undefined });
@@ -87,6 +95,6 @@ function givenSignUpDataIsMissing(missingData: string) {
   })
 }
 
-function assertJson(headers: any) {
+export function assertJson(headers: any) {
   expect(headers["content-type"]).toMatch(/json/);
 }
