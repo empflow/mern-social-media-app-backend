@@ -4,5 +4,4 @@ module.exports = {
   testEnvironment: 'node',
   testMatch: ["**/**/*.test.ts"],
   forceExit: true,
-  setupFiles: ["dotenv/config"]
 };

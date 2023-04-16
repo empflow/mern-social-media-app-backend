@@ -22,8 +22,8 @@ export default function fieldIsOfLength(
     it(itContent, async () => {
       const { body, statusCode, headers } = await requests(app)
         .post("/auth/sign-up")
-        .send({ ...signUpData, firstName: getStrOfLength(length) });
-      
+        .send({ ...signUpData, [field]: getStrOfLength(length) });
+
         expectJson(headers);
         expect(statusCode).toBe(expectedStatusCode);
 

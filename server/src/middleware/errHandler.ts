@@ -20,14 +20,13 @@ export default function errHandler(
     message: err.message || "No error message was provided"
   }
   let code = 500;
-  console.log(err);
   
   if (err.name === "ApiErr") {
     code = (err as ApiErr).code;
   } else if (isErrCausedByUser(err)) {
     code = ErrCodes.BadRequest;
   } else {
-    // console.error(err);
+    console.error(err);
   }
 
   res.status(code).json(errObj);

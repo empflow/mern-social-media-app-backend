@@ -1,12 +1,11 @@
 import requests from "supertest";
-import mongoose from "mongoose";
-import User, { maxLengths, minLengths } from "../models/User";
+import User from "../models/User";
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
-import getStrOfLength from "../utils/getStrOfLength";
 import fieldIsOfLength from "./helpers/fieldIsOfLength";
 import expectJson from "./helpers/assertJson";
 import missingSignUpData from "./helpers/someSignUpDataIsMissing";
+import getStrOfLength from "../utils/getStrOfLength";
 
 
 beforeEach(async () => {
@@ -83,17 +82,27 @@ describe("auth", () => {
     fieldIsOfLength("lastName", 3);
     fieldIsOfLength("lastName", 2);
 
-    fieldIsOfLength("profilePath", 30);
-    fieldIsOfLength("profilePath", 29);
-    fieldIsOfLength("profilePath", 31);
-    fieldIsOfLength("profilePath", 3);
-    fieldIsOfLength("profilePath", 2);
-
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
         const invalidProfilePath = "$hello#";
 
         await expect(User.create({ ...userDataForModel, profilePath: invalidProfilePath }))
+          .rejects.toThrow();
+      })
+    })
+
+    describe("create user with profilePath that's too long (31 chars)", () => {
+      it("throws an error", async () => {
+        const profilePath = getStrOfLength(31);
+        await expect(User.create({ ...userDataForModel, profilePath }))
+          .rejects.toThrow();
+      })
+    })
+
+    describe("create user with profilePath that's too short (2 chars)", () => {
+      it("throws an error", async () => {
+        const profilePath = getStrOfLength(2);
+        await expect(User.create({ ...userDataForModel, profilePath }))
           .rejects.toThrow();
       })
     })
