@@ -2,7 +2,7 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import { signUpData } from "../auth.test";
 import requests from "supertest";
 import app from "../../index";
-import { assertJson } from "../auth.test";
+import assertJson from "./assertJson";
 
 export default function fieldIsOfLength(
   field: string, length: number, maxAllowedLength: number, minAllowedLength: number = 0

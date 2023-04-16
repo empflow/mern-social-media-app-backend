@@ -5,6 +5,8 @@ import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
 import getStrOfLength from "../utils/getStrOfLength";
 import fieldIsOfLength from "./helpers/fieldIsOfLength";
+import assertJson from "./helpers/assertJson";
+import missingSignUpData from "./helpers/someSignUpDataIsMissing";
 
 
 beforeEach(async () => {
@@ -52,11 +54,11 @@ describe("auth", () => {
       })
     })
 
-    givenSignUpDataIsMissing("firstName");
-    givenSignUpDataIsMissing("lastName");
-    givenSignUpDataIsMissing("email");
+    missingSignUpData("firstName");
+    missingSignUpData("lastName");
+    missingSignUpData("email");
 
-    describe("given the password is missing", () => {
+    describe("password is missing", () => {
       it("returns password missing error", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-up")
@@ -75,26 +77,3 @@ describe("auth", () => {
     fieldIsOfLength("firstName", 2, maxLengths.firstName, minLengths.firstName);
   })
 })
-
-
-function givenSignUpDataIsMissing(missingData: string) {
-  describe(`given the ${missingData} is missing`, () => {
-    it("returns 400 BadRequest error", async () => {
-      const { body, statusCode, headers } = await requests(app)
-        .post("/auth/sign-up")
-        .send({ ...signUpData, [missingData]: undefined });
-
-      const regexMatch = `Path \`${missingData}\` is required`;
-      const regex = new RegExp(regexMatch);
-
-      expect(body.message).toMatch(regex);
-      assertJson(headers);
-      expect(statusCode).toBe(400);
-      expect(body.message).toBeDefined();
-    })
-  })
-}
-
-export function assertJson(headers: any) {
-  expect(headers["content-type"]).toMatch(/json/);
-}
