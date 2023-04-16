@@ -2,7 +2,7 @@ import requests from "supertest";
 import User from "../models/User";
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
-import fieldIsOfLength from "./helpers/fieldIsOfLength";
+import signUpFieldIsOfLength from "./helpers/fieldIsOfLength";
 import expectJson from "./helpers/assertJson";
 import missingSignUpData from "./helpers/someSignUpDataIsMissing";
 import getStrOfLength from "../utils/getStrOfLength";
@@ -70,17 +70,17 @@ describe("auth", () => {
       })
     })
 
-    fieldIsOfLength("firstName", 30);
-    fieldIsOfLength("firstName", 29);
-    fieldIsOfLength("firstName", 31);
-    fieldIsOfLength("firstName", 3);
-    fieldIsOfLength("firstName", 2);
+    signUpFieldIsOfLength("firstName", 30);
+    signUpFieldIsOfLength("firstName", 29);
+    signUpFieldIsOfLength("firstName", 31);
+    signUpFieldIsOfLength("firstName", 3);
+    signUpFieldIsOfLength("firstName", 2);
 
-    fieldIsOfLength("lastName", 30);
-    fieldIsOfLength("lastName", 29);
-    fieldIsOfLength("lastName", 31);
-    fieldIsOfLength("lastName", 3);
-    fieldIsOfLength("lastName", 2);
+    signUpFieldIsOfLength("lastName", 30);
+    signUpFieldIsOfLength("lastName", 29);
+    signUpFieldIsOfLength("lastName", 31);
+    signUpFieldIsOfLength("lastName", 3);
+    signUpFieldIsOfLength("lastName", 2);
 
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
