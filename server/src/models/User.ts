@@ -10,6 +10,7 @@ export const maxLengths: Record<string, any> = {
   lastName: 30,
   profilePath: 30,
   email: 254,
+  password: 100,
   pictureUrl: 1000,
   city: 100,
   occupation: 300,
@@ -20,7 +21,8 @@ export const minLengths: Record<string, any> = {
   firstName: 3,
   lastName: 3,
   profilePath: 3,
-  email: 7
+  email: 7,
+  password: 10
 }
 
 export interface IUser {

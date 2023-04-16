@@ -77,6 +77,12 @@ describe("auth", () => {
     signUpFieldIsOfLength("email", 7);
     signUpFieldIsOfLength("email", 8);
 
+    signUpFieldIsOfLength("password", 9);
+    signUpFieldIsOfLength("password", 101);
+    signUpFieldIsOfLength("password", 10);
+    signUpFieldIsOfLength("password", 100);
+    signUpFieldIsOfLength("password", 50);
+
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
         const invalidProfilePath = "$hello#";

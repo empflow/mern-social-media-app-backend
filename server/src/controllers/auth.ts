@@ -9,8 +9,8 @@ export async function signUp(req: IReq, res: IRes) {
   const { password, email } = req.body;
 
   if (!password) throw new BadRequestErr("password is required");
-  if (password.length < 10) {
-    throw new BadRequestErr("password must be at least 10 characters long");
+  if (password.length < 10 || password.length > 100) {
+    throw new BadRequestErr("password must be at least 10 and not above 100 characters long");
   }
 
   const userWithSameEmail = await User.findOne({ email });

@@ -70,7 +70,7 @@ function getTestContentBasedOnFieldLength(
   } else if (isLessThanMinAllowed) {
     describeContent = `${field} length (${length}) is less than min allowed length (${minAllowedLength})`;
   } else {
-    describeContent = `${field} length (${length}) is in allowed length range (${minAllowedLength}-${maxAllowedLength})`
+    describeContent = `${field} length (${length}) is within allowed length range (${minAllowedLength}-${maxAllowedLength})`
   }
 
   let itContent = "returns 201 created user and token";
