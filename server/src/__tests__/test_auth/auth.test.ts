@@ -8,7 +8,12 @@ import testMissingSignUpData from "./testMissingSignUpData";
 import getStrOfLength from "../../utils/getStrOfLength";
 import getSignUpData from "./getSignUpData";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
+import signUpBeforeEachSignIn from "./signUpBeforeEachSignIn";
+import testMissingSignInData from "./testMissingSignInData";
 
+
+export const signUpData = getSignUpData();
+export const signInData = convertSignUpDataToSignInData(signUpData);
 
 beforeEach(async () => {
   await User.deleteMany({});
@@ -106,15 +111,7 @@ describe("auth", () => {
   })
 
   describe("sign-in", () => {
-    const signUpData = getSignUpData();
-    const signInData = convertSignUpDataToSignInData(signUpData);
-    
-    beforeEach(async () => {
-      const { headers } = await requests(app)
-        .post("/auth/sign-up")
-        .send(signUpData);
-      assertJson(headers);
-    })
+    beforeEach(signUpBeforeEachSignIn);
 
     describe("given all correct sign-in data", () => {
       it("returns 200 and token", async () => {
@@ -154,5 +151,8 @@ describe("auth", () => {
         expect(statusCode).toBe(401);
       })
     })
+
+    testMissingSignInData("email");
+    testMissingSignInData("password");
   })
 })
