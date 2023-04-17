@@ -156,5 +156,17 @@ describe("auth", () => {
         expect(statusCode).toBe(401);
       })
     })
+
+    describe("no email", () => {
+      it("retuns 400 bad request", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-in")
+          .send({ ...signInData, email: undefined });
+
+        expectJson(headers);
+        expect(statusCode).toBe(400);
+        expect(body.message).toBe("both email and password must be provided");
+      })
+    })
   })
 })
