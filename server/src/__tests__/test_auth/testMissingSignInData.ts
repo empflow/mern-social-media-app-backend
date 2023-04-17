@@ -5,7 +5,7 @@ import app from "../../index";
 import getSignUpData from "./getSignUpData";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 
-export default async function someSignInDataIsMissing(missingData: keyof TSignInData) {
+export default async function testMissingSignInData(missingData: keyof TSignInData) {
   const signUpData = getSignUpData();
   const signInData = convertSignUpDataToSignInData(signUpData);
 
