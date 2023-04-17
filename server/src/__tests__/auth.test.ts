@@ -111,9 +111,10 @@ describe("auth", () => {
     const signInData = signUpDataToSignInData(signUpData);
     
     beforeEach(async () => {
-      await requests(app)
+      const { headers } = await requests(app)
         .post("/auth/sign-up")
         .send(signUpData);
+      expectJson(headers);
     })
 
     describe("given all correct sign-in data", () => {
@@ -128,6 +129,18 @@ describe("auth", () => {
         expect(body.user).toBeDefined();
         expect(body.user._id).toBeDefined();
         expect(body.user.profilePath).toBeDefined();
+      })
+    })
+
+    describe("user doesn't exist (no user with such email)", () => {
+      it("returns 404 not found", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-in")
+          .send({ ...signInData, email: "thisDoesntExist@mail.com" });
+
+        expectJson(headers);
+        expect(statusCode).toBe(404);
+        expect(body.message).toBe("user not found");
       })
     })
   })
