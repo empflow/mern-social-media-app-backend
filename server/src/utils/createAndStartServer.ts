@@ -21,6 +21,7 @@ export default function createAndStartServer() {
   app.listen(PORT, async () => {
     console.log(`app running on port ${PORT}`);
     await connectDB(getMongoUri());
+    console.log("DB connected")
   })
 
   return app;

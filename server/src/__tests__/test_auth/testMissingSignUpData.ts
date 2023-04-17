@@ -1,8 +1,8 @@
-import getSignUpData from "../test_auth/getSignUpData";
-import assertJson from "./assertJson";
+import getSignUpData from "./getSignUpData";
+import assertJson from "../utils/assertJson";
 import requests from "supertest";
 import app from "../../index";
-import { ISignUpData } from "./signUpAndSignInInterfaces";
+import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
 export default function testMissingSignUpData(missingData: keyof ISignUpData) {
   describe(`${missingData} is missing`, () => {

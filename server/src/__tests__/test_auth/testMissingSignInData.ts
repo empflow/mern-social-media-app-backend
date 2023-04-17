@@ -1,13 +1,13 @@
-import expectJson from "./assertJson";
-import { TSignInData } from "./signUpAndSignInInterfaces";
+import expectJson from "../utils/assertJson";
+import { TSignInData } from "../utils/signUpAndSignInInterfaces";
 import requests from "supertest";
 import app from "../../index";
 import getSignUpData from "./getSignUpData";
-import signUpDataToSignInData from "./singUpDataToSignInData";
+import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 
 export default async function someSignInDataIsMissing(missingData: keyof TSignInData) {
   const signUpData = getSignUpData();
-  const signInData = signUpDataToSignInData(signUpData);
+  const signInData = convertSignUpDataToSignInData(signUpData);
 
   describe(`no ${missingData}`, () => {
     it("retuns 400 bad request", async () => {

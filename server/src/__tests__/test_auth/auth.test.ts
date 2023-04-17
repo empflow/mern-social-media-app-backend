@@ -1,15 +1,13 @@
 import requests from "supertest";
-import User from "../models/User";
-import { getRandomProfilePath } from "../utils/pathsGenerators";
-import app from "../index";
-import signUpFieldIsOfLength from "./helpers/signUpFieldIsOfLength";
-import expectJson from "./helpers/assertJson";
-import missingSignUpData from "./helpers/missingSignUpData";
-import missingSignInData from "./helpers/missingSignInData";
-import getStrOfLength from "../utils/getStrOfLength";
-import signJwt from "../utils/signJwt";
-import getSignUpData from "./helpers/getSignUpData";
-import signUpDataToSignInData from "./helpers/singUpDataToSignInData";
+import User from "../../models/User";
+import { getRandomProfilePath } from "../../utils/pathsGenerators";
+import app from "../..";
+import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
+import assertJson from "../utils/assertJson";
+import testMissingSignUpData from "./testMissingSignUpData";
+import getStrOfLength from "../../utils/getStrOfLength";
+import getSignUpData from "./getSignUpData";
+import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 
 
 beforeEach(async () => {
@@ -157,21 +155,7 @@ describe("auth", () => {
       })
     })
 
-<<<<<<< HEAD:server/src/__tests__/test_auth/auth.test.ts
-    describe("no email", () => {
-      it("retuns 400 bad request", async () => {
-        const { body, statusCode, headers } = await requests(app)
-          .post("/auth/sign-in")
-          .send({ ...signInData, email: undefined });
-
-        assertJson(headers);
-        expect(statusCode).toBe(400);
-        expect(body.message).toBe("both email and password must be provided");
-      })
-    })
-=======
-    missingSignInData("email");
-    missingSignInData("password");
->>>>>>> main:server/src/__tests__/auth.test.ts
+    testMissingSignUpData("email");
+    testMissingSignUpData("password");
   })
 })
