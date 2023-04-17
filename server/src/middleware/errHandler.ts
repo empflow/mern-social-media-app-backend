@@ -5,7 +5,7 @@ import { MongoError } from "mongodb";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import isErrCausedByUser from "../utils/isErrCausedByUser";
 
-export type TErr = TApiErrs | Error | MongoError;
+export type TErr = TApiErrs | Error | MongoError | SyntaxError;
 
 interface IErrObject {
   message: string,
