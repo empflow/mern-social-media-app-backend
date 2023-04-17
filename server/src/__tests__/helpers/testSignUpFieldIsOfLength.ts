@@ -6,7 +6,7 @@ import expectJson from "./assertJson";
 import { maxLengths, minLengths } from "../../models/User";
 import { ISignUpData } from "./signUpAndSignInInterfaces";
 
-export default function signUpFieldIsOfLength(
+export default function testSignUpFieldIsOfLength(
   field: keyof ISignUpData, length: number
 ) {
   const maxAllowedLength = maxLengths[field];

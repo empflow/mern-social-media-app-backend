@@ -1,6 +1,6 @@
 import { TSignInData, ISignUpData } from "./signUpAndSignInInterfaces";
 
-export default function signUpDataToSignInData(signUpData: ISignUpData) {
+export default function convertSignUpDataToSignInData(signUpData: ISignUpData) {
   const logInData: TSignInData = {
     email: signUpData.email,
     password: signUpData.password
