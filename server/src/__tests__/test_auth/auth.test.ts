@@ -29,7 +29,7 @@ describe("auth", () => {
           .post("/auth/sign-up")
           .send(getSignUpData());
 
-          expectJson(headers);
+          assertJson(headers);
           expect(statusCode).toBe(201);
           expect(body.user).toBeDefined();
           expect(body.token).toBeDefined();
@@ -46,40 +46,40 @@ describe("auth", () => {
           .post("/auth/sign-up")
           .send(signUpData);
 
-        expectJson(headers);
+        assertJson(headers);
         expect(body.message).toBeDefined();
         expect(statusCode).toBe(409);
       })
     })
 
-    missingSignUpData("firstName");
-    missingSignUpData("lastName");
-    missingSignUpData("email");
-    missingSignUpData("password");
+    testMissingSignUpData("firstName");
+    testMissingSignUpData("lastName");
+    testMissingSignUpData("email");
+    testMissingSignUpData("password");
 
-    signUpFieldIsOfLength("firstName", 30);
-    signUpFieldIsOfLength("firstName", 29);
-    signUpFieldIsOfLength("firstName", 31);
-    signUpFieldIsOfLength("firstName", 3);
-    signUpFieldIsOfLength("firstName", 2);
+    testSignUpFieldIsOfLength("firstName", 30);
+    testSignUpFieldIsOfLength("firstName", 29);
+    testSignUpFieldIsOfLength("firstName", 31);
+    testSignUpFieldIsOfLength("firstName", 3);
+    testSignUpFieldIsOfLength("firstName", 2);
 
-    signUpFieldIsOfLength("lastName", 30);
-    signUpFieldIsOfLength("lastName", 29);
-    signUpFieldIsOfLength("lastName", 31);
-    signUpFieldIsOfLength("lastName", 3);
-    signUpFieldIsOfLength("lastName", 2);
+    testSignUpFieldIsOfLength("lastName", 30);
+    testSignUpFieldIsOfLength("lastName", 29);
+    testSignUpFieldIsOfLength("lastName", 31);
+    testSignUpFieldIsOfLength("lastName", 3);
+    testSignUpFieldIsOfLength("lastName", 2);
 
-    signUpFieldIsOfLength("email", 255);
-    signUpFieldIsOfLength("email", 6);
-    signUpFieldIsOfLength("email", 254);
-    signUpFieldIsOfLength("email", 7);
-    signUpFieldIsOfLength("email", 8);
+    testSignUpFieldIsOfLength("email", 255);
+    testSignUpFieldIsOfLength("email", 6);
+    testSignUpFieldIsOfLength("email", 254);
+    testSignUpFieldIsOfLength("email", 7);
+    testSignUpFieldIsOfLength("email", 8);
 
-    signUpFieldIsOfLength("password", 9);
-    signUpFieldIsOfLength("password", 101);
-    signUpFieldIsOfLength("password", 10);
-    signUpFieldIsOfLength("password", 100);
-    signUpFieldIsOfLength("password", 50);
+    testSignUpFieldIsOfLength("password", 9);
+    testSignUpFieldIsOfLength("password", 101);
+    testSignUpFieldIsOfLength("password", 10);
+    testSignUpFieldIsOfLength("password", 100);
+    testSignUpFieldIsOfLength("password", 50);
 
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
@@ -109,13 +109,13 @@ describe("auth", () => {
 
   describe("sign-in", () => {
     const signUpData = getSignUpData();
-    const signInData = signUpDataToSignInData(signUpData);
+    const signInData = convertSignUpDataToSignInData(signUpData);
     
     beforeEach(async () => {
       const { headers } = await requests(app)
         .post("/auth/sign-up")
         .send(signUpData);
-      expectJson(headers);
+      assertJson(headers);
     })
 
     describe("given all correct sign-in data", () => {
@@ -124,7 +124,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send(signInData)
 
-        expectJson(headers);
+        assertJson(headers);
         expect(statusCode).toBe(200);
         expect(body.token).toBeDefined();
         expect(body.user).toBeDefined();
@@ -139,7 +139,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send({ ...signInData, email: "thisDoesntExist@gmail.com" });
 
-        expectJson(headers);
+        assertJson(headers);
         expect(statusCode).toBe(404);
         expect(body.message).toBe("user not found");
       })
@@ -151,14 +151,27 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send({ ...signInData, password: "wrong-password" });
 
-        console.log(body);
-        expectJson(headers);
+        assertJson(headers);
         expect(body.message).toBe("wrong password");
         expect(statusCode).toBe(401);
       })
     })
 
+<<<<<<< HEAD:server/src/__tests__/test_auth/auth.test.ts
+    describe("no email", () => {
+      it("retuns 400 bad request", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-in")
+          .send({ ...signInData, email: undefined });
+
+        assertJson(headers);
+        expect(statusCode).toBe(400);
+        expect(body.message).toBe("both email and password must be provided");
+      })
+    })
+=======
     missingSignInData("email");
     missingSignInData("password");
+>>>>>>> main:server/src/__tests__/auth.test.ts
   })
 })

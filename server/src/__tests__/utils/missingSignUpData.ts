@@ -1,10 +1,10 @@
-import getSignUpData from "./getSignUpData";
-import expectJson from "./assertJson";
+import getSignUpData from "../test_auth/getSignUpData";
+import assertJson from "./assertJson";
 import requests from "supertest";
 import app from "../../index";
 import { ISignUpData } from "./signUpAndSignInInterfaces";
 
-export default function missingSignUpData(missingData: keyof ISignUpData) {
+export default function testMissingSignUpData(missingData: keyof ISignUpData) {
   describe(`${missingData} is missing`, () => {
     it("returns 400 BadRequest error", async () => {
       const { body, statusCode, headers } = await requests(app)
@@ -20,7 +20,7 @@ export default function missingSignUpData(missingData: keyof ISignUpData) {
       } else {
         expect(body.message).toMatch(normalResponseRegex);
       }
-      expectJson(headers);
+      assertJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBeDefined();
     })

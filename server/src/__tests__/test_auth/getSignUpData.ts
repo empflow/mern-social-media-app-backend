@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { ISignUpData } from "./signUpAndSignInInterfaces";
+import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
 export default function getSignUpData() {
   const data: ISignUpData = {
