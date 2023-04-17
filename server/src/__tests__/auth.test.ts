@@ -143,5 +143,20 @@ describe("auth", () => {
         expect(body.message).toBe("user not found");
       })
     })
+
+    describe("wrong password", () => {
+      it("returns 401 unauthorized", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-in")
+          .send({ ...signInData, password: "wrong-password" });
+
+        console.log(body);
+        expectJson(headers);
+        expect(body.message).toBe("wrong password");
+        expect(statusCode).toBe(401);
+      })
+
+      // test
+    })
   })
 })
