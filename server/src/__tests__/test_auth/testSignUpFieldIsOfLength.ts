@@ -2,9 +2,9 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import getSignUpData from "./getSignUpData";
 import requests from "supertest";
 import app from "../../index";
-import expectJson from "./assertJson";
+import expectJson from "../utils/assertJson";
 import { maxLengths, minLengths } from "../../models/User";
-import { ISignUpData } from "./signUpAndSignInInterfaces";
+import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
 export default function testSignUpFieldIsOfLength(
   field: keyof ISignUpData, length: number

@@ -1,4 +1,4 @@
-import getSignUpData from "./getSignUpData";
+import getSignUpData from "../test_auth/getSignUpData";
 import expectJson from "./assertJson";
 import requests from "supertest";
 import app from "../../index";

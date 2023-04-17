@@ -1,14 +1,14 @@
 import requests from "supertest";
-import User from "../models/User";
-import { getRandomProfilePath } from "../utils/pathsGenerators";
-import app from "../index";
-import testSignUpFieldIsOfLength from "./helpers/testSignUpFieldIsOfLength";
-import testMissingSignUpData from "./helpers/testMissingSignUpData";
-import expectJson from "./helpers/assertJson";
-import getStrOfLength from "../utils/getStrOfLength";
-import signJwt from "../utils/signJwt";
-import getSignUpData from "./helpers/getSignUpData";
-import convertSignUpDataToSignInData from "./helpers/convertSignUpDataToSignInData";
+import User from "../../models/User";
+import { getRandomProfilePath } from "../../utils/pathsGenerators";
+import app from "../../index";
+import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
+import testMissingSignUpData from "../utils/testMissingSignUpData";
+import expectJson from "../utils/assertJson";
+import getStrOfLength from "../../utils/getStrOfLength";
+import signJwt from "../../utils/signJwt";
+import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
+import getSignUpData from "./getSignUpData";
 
 
 beforeEach(async () => {
