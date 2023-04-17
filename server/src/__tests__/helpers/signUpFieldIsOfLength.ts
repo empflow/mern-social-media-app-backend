@@ -1,12 +1,13 @@
 import getStrOfLength from "../../utils/getStrOfLength";
-import { signUpData } from "../auth.test";
+import getSignUpData from "./getSignUpData";
 import requests from "supertest";
 import app from "../../index";
 import expectJson from "./assertJson";
 import { maxLengths, minLengths } from "../../models/User";
+import { ISignUpData } from "./signUpAndSignInInterfaces";
 
 export default function signUpFieldIsOfLength(
-  field: string, length: number
+  field: keyof ISignUpData, length: number
 ) {
   const maxAllowedLength = maxLengths[field];
   const minAllowedLength = minLengths[field] ?? 0;
@@ -81,9 +82,9 @@ function getTestContentBasedOnFieldLength(
   return [describeContent, itContent];
 }
 
-function getPayload(field: string, length: number) {
-  const payload = { ...signUpData };
-  
+function getPayload(field: keyof ISignUpData, length: number) {
+  const payload = { ...getSignUpData() };
+
   if (field === "email") {
     const emailPartAfterUsername = "@in.io";
     payload.email = `${getStrOfLength(length - emailPartAfterUsername.length)}${emailPartAfterUsername}`;

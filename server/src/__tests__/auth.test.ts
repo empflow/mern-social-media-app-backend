@@ -2,25 +2,21 @@ import requests from "supertest";
 import User from "../models/User";
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
-import signUpFieldIsOfLength from "./helpers/fieldIsOfLength";
+import signUpFieldIsOfLength from "./helpers/signUpFieldIsOfLength";
 import expectJson from "./helpers/assertJson";
 import missingSignUpData from "./helpers/someSignUpDataIsMissing";
 import getStrOfLength from "../utils/getStrOfLength";
+import signJwt from "../utils/signJwt";
+import getSignUpData from "./helpers/getSignUpData";
+import signUpDataToLogInData from "./helpers/singUpDataToLogInData";
 
 
 beforeEach(async () => {
   await User.deleteMany({});
 });
 
-export const signUpData: Record<string, any> = {
-  firstName: "john",
-  lastName: "doe",
-  email: "johndoe@gmail.com",
-  password: "1234567890"
-};
-
 export const userDataForModel = {
-  ...signUpData,
+  ...getSignUpData(),
   profilePath: getRandomProfilePath()
 }
 
@@ -30,7 +26,7 @@ describe("auth", () => {
       it("returns 201 created user and token (no password)", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-up")
-          .send(signUpData);
+          .send(getSignUpData());
 
           expectJson(headers);
           expect(statusCode).toBe(201);
@@ -43,7 +39,8 @@ describe("auth", () => {
     describe("given user with this email already exists", () => {
       it("returns a duplicate error", async () => {
         await User.create(userDataForModel);
-
+        
+        const signUpData = { ...userDataForModel, profilePath: undefined };
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-up")
           .send(signUpData);
@@ -105,6 +102,30 @@ describe("auth", () => {
         const profilePath = getStrOfLength(2);
         await expect(User.create({ ...userDataForModel, profilePath }))
           .rejects.toThrow();
+      })
+    })
+  })
+
+  describe("sign-in", () => {
+    describe("given all correct sign-in data", () => {
+      it("returns token", async () => {
+        const signUpData = getSignUpData();
+
+        await requests(app)
+          .post("/auth/sign-up")
+          .send(signUpData);
+  
+        const logInData = signUpDataToLogInData(signUpData);
+        const { body, statusCode, headers } = await requests(app)
+          .post("/auth/sign-in")
+          .send(logInData)
+
+        expectJson(headers);
+        expect(statusCode).toBe(200);
+        expect(body.token).toBeDefined();
+        expect(body.user).toBeDefined();
+        expect(body.user._id).toBeDefined();
+        expect(body.user.profilePath).toBeDefined();
       })
     })
   })
