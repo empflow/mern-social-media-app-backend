@@ -3,14 +3,11 @@ import User from "../../models/User";
 import { getRandomProfilePath } from "../../utils/pathsGenerators";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
 import testMissingSignUpData from "../utils/testMissingSignUpData";
-import expectJson from "../utils/assertJson";
+import assertJson from "../utils/assertJson";
 import getStrOfLength from "../../utils/getStrOfLength";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 import getSignUpData from "./getSignUpData";
-import createAndStartServer from "../../utils/createAndStartServer";
-
-
-const app = createAndStartServer();
+import app from "../../index";
 
 beforeEach(async () => {
   await User.deleteMany({});
@@ -29,7 +26,7 @@ describe("auth", () => {
           .post("/auth/sign-up")
           .send(getSignUpData());
 
-          expectJson(headers);
+          assertJson(headers);
           expect(statusCode).toBe(201);
           expect(body.user).toBeDefined();
           expect(body.token).toBeDefined();
@@ -46,7 +43,7 @@ describe("auth", () => {
           .post("/auth/sign-up")
           .send(signUpData);
 
-        expectJson(headers);
+        assertJson(headers);
         expect(body.message).toBeDefined();
         expect(statusCode).toBe(409);
       })
@@ -115,7 +112,7 @@ describe("auth", () => {
       const { headers } = await requests(app)
         .post("/auth/sign-up")
         .send(signUpData);
-      expectJson(headers);
+      assertJson(headers);
     })
 
     describe("given all correct sign-in data", () => {
@@ -124,7 +121,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send(signInData)
 
-        expectJson(headers);
+        assertJson(headers);
         expect(statusCode).toBe(200);
         expect(body.token).toBeDefined();
         expect(body.user).toBeDefined();
@@ -139,7 +136,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send({ ...signInData, email: "thisDoesntExist@mail.com" });
 
-        expectJson(headers);
+        assertJson(headers);
         expect(statusCode).toBe(404);
         expect(body.message).toBe("user not found");
       })
@@ -151,8 +148,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send({ ...signInData, password: "wrong-password" });
 
-        console.log(body);
-        expectJson(headers);
+        assertJson(headers);
         expect(body.message).toBe("wrong password");
         expect(statusCode).toBe(401);
       })
@@ -164,7 +160,7 @@ describe("auth", () => {
           .post("/auth/sign-in")
           .send({ ...signInData, email: undefined });
 
-        expectJson(headers);
+        assertJson(headers);
         expect(statusCode).toBe(400);
         expect(body.message).toBe("both email and password must be provided");
       })
