@@ -4,7 +4,8 @@ import { getRandomProfilePath } from "../utils/pathsGenerators";
 import app from "../index";
 import signUpFieldIsOfLength from "./helpers/signUpFieldIsOfLength";
 import expectJson from "./helpers/assertJson";
-import missingSignUpData from "./helpers/someSignUpDataIsMissing";
+import missingSignUpData from "./helpers/missingSignUpData";
+import missingSignInData from "./helpers/missingSignInData";
 import getStrOfLength from "../utils/getStrOfLength";
 import signJwt from "../utils/signJwt";
 import getSignUpData from "./helpers/getSignUpData";
@@ -157,16 +158,7 @@ describe("auth", () => {
       })
     })
 
-    describe("no email", () => {
-      it("retuns 400 bad request", async () => {
-        const { body, statusCode, headers } = await requests(app)
-          .post("/auth/sign-in")
-          .send({ ...signInData, email: undefined });
-
-        expectJson(headers);
-        expect(statusCode).toBe(400);
-        expect(body.message).toBe("both email and password must be provided");
-      })
-    })
+    missingSignInData("email");
+    missingSignInData("password");
   })
 })
