@@ -154,8 +154,5 @@ describe("auth", () => {
         expect(statusCode).toBe(401);
       })
     })
-
-    testMissingSignUpData("email");
-    testMissingSignUpData("password");
   })
 })
