@@ -8,7 +8,7 @@ import missingSignUpData from "./helpers/someSignUpDataIsMissing";
 import getStrOfLength from "../utils/getStrOfLength";
 import signJwt from "../utils/signJwt";
 import getSignUpData from "./helpers/getSignUpData";
-import signUpDataToLogInData from "./helpers/singUpDataToLogInData";
+import signUpDataToSignInData from "./helpers/singUpDataToSignInData";
 
 
 beforeEach(async () => {
@@ -107,18 +107,20 @@ describe("auth", () => {
   })
 
   describe("sign-in", () => {
+    const signUpData = getSignUpData();
+    const signInData = signUpDataToSignInData(signUpData);
+    
+    beforeEach(async () => {
+      await requests(app)
+        .post("/auth/sign-up")
+        .send(signUpData);
+    })
+
     describe("given all correct sign-in data", () => {
       it("returns token", async () => {
-        const signUpData = getSignUpData();
-
-        await requests(app)
-          .post("/auth/sign-up")
-          .send(signUpData);
-  
-        const logInData = signUpDataToLogInData(signUpData);
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-in")
-          .send(logInData)
+          .send(signInData)
 
         expectJson(headers);
         expect(statusCode).toBe(200);

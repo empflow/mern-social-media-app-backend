@@ -5,4 +5,4 @@ export interface ISignUpData {
   password: string
 }
 
-export type TLogInData = Omit<ISignUpData, "firstName" | "lastName">;
+export type TSignInData = Omit<ISignUpData, "firstName" | "lastName">;
