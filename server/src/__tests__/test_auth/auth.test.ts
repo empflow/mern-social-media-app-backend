@@ -1,13 +1,16 @@
 import requests from "supertest";
-import User from "../../models/User";
-import { getRandomProfilePath } from "../../utils/pathsGenerators";
-import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
-import testMissingSignUpData from "../utils/testMissingSignUpData";
-import assertJson from "../utils/assertJson";
-import getStrOfLength from "../../utils/getStrOfLength";
-import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
-import getSignUpData from "./getSignUpData";
-import app from "../../index";
+import User from "../models/User";
+import { getRandomProfilePath } from "../utils/pathsGenerators";
+import app from "../index";
+import signUpFieldIsOfLength from "./helpers/signUpFieldIsOfLength";
+import expectJson from "./helpers/assertJson";
+import missingSignUpData from "./helpers/missingSignUpData";
+import missingSignInData from "./helpers/missingSignInData";
+import getStrOfLength from "../utils/getStrOfLength";
+import signJwt from "../utils/signJwt";
+import getSignUpData from "./helpers/getSignUpData";
+import signUpDataToSignInData from "./helpers/singUpDataToSignInData";
+
 
 beforeEach(async () => {
   await User.deleteMany({});
@@ -116,7 +119,7 @@ describe("auth", () => {
     })
 
     describe("given all correct sign-in data", () => {
-      it("returns token", async () => {
+      it("returns 200 and token", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-in")
           .send(signInData)
@@ -134,7 +137,7 @@ describe("auth", () => {
       it("returns 404 not found", async () => {
         const { body, statusCode, headers } = await requests(app)
           .post("/auth/sign-in")
-          .send({ ...signInData, email: "thisDoesntExist@mail.com" });
+          .send({ ...signInData, email: "thisDoesntExist@gmail.com" });
 
         assertJson(headers);
         expect(statusCode).toBe(404);
@@ -154,6 +157,7 @@ describe("auth", () => {
       })
     })
 
+<<<<<<< HEAD:server/src/__tests__/test_auth/auth.test.ts
     describe("no email", () => {
       it("retuns 400 bad request", async () => {
         const { body, statusCode, headers } = await requests(app)
@@ -165,5 +169,9 @@ describe("auth", () => {
         expect(body.message).toBe("both email and password must be provided");
       })
     })
+=======
+    missingSignInData("email");
+    missingSignInData("password");
+>>>>>>> main:server/src/__tests__/auth.test.ts
   })
 })
