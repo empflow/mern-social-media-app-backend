@@ -1,15 +1,16 @@
 import requests from "supertest";
 import User from "../../models/User";
 import { getRandomProfilePath } from "../../utils/pathsGenerators";
-import app from "../../index";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
 import testMissingSignUpData from "../utils/testMissingSignUpData";
 import expectJson from "../utils/assertJson";
 import getStrOfLength from "../../utils/getStrOfLength";
-import signJwt from "../../utils/signJwt";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 import getSignUpData from "./getSignUpData";
+import createAndStartServer from "../../utils/createAndStartServer";
 
+
+const app = createAndStartServer();
 
 beforeEach(async () => {
   await User.deleteMany({});

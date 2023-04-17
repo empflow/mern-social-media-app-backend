@@ -1,9 +1,14 @@
 export default function getMongoUri() {
-  const nodeEnv = process.env.NODE_ENV;
+  const NODE_ENV = process.env.NODE_ENV;
 
-  if (nodeEnv === "dev" || nodeEnv === "prod") {
-    return process.env.MONGO_URI as string;
-  } else {
-    return process.env.TEST_MONGO_URI as string;
+  switch (NODE_ENV) {
+    case "dev":
+      return process.env.DEV_MONGO_URI as string;
+    case "test":
+      return process.env.TEST_MONGO_URI as string;
+    case "prod":
+      return process.env.PROD_MONGO_URI as string;
+    default:
+      throw new Error("unknown environement. Possible environments: 'dev', 'test', 'prod'");
   }
 }
