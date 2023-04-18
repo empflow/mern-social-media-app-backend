@@ -37,7 +37,8 @@
     "dev": "NODE_ENV=dev ts-node-dev ./src/index.ts",
     "test": "jest",
     "test--coverage": "jest --coverage",
-    "test--detectOpenHandles": "jest --detectOpenHandles"
+    "test--detectOpenHandles": "jest --detectOpenHandles",
+    "build": "tsc -p ./tsconfig.json"
   },
   "keywords": [],
   "author": "",
