@@ -36,9 +36,10 @@
   "scripts": {
     "dev": "NODE_ENV=dev ts-node-dev ./src/index.ts",
     "test": "jest",
+    "build": "tsc -p ./tsconfig.json",
+    "prod": "NODE_ENV=prod node ./dist/index.js",
     "test--coverage": "jest --coverage",
-    "test--detectOpenHandles": "jest --detectOpenHandles",
-    "build": "tsc -p ./tsconfig.json"
+    "test--detectOpenHandles": "jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
