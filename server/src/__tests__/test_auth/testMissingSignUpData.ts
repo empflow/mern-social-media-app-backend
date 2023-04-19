@@ -1,15 +1,18 @@
 import assertJson from "../utils/assertJson";
 import requests from "supertest";
-import app from "../../server";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
-import { signInData } from "./auth.test";
+import getSignUpData from "./getSignUpData";
+import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
+import app from "../../app";
 
 export default function testMissingSignUpData(missingData: keyof ISignUpData) {
+  const signUpData = getSignUpData();
+
   describe(`${missingData} is missing`, () => {
     it("returns 400 BadRequest error", async () => {
       const { body, statusCode, headers } = await requests(app)
         .post("/auth/sign-up")
-        .send({ ...signInData, [missingData]: undefined });
+        .send({ ...signUpData, [missingData]: undefined });
 
       const normalResponseRegexMatch = `Path \`${missingData}\` is required`;
       const normalResponseRegex = new RegExp(normalResponseRegexMatch);
@@ -20,6 +23,7 @@ export default function testMissingSignUpData(missingData: keyof ISignUpData) {
       } else {
         expect(body.message).toMatch(normalResponseRegex);
       }
+      
       assertJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBeDefined();
