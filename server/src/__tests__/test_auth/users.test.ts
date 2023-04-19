@@ -3,26 +3,23 @@ dotenv.config();
 import mongoose from "mongoose";
 import requests from "supertest";
 import app from "../../app";
-import getSignUpData from "./getSignUpData";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 
-const signUpData = getSignUpData();
 beforeAll(async () => {
   const mongod = await MongoMemoryServer.create();
   await mongoose.connect(mongod.getUri());
 })
 
-describe("auth", () => {
 
-  describe("sign-up", () => {
-    describe("given all correct sign-up data", () => {
-      it("returns 201 and created user", async () => {
+describe("users", () => {
+  describe("get users", () => {
+    describe("not given auth token", () => {
+      it("returns 401 unauthorized error", async () => {
         const { body, statusCode, headers } = await requests(app)
-          .post("/auth/sign-up")
-          .send(signUpData);
+          .get("/users")
 
-        expect(statusCode).toBe(201);
+        expect(statusCode).toBe(401);
       })
     })
   })
