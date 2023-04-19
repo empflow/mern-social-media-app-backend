@@ -1,7 +1,7 @@
 import getStrOfLength from "../../utils/getStrOfLength";
 import getSignUpData from "./getSignUpData";
 import requests from "supertest";
-import app from "../../index";
+import app from "../../server";
 import assertJson from "../utils/assertJson";
 import { maxLengths, minLengths } from "../../models/User";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";

@@ -1,7 +1,7 @@
 import expectJson from "../utils/assertJson";
 import { TSignInData } from "../utils/signUpAndSignInInterfaces";
 import requests from "supertest";
-import app from "../../index";
+import app from "../../server";
 import getSignUpData from "./getSignUpData";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 

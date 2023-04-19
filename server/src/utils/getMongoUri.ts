@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export default function getMongoUri() {
   const NODE_ENV = process.env.NODE_ENV;
+  console.log(NODE_ENV);
 
   switch (NODE_ENV) {
     case "dev":

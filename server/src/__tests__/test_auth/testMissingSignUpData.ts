@@ -1,6 +1,6 @@
 import assertJson from "../utils/assertJson";
 import requests from "supertest";
-import app from "../../index";
+import app from "../../server";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 import { signInData } from "./auth.test";
 

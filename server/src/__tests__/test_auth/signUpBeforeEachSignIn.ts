@@ -1,5 +1,5 @@
 import requests from "supertest";
-import app from "../..";
+import app from "../../server";
 import assertJson from "../utils/assertJson";
 import { signUpData } from "./auth.test";
 
