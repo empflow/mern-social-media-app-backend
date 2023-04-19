@@ -25,7 +25,7 @@ export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
 
 export const userDataForModel = {
-  ...getSignUpData(),
+  ...signUpData,
   profilePath: getRandomProfilePath()
 }
 
