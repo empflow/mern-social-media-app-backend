@@ -1,3 +1,4 @@
+import "express-async-errors";
 import express from "express";
 import allRoutes from "./routes/index";
 import globalMiddleware from "./middleware/globalMiddleware";

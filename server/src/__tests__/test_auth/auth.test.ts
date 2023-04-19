@@ -1,7 +1,5 @@
-import "express-async-errors";
 import dotenv from "dotenv";
 dotenv.config();
-import mongoose from "mongoose";
 import requests from "supertest";
 import app from "../../app";
 import getSignUpData from "./getSignUpData";
@@ -9,27 +7,19 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import testMissingSignUpData from "./testMissingSignUpData";
 import { getRandomProfilePath } from "../../utils/pathsGenerators";
 import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
-import getMongoUri from "../../utils/getMongoUri";
 import assertJson from "../utils/assertJson";
 import User from "../../models/User";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
-import signUpBeforeEachSignIn from "./signUpBeforeEachSignIn";
+import signUpBeforeEachSignInAndAssertJson from "./signUpBeforeEachSignInAndAssertJson";
 import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
+import { dbConnSetup, dbConnTeardown } from "../utils/db";
 
 
 let mongod: MongoMemoryServer;
 
-beforeEach(async () => {
-  mongod = await MongoMemoryServer.create();
-  await mongoose.connect(mongod.getUri());
-})
-
-afterEach(async () => {
-  await mongod.stop();
-  await mongoose.disconnect();
-  await mongoose.connection.close();
-})
+beforeEach(async () => mongod = await dbConnSetup());
+afterEach(async () => await dbConnTeardown(mongod))
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
@@ -126,7 +116,7 @@ describe("auth", () => {
   })
 
   describe("sign-in", () => {
-    beforeEach(signUpBeforeEachSignIn);
+    beforeEach(signUpBeforeEachSignInAndAssertJson);
 
     describe("given all correct sign-in data", () => {
       it("returns 200 and token", async () => {

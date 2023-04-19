@@ -2,7 +2,6 @@ import assertJson from "../utils/assertJson";
 import requests from "supertest";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 import getSignUpData from "./getSignUpData";
-import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
 import app from "../../app";
 
 export default function testMissingSignUpData(missingData: keyof ISignUpData) {
