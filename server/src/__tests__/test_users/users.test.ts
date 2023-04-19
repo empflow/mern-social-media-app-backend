@@ -8,6 +8,7 @@ import mockUser from "./mockUser";
 import signJwt from "../../utils/signJwt";
 import assertJson from "../utils/assertJson";
 import getSignUpData from "../test_auth/getSignUpData";
+import getToken from "./getToken";
 
 
 let mongod: MongoMemoryServer;
@@ -24,12 +25,13 @@ describe("users", () => {
           .get("/users")
 
         expect(statusCode).toBe(401);
+        expect(body.message).toBe("unauthorized");
       })
     })
 
     describe("given auth token", () => {
       it("returns 200 and an array of users", async () => {
-        const token = signJwt({ userId: mockUser._id });
+        const token = getToken();
 
         await requests(app).post("/auth/sign-up").send(getSignUpData());
         await requests(app).post("/auth/sign-up").send(getSignUpData());
