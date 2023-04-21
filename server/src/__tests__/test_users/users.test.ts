@@ -148,7 +148,6 @@ describe("users", () => {
             .set("Authorization", authHeader);
 
           expect(statusCode).toBe(400);
-          console.log(body);
           expect(body.message).toMatch(/Cast to ObjectId failed for value.+at path "_id" for model "User"/)
         })
       })
@@ -164,6 +163,28 @@ describe("users", () => {
 
           expect(statusCode).toBe(401);
           expect(body.message).toBe("unauthorized");
+        })
+
+        describe("given valid id and given auth token", () => {
+          it("returns 404 not found error", async () => {
+            const id = new mongoose.Types.ObjectId().toString();
+            const authHeader = getAuthHeader();
+
+            const { body, statusCode } = await requests(app)
+              .get(`/users/id/${id}`)
+              .set("Authorization", authHeader);
+
+            expect(statusCode).toBe(404);
+            expect(body.message).toBe("user not found");
+          })
+        })
+
+        describe("given invalid id and not given auth token", () => {
+
+        })
+
+        describe("given invalid id and given auth token", () => {
+
         })
       })
     })
