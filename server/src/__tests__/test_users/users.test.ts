@@ -14,6 +14,7 @@ describe("users", () => {
   let mongod: MongoMemoryServer;
 
   beforeAll(async () => mongod = await dbConnSetup());
+  afterEach(async () => await User.deleteMany());
   afterAll(async () => await dbConnTeardown(mongod));
 
   describe("get users", () => {
@@ -57,7 +58,7 @@ describe("users", () => {
     })
 
     describe("given auth token", () => {
-      it("returns a signle user", async () => {
+      it("returns a single user", async () => {
         const authHeader = getAuthHeader();
 
         await User.create(userDataForModel);
@@ -102,9 +103,24 @@ describe("users", () => {
 
   describe("get user by ID", () => {
     describe("given valid id but not given auth token and user doesn't exist", () => {
-      const id = new mongoose.Types.ObjectId().toString();
-
+      
       it("returns 401 unauthorized error", async () => {
+        const id = new mongoose.Types.ObjectId().toString();
+
+        const { body, statusCode, headers } = await requests(app)
+          .get(`/users/${id}`);
+
+        assertJson(headers);
+        expect(statusCode).toBe(401);
+        expect(body.message).toBe("unauthorized");
+      })
+    })
+
+    describe("given valid id but not given auth token and user exists", () => {
+      it("returns 401 unauthorized error", async () => {
+        const id = new mongoose.Types.ObjectId().toString();
+        await User.create({ ...userDataForModel, _id: id });
+        
         const { body, statusCode, headers } = await requests(app)
           .get(`/users/${id}`);
 
