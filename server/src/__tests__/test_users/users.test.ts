@@ -190,7 +190,17 @@ describe("users", () => {
         })
 
         describe("given invalid id and given auth token", () => {
-
+          it("returns 400 bad request error", async () => {
+            const authHeader = getAuthHeader();
+            const id = "invalidId";
+  
+            const { body, statusCode } = await requests(app)
+              .get(`/users/id/${id}`)
+              .set("Authorization", authHeader);
+            
+            expect(statusCode).toBe(400);
+            expect(body.message).toMatch(/Cast to ObjectId failed for value.+at path "_id" for model "User"/);
+          })
         })
       })
     })
