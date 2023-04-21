@@ -60,8 +60,8 @@ describe("users", () => {
     describe("given auth token", () => {
       it("returns a single user", async () => {
         const authHeader = getAuthHeader();
-
         await User.create(userDataForModel);
+
         const { body, statusCode, headers } = await requests(app)
           .get(`/users/${userDataForModel.profilePath}`)
           .set("Authorization", authHeader);
@@ -90,8 +90,6 @@ describe("users", () => {
 
     describe("not given auth token and user doesn't exist", () => {
       it("returns 404 not found error", async () => {
-        const authHeader = getAuthHeader();
-
         const { body, statusCode, headers } = await requests(app)
           .get("/users/doesntExist");
         
@@ -108,7 +106,7 @@ describe("users", () => {
         const id = new mongoose.Types.ObjectId().toString();
 
         const { body, statusCode, headers } = await requests(app)
-          .get(`/users/${id}`);
+          .get(`/users/id/${id}`);
 
         assertJson(headers);
         expect(statusCode).toBe(401);
@@ -122,11 +120,30 @@ describe("users", () => {
         await User.create({ ...userDataForModel, _id: id });
         
         const { body, statusCode, headers } = await requests(app)
-          .get(`/users/${id}`);
+          .get(`/users/id/${id}`);
 
         assertJson(headers);
         expect(statusCode).toBe(401);
         expect(body.message).toBe("unauthorized");
+      })
+    })
+
+    describe("given valid id and given auth token and user exists", () => {
+      it("returns 200 and user", async () => {
+        const user = await User.create(userDataForModel);
+        const authHeader = getAuthHeader();
+
+        const { body, statusCode, headers } = await requests(app)
+          .get(`/users/id/${user.id}`)
+          .set("Authorization", authHeader);
+
+        assertJson(headers);
+        expect(statusCode).toBe(200);
+        expect(body._id).toBe(user.id);
+        expect(body.firstName).toBe(userDataForModel.firstName);
+        expect(body.lastName).toBe(userDataForModel.lastName);
+        expect(body.email).toBe(userDataForModel.email);
+        expect(body.profilePath).toBe(userDataForModel.profilePath);
       })
     })
   })

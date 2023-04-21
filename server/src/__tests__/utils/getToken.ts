@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import signJwt from "../../utils/signJwt";
 import mockUser from "../test_users/mockUser";
 
