@@ -180,7 +180,13 @@ describe("users", () => {
         })
 
         describe("given invalid id and not given auth token", () => {
+          it("returns 401 unauthorized", async () => {
+            const { body, statusCode } = await requests(app)
+              .get(`/users/id/invalidId`);
 
+            expect(statusCode).toBe(401);
+            expect(body.message).toBe("unauthorized");
+          })
         })
 
         describe("given invalid id and given auth token", () => {
