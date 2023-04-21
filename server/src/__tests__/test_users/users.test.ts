@@ -7,6 +7,7 @@ import getSignUpData from "../utils/getSignUpData";
 import User, { IUser } from "../../models/User";
 import { userDataForModel } from "../test_auth/auth.test";
 import mongoose, { Document } from "mongoose";
+import getUserDataForModel from "../utils/getUserDataForModel";
 
 
 describe("users", () => {
@@ -228,6 +229,88 @@ describe("users", () => {
 
           expect(statusCode).toBe(404);
           expect(body.message).toBe("user not found");
+        })
+      })
+    })
+
+    describe("given user exists", () => {
+      describe("not given auth token", () => {
+        it("returns 401 unauthorized", async () => {
+          const user = await User.create(userDataForModel);
+
+          const { body, statusCode } = await requests(app)
+            .get(`/users/${user.profilePath}/friends`);
+
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe("unauthorized");
+        })
+      })
+
+      describe("given auth token", () => {
+        it("returns 200 and an empty array", async () => {
+          const authHeader = getAuthHeader();
+          const user = await User.create(userDataForModel);
+
+          const { body, statusCode } = await requests(app)
+            .get(`/users/${user.profilePath}/friends`)
+            .set("Authorization", authHeader);
+
+          expect(statusCode).toBe(200);
+          expect(Array.isArray(body)).toBe(true);
+          expect(body.length).toBe(0);
+        })
+      })
+
+      describe("given auth token and user has 2 friends", () => {
+        it("returns 200 and an array of 2 friends", async () => {
+          const authHeader = getAuthHeader();
+
+          const friend1Data = getUserDataForModel();
+          const friend2Data = getUserDataForModel();
+
+          const friend1 = await User.create(friend1Data);
+          const friend2 = await User.create(friend2Data);
+          const user = await User.create({
+            ...userDataForModel, friends: [friend1._id, friend2._id]
+          });
+
+          const { body, statusCode } = await requests(app)
+            .get(`/users/${user.profilePath}/friends`)
+            .set("Authorization", authHeader);
+
+          expect(Array.isArray(body)).toBe(true);
+          expect(body.length).toBe(2);
+          expect(statusCode).toBe(200);
+          expect(body[0].password).toBeUndefined();
+          expect(body[0].friends).toBeUndefined();
+          expect(body[0].friendRequestsSent).toBeUndefined();
+          expect(body[0].friendRequestsReceived).toBeUndefined();
+        })
+      })
+
+      describe("given auth token and user has a friend who deleted his account", () => {
+        it("don't rememeber", async () => {
+          const authHeader = getAuthHeader();
+
+          const friend1Data = getUserDataForModel();
+          const friend2Data = getUserDataForModel();
+
+          const friend1 = await User.create(friend1Data);
+          const friend2 = await User.create(friend2Data);
+          const user = await User.create({
+            ...userDataForModel, friends: [friend1._id, friend2._id]
+          });
+
+          await User.deleteOne({ profilePath: friend1Data.profilePath });
+
+          const { body, statusCode } = await requests(app)
+            .get(`/users/${user.profilePath}/friends`)
+            .set("Authorization", authHeader);
+
+          expect(Array.isArray(body)).toBe(true);
+          expect(body.length).toBe(1);
+          expect(body[0].profilePath).toBe(friend2Data.profilePath);
+          expect(statusCode).toBe(200);
         })
       })
     })

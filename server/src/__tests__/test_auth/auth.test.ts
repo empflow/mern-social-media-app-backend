@@ -13,6 +13,7 @@ import signUpBeforeEachSignIn from "./signUpBeforeEachSignIn";
 import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
+import getUserDataForModel from "../utils/getUserDataForModel";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -21,10 +22,7 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
 
-export const userDataForModel = {
-  ...signUpData,
-  profilePath: getRandomProfilePath()
-}
+export const userDataForModel = getUserDataForModel();
 
 describe("auth", () => {
   let mongod: MongoMemoryServer;
