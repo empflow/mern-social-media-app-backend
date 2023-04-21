@@ -289,7 +289,7 @@ describe("users", () => {
       })
 
       describe("given auth token and user has a friend who deleted his account", () => {
-        it("don't rememeber", async () => {
+        it("returns an array of friends without the friend who deleted his account", async () => {
           const authHeader = getAuthHeader();
 
           const friend1Data = getUserDataForModel();
