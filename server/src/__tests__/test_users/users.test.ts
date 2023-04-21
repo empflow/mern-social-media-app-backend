@@ -72,5 +72,18 @@ describe("users", () => {
         expect(body.email).toBe(userDataForModel.email);
       })
     })
+
+    describe("given auth token but user doesn't exist", () => {
+      it("returns 404 not found error", async () => {
+        const authHeader = getAuthHeader();
+
+        const { body, statusCode, headers } = await requests(app)
+          .get("/users/doesntExist")
+          .set("Authorization", authHeader);
+        
+        expect(statusCode).toBe(404);
+        expect(body.message).toBe("user not found");
+      })
+    })
   })
 })
