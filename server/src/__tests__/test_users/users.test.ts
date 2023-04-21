@@ -205,4 +205,31 @@ describe("users", () => {
       })
     })
   })
+
+  describe("get friends of a user", () => {
+    describe("given user doesn't exist", () => {
+      describe("not given auth token", () => {
+        it("returns 401 unauthorized", async () => {
+          const { statusCode, body } = await requests(app)
+            .get("/users/doenstExist/friends");
+
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe("unauthorized");
+        })
+      })
+
+      describe("given auth token", () => {
+        it("returns 404 not found", async () => {
+          const authHeader = getAuthHeader();
+
+          const { statusCode, body } = await requests(app)
+            .get("/users/doenstExist/friends")
+            .set("Authorization", authHeader);
+
+          expect(statusCode).toBe(404);
+          expect(body.message).toBe("user not found");
+        })
+      })
+    })
+  })
 })
