@@ -85,5 +85,17 @@ describe("users", () => {
         expect(body.message).toBe("user not found");
       })
     })
+
+    describe("not given auth token and user doesn't exist", () => {
+      it("returns 404 not found error", async () => {
+        const authHeader = getAuthHeader();
+
+        const { body, statusCode, headers } = await requests(app)
+          .get("/users/doesntExist");
+        
+        expect(statusCode).toBe(401);
+        expect(body.message).toBe("unauthorized");
+      })
+    })
   })
 })
