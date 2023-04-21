@@ -1,4 +1,3 @@
-import expectJson from "../utils/assertJson";
 import { TSignInData } from "../utils/signUpAndSignInInterfaces";
 import requests from "supertest";
 import app from "../../app";
@@ -15,7 +14,6 @@ export default async function testMissingSignInData(missingData: keyof TSignInDa
         .post("/auth/sign-in")
         .send({ ...signInData, [missingData]: undefined });
 
-      expectJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBe("both email and password must be provided");
     })

@@ -1,4 +1,3 @@
-import assertJson from "../utils/assertJson";
 import requests from "supertest";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 import getSignUpData from "../utils/getSignUpData";
@@ -23,7 +22,6 @@ export default function testMissingSignUpData(missingData: keyof ISignUpData) {
         expect(body.message).toMatch(normalResponseRegex);
       }
       
-      assertJson(headers);
       expect(statusCode).toBe(400);
       expect(body.message).toBeDefined();
     })

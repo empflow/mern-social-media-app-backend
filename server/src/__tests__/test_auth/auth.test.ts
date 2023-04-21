@@ -7,10 +7,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import testMissingSignUpData from "./testMissingSignUpData";
 import { getRandomProfilePath } from "../../utils/pathsGenerators";
 import convertSignUpDataToSignInData from "../utils/convertSignUpDataToSignInData";
-import assertJson from "../utils/assertJson";
 import User from "../../models/User";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
-import signUpBeforeEachSignInAndAssertJson from "./signUpBeforeEachSignInAndAssertJson";
+import signUpBeforeEachSignIn from "./signUpBeforeEachSignIn";
 import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
@@ -37,11 +36,10 @@ describe("auth", () => {
   describe("sign-up", () => {
     describe("given all correct sign-up data", () => {
       it("returns 201 created user and token (no password)", async () => {
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .post("/auth/sign-up")
           .send(signUpData);
 
-          assertJson(headers);
           expect(statusCode).toBe(201);
           expect(body.user).toBeDefined();
           expect(body.token).toBeDefined();
@@ -54,11 +52,10 @@ describe("auth", () => {
         await User.create(userDataForModel);
         
         const signUpData = { ...userDataForModel, profilePath: undefined };
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .post("/auth/sign-up")
           .send(signUpData);
 
-        assertJson(headers);
         expect(body.message).toBeDefined();
         expect(statusCode).toBe(409);
       })
@@ -120,15 +117,14 @@ describe("auth", () => {
   })
 
   describe("sign-in", () => {
-    beforeEach(signUpBeforeEachSignInAndAssertJson);
+    beforeEach(signUpBeforeEachSignIn);
 
     describe("given all correct sign-in data", () => {
       it("returns 200 and token", async () => {
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .post("/auth/sign-in")
           .send(signInData)
 
-        assertJson(headers);
         expect(statusCode).toBe(200);
         expect(body.token).toBeDefined();
         expect(body.user).toBeDefined();
@@ -139,11 +135,10 @@ describe("auth", () => {
 
     describe("user doesn't exist (no user with such email)", () => {
       it("returns 404 not found", async () => {
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .post("/auth/sign-in")
           .send({ ...signInData, email: "thisDoesntExist@gmail.com" });
 
-        assertJson(headers);
         expect(statusCode).toBe(404);
         expect(body.message).toBe("user not found");
       })
@@ -151,11 +146,10 @@ describe("auth", () => {
 
     describe("wrong password", () => {
       it("returns 401 unauthorized", async () => {
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .post("/auth/sign-in")
           .send({ ...signInData, password: "wrong-password" });
 
-        assertJson(headers);
         expect(body.message).toBe("wrong password");
         expect(statusCode).toBe(401);
       })

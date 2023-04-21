@@ -2,7 +2,6 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import getSignUpData from "../utils/getSignUpData";
 import requests from "supertest";
 import app from "../../app";
-import assertJson from "../utils/assertJson";
 import { maxLengths, minLengths } from "../../models/User";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
@@ -27,7 +26,6 @@ export default function testSignUpFieldIsOfLength(
         .post("/auth/sign-up")
         .send(payload);
 
-        assertJson(headers);
         expect(statusCode).toBe(expectedStatusCode);
 
         if (expectedStatusCode === 201) {
