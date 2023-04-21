@@ -7,6 +7,7 @@ import getSignUpData from "../utils/getSignUpData";
 import assertJson from "../utils/assertJson";
 import User from "../../models/User";
 import { userDataForModel } from "../test_auth/auth.test";
+import mongoose from "mongoose";
 
 
 describe("users", () => {
@@ -93,6 +94,21 @@ describe("users", () => {
         const { body, statusCode, headers } = await requests(app)
           .get("/users/doesntExist");
         
+        expect(statusCode).toBe(401);
+        expect(body.message).toBe("unauthorized");
+      })
+    })
+  })
+
+  describe("get user by ID", () => {
+    describe("given valid id but not given auth token and user doesn't exist", () => {
+      const id = new mongoose.Types.ObjectId().toString();
+
+      it("returns 401 unauthorized error", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .get(`/users/${id}`);
+
+        assertJson(headers);
         expect(statusCode).toBe(401);
         expect(body.message).toBe("unauthorized");
       })
