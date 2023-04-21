@@ -56,16 +56,16 @@ describe("users", () => {
         expect(statusCode).toBe(401);
       })
     })
-
+    
     describe("given auth token", () => {
       it("returns a single user", async () => {
         const authHeader = getAuthHeader();
         await User.create(userDataForModel);
-
+        
         const { body, statusCode, headers } = await requests(app)
-          .get(`/users/${userDataForModel.profilePath}`)
-          .set("Authorization", authHeader);
-
+        .get(`/users/${userDataForModel.profilePath}`)
+        .set("Authorization", authHeader);
+        
         expect(statusCode).toBe(200);
         expect(body.password).toBeUndefined();
         expect(body.profilePath).toBe(userDataForModel.profilePath);
@@ -74,76 +74,79 @@ describe("users", () => {
         expect(body.email).toBe(userDataForModel.email);
       })
     })
-
+    
     describe("given auth token but user doesn't exist", () => {
       it("returns 404 not found error", async () => {
         const authHeader = getAuthHeader();
-
+        
         const { body, statusCode, headers } = await requests(app)
-          .get("/users/doesntExist")
-          .set("Authorization", authHeader);
+        .get("/users/doesntExist")
+        .set("Authorization", authHeader);
         
         expect(statusCode).toBe(404);
         expect(body.message).toBe("user not found");
       })
     })
-
+    
     describe("not given auth token and user doesn't exist", () => {
       it("returns 404 not found error", async () => {
         const { body, statusCode, headers } = await requests(app)
-          .get("/users/doesntExist");
+        .get("/users/doesntExist");
         
         expect(statusCode).toBe(401);
         expect(body.message).toBe("unauthorized");
       })
     })
   })
-
+  
   describe("get user by ID", () => {
-    describe("given valid id but not given auth token and user doesn't exist", () => {
+    describe("given user exists", () => {
+      describe("given valid id but not given auth token", () => {
+        it("returns 401 unauthorized error", async () => {
+          const id = new mongoose.Types.ObjectId().toString();
+          await User.create({ ...userDataForModel, _id: id });
+          
+          const { body, statusCode, headers } = await requests(app)
+          .get(`/users/id/${id}`);
+          
+          assertJson(headers);
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe("unauthorized");
+        })
+      })
       
-      it("returns 401 unauthorized error", async () => {
-        const id = new mongoose.Types.ObjectId().toString();
-
-        const { body, statusCode, headers } = await requests(app)
-          .get(`/users/id/${id}`);
-
-        assertJson(headers);
-        expect(statusCode).toBe(401);
-        expect(body.message).toBe("unauthorized");
+      describe("given valid id and given auth token", () => {
+        it("returns 200 and user", async () => {
+          const user = await User.create(userDataForModel);
+          const authHeader = getAuthHeader();
+    
+          const { body, statusCode, headers } = await requests(app)
+            .get(`/users/id/${user.id}`)
+            .set("Authorization", authHeader);
+    
+          assertJson(headers);
+          expect(statusCode).toBe(200);
+          expect(body._id).toBe(user.id);
+          expect(body.firstName).toBe(userDataForModel.firstName);
+          expect(body.lastName).toBe(userDataForModel.lastName);
+          expect(body.email).toBe(userDataForModel.email);
+          expect(body.profilePath).toBe(userDataForModel.profilePath);
+        })
       })
     })
 
-    describe("given valid id but not given auth token and user exists", () => {
-      it("returns 401 unauthorized error", async () => {
-        const id = new mongoose.Types.ObjectId().toString();
-        await User.create({ ...userDataForModel, _id: id });
-        
-        const { body, statusCode, headers } = await requests(app)
-          .get(`/users/id/${id}`);
-
-        assertJson(headers);
-        expect(statusCode).toBe(401);
-        expect(body.message).toBe("unauthorized");
-      })
-    })
-
-    describe("given valid id and given auth token and user exists", () => {
-      it("returns 200 and user", async () => {
-        const user = await User.create(userDataForModel);
-        const authHeader = getAuthHeader();
-
-        const { body, statusCode, headers } = await requests(app)
-          .get(`/users/id/${user.id}`)
-          .set("Authorization", authHeader);
-
-        assertJson(headers);
-        expect(statusCode).toBe(200);
-        expect(body._id).toBe(user.id);
-        expect(body.firstName).toBe(userDataForModel.firstName);
-        expect(body.lastName).toBe(userDataForModel.lastName);
-        expect(body.email).toBe(userDataForModel.email);
-        expect(body.profilePath).toBe(userDataForModel.profilePath);
+    describe("given user doesn't exist", () => {
+      describe("given valid id but not given auth token", () => {
+        it("returns 401 unauthorized error", async () => {
+          const id = new mongoose.Types.ObjectId().toString();
+  
+          const { body, statusCode, headers } = await requests(app)
+            .get(`/users/id/${id}`);
+  
+          assertJson(headers);
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe("unauthorized");
+        })
       })
     })
   })
