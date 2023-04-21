@@ -137,6 +137,21 @@ describe("users", () => {
           expect(body.message).toBe("unauthorized");
         })
       })
+
+      describe("given invalid id and given auth token", () => {
+        it("returns 400 bad request error", async () => {
+          await User.create({ ...userDataForModel });
+          const authHeader = getAuthHeader();
+
+          const { body, statusCode } = await requests(app)
+            .get("/users/id/invalidId")
+            .set("Authorization", authHeader);
+
+          expect(statusCode).toBe(400);
+          console.log(body);
+          expect(body.message).toMatch(/Cast to ObjectId failed for value.+at path "_id" for model "User"/)
+        })
+      })
     })
 
     describe("given user doesn't exist", () => {
