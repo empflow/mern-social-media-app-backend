@@ -1,23 +1,20 @@
-import dotenv from "dotenv";
-dotenv.config();
 import requests from "supertest";
-import app from "../../app";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
-import mockUser from "./mockUser";
-import signJwt from "../../utils/signJwt";
+import app from "../../app";
+import getAuthHeader from "../utils/getToken";
+import getSignUpData from "../utils/getSignUpData";
 import assertJson from "../utils/assertJson";
-import getSignUpData from "../test_auth/getSignUpData";
-import getToken from "./getToken";
-
-
-let mongod: MongoMemoryServer;
-
-beforeEach(async () => mongod = await dbConnSetup());
-afterEach(async () => await dbConnTeardown(mongod))
+import User from "../../models/User";
+import { userDataForModel } from "../test_auth/auth.test";
 
 
 describe("users", () => {
+  let mongod: MongoMemoryServer;
+
+  beforeAll(async () => mongod = await dbConnSetup());
+  afterAll(async () => await dbConnTeardown(mongod));
+
   describe("get users", () => {
     describe("not given auth token", () => {
       it("returns 401 unauthorized error", async () => {
@@ -31,19 +28,48 @@ describe("users", () => {
 
     describe("given auth token", () => {
       it("returns 200 and an array of users", async () => {
-        const token = getToken();
+        const authHeader = getAuthHeader();
 
         await requests(app).post("/auth/sign-up").send(getSignUpData());
         await requests(app).post("/auth/sign-up").send(getSignUpData());
 
         const { body, statusCode, headers } = await requests(app)
           .get("/users")
-          .set("Authorization", `Bearer ${token}`);
+          .set("Authorization", authHeader);
 
         assertJson(headers);
         expect(statusCode).toBe(200);
         expect(Array.isArray(body)).toBe(true);
         expect(body.length).toBe(2);
+      })
+    })
+  })
+
+  describe("get a single user", () => {
+    describe("not given auth token", () => {
+      it("returns 401 unauthorized error", async () => {
+        const { body, statusCode, headers } = await requests(app)
+          .get(`/users/${"profilePath"}`);
+        
+        expect(statusCode).toBe(401);
+      })
+    })
+
+    describe("given auth token", () => {
+      it("returns a signle user", async () => {
+        const authHeader = getAuthHeader();
+
+        await User.create(userDataForModel);
+        const { body, statusCode, headers } = await requests(app)
+          .get(`/users/${userDataForModel.profilePath}`)
+          .set("Authorization", authHeader);
+
+        expect(statusCode).toBe(200);
+        expect(body.password).toBeUndefined();
+        expect(body.profilePath).toBe(userDataForModel.profilePath);
+        expect(body.firstName).toBe(userDataForModel.firstName);
+        expect(body.lastName).toBe(userDataForModel.lastName);
+        expect(body.email).toBe(userDataForModel.email);
       })
     })
   })

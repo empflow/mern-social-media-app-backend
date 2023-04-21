@@ -1,5 +1,5 @@
 import getStrOfLength from "../../utils/getStrOfLength";
-import getSignUpData from "./getSignUpData";
+import getSignUpData from "../utils/getSignUpData";
 import requests from "supertest";
 import app from "../../app";
 import assertJson from "../utils/assertJson";

@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import requests from "supertest";
 import app from "../../app";
-import getSignUpData from "./getSignUpData";
+import getSignUpData from "../utils/getSignUpData";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import testMissingSignUpData from "./testMissingSignUpData";
 import { getRandomProfilePath } from "../../utils/pathsGenerators";
-import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
+import convertSignUpDataToSignInData from "../utils/convertSignUpDataToSignInData";
 import assertJson from "../utils/assertJson";
 import User from "../../models/User";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
@@ -15,11 +15,9 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 
-
-let mongod: MongoMemoryServer;
-
-beforeEach(async () => mongod = await dbConnSetup());
-afterEach(async () => await dbConnTeardown(mongod))
+// tests seem to be running twice or more
+// weird behavior, but couldn't fix
+// seems like it doesn't affect anything but the amount of tests run in the report
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
@@ -30,7 +28,13 @@ export const userDataForModel = {
 }
 
 describe("auth", () => {
-  describe("sing-up", () => {
+  let mongod: MongoMemoryServer;
+
+  beforeAll(async () => mongod = await dbConnSetup());
+  afterEach(async () => User.deleteMany({}));
+  afterAll(async () => await dbConnTeardown(mongod));
+
+  describe("sign-up", () => {
     describe("given all correct sign-up data", () => {
       it("returns 201 created user and token (no password)", async () => {
         const { body, statusCode, headers } = await requests(app)

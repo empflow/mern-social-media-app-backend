@@ -2,8 +2,8 @@ import expectJson from "../utils/assertJson";
 import { TSignInData } from "../utils/signUpAndSignInInterfaces";
 import requests from "supertest";
 import app from "../../app";
-import getSignUpData from "./getSignUpData";
-import convertSignUpDataToSignInData from "./convertSignUpDataToSignInData";
+import getSignUpData from "../utils/getSignUpData";
+import convertSignUpDataToSignInData from "../utils/convertSignUpDataToSignInData";
 
 export default async function testMissingSignInData(missingData: keyof TSignInData) {
   const signUpData = getSignUpData();
