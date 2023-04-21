@@ -61,6 +61,18 @@ describe("auth", () => {
       })
     })
 
+    describe("given profilePath", () => {
+      it("ignores it and returns 201 and a user with a random profilePath", async () => {
+        const profilePath = "empflow";
+
+        const { body, statusCode } = await requests(app)
+          .post("/auth/sign-up")
+          .send({ ...signUpData, profilePath });
+
+        expect(body.profilePath).not.toBe(profilePath);
+      })
+    })
+
     testMissingSignUpData("firstName");
     testMissingSignUpData("lastName");
     testMissingSignUpData("email");
