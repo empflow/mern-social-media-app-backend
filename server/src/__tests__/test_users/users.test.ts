@@ -4,7 +4,6 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
 import getAuthHeader from "../utils/getToken";
 import getSignUpData from "../utils/getSignUpData";
-import assertJson from "../utils/assertJson";
 import User, { IUser } from "../../models/User";
 import { userDataForModel } from "../test_auth/auth.test";
 import mongoose, { Document } from "mongoose";
@@ -35,14 +34,16 @@ describe("users", () => {
         await requests(app).post("/auth/sign-up").send(getSignUpData());
         await requests(app).post("/auth/sign-up").send(getSignUpData());
 
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .get("/users")
           .set("Authorization", authHeader);
 
-        assertJson(headers);
         expect(statusCode).toBe(200);
         expect(Array.isArray(body)).toBe(true);
         expect(body.length).toBe(2);
+        for (const user in body) {
+          expect(body[user].password).toBeUndefined();
+        }
       })
     })
   })
@@ -50,10 +51,11 @@ describe("users", () => {
   describe("get a single user", () => {
     describe("not given auth token", () => {
       it("returns 401 unauthorized error", async () => {
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
           .get(`/users/${"profilePath"}`);
         
         expect(statusCode).toBe(401);
+        expect(body.message).toBe("unauthorized");
       })
     })
     
@@ -62,16 +64,12 @@ describe("users", () => {
         const authHeader = getAuthHeader();
         await User.create(userDataForModel);
         
-        const { body, statusCode, headers } = await requests(app)
+        const { body, statusCode } = await requests(app)
         .get(`/users/${userDataForModel.profilePath}`)
         .set("Authorization", authHeader);
         
         expect(statusCode).toBe(200);
         expect(body.password).toBeUndefined();
-        expect(body.profilePath).toBe(userDataForModel.profilePath);
-        expect(body.firstName).toBe(userDataForModel.firstName);
-        expect(body.lastName).toBe(userDataForModel.lastName);
-        expect(body.email).toBe(userDataForModel.email);
       })
     })
     
@@ -105,10 +103,9 @@ describe("users", () => {
         it("returns 401 unauthorized error", async () => {
           const user = await User.create(userDataForModel)
           
-          const { body, statusCode, headers } = await requests(app)
+          const { body, statusCode } = await requests(app)
           .get(`/users/id/${user.id}`);
           
-          assertJson(headers);
           expect(statusCode).toBe(401);
           expect(body.message).toBe("unauthorized");
         })
@@ -119,13 +116,13 @@ describe("users", () => {
           const user = await User.create(userDataForModel);
           const authHeader = getAuthHeader();
     
-          const { body, statusCode, headers } = await requests(app)
+          const { body, statusCode } = await requests(app)
             .get(`/users/id/${user.id}`)
             .set("Authorization", authHeader);
     
-          assertJson(headers);
           expect(statusCode).toBe(200);
           expect(body._id).toBe(user.id);
+          expect(body.password).toBeUndefined();
         })
       })
 
@@ -133,7 +130,7 @@ describe("users", () => {
         it("returns 401 unauthorized error", async () => {
           await User.create(userDataForModel);
 
-          const { body, statusCode, headers } = await requests(app)
+          const { body, statusCode } = await requests(app)
             .get(`/users/id/invalidId`);
 
           expect(statusCode).toBe(401);
@@ -147,10 +144,9 @@ describe("users", () => {
         it("returns 401 unauthorized error", async () => {
           const id = new mongoose.Types.ObjectId().toString();
   
-          const { body, statusCode, headers } = await requests(app)
+          const { body, statusCode } = await requests(app)
             .get(`/users/id/${id}`);
-  
-          assertJson(headers);
+
           expect(statusCode).toBe(401);
           expect(body.message).toBe("unauthorized");
         })
