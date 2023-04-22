@@ -76,28 +76,28 @@ describe("auth", () => {
     testMissingSignUpData("email");
     testMissingSignUpData("password");
 
-    testSignUpFieldIsOfLength("firstName", 30);
+    testSignUpFieldIsOfLength("firstName", 30, { shouldLog: true });
     testSignUpFieldIsOfLength("firstName", 29);
     testSignUpFieldIsOfLength("firstName", 31);
     testSignUpFieldIsOfLength("firstName", 3);
     testSignUpFieldIsOfLength("firstName", 2);
 
-    testSignUpFieldIsOfLength("lastName", 30);
+    testSignUpFieldIsOfLength("lastName", 30, { shouldLog: true });
     testSignUpFieldIsOfLength("lastName", 29);
     testSignUpFieldIsOfLength("lastName", 31);
     testSignUpFieldIsOfLength("lastName", 3);
     testSignUpFieldIsOfLength("lastName", 2);
 
+    testSignUpFieldIsOfLength("email", 254, { shouldLog: true });
+    testSignUpFieldIsOfLength("email", 253);
     testSignUpFieldIsOfLength("email", 255);
-    testSignUpFieldIsOfLength("email", 6);
-    testSignUpFieldIsOfLength("email", 254);
     testSignUpFieldIsOfLength("email", 7);
-    testSignUpFieldIsOfLength("email", 8);
+    testSignUpFieldIsOfLength("email", 6);
 
+    testSignUpFieldIsOfLength("password", 100, { shouldLog: true });
     testSignUpFieldIsOfLength("password", 9);
     testSignUpFieldIsOfLength("password", 101);
     testSignUpFieldIsOfLength("password", 10);
-    testSignUpFieldIsOfLength("password", 100);
     testSignUpFieldIsOfLength("password", 50);
 
     describe("create user with invalid profile path", () => {

@@ -6,7 +6,7 @@ import { maxLengths, minLengths } from "../../models/User";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
 export default function testSignUpFieldIsOfLength(
-  field: keyof ISignUpData, length: number
+  field: keyof ISignUpData, length: number, options?: { shouldLog: boolean }
 ) {
   const maxAllowedLength = maxLengths[field];
   const minAllowedLength = minLengths[field] ?? 0;
@@ -25,6 +25,8 @@ export default function testSignUpFieldIsOfLength(
       const { body, statusCode, headers } = await requests(app)
         .post("/auth/sign-up")
         .send(payload);
+
+        if (options?.shouldLog) console.log(body);
 
         expect(statusCode).toBe(expectedStatusCode);
 
