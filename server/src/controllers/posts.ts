@@ -9,17 +9,20 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
+  
+  console.log(profilePath);
   const userToPostTo = await User.findOne(
     { profilePath }, { canAnyonePost: 1 }
-  );
-  const posterId: string = req.data.user.userId;
-  
-  if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-  const userToPostToId = userToPostTo._id.toString();
-  if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
-    throw new ForbiddenErr("posting to this user's wall is not allowed");
-  }
-
+    );
+    if (!userToPostTo) throw new NotFoundErr("user to post to not found");
+    
+    const userToPostToId = userToPostTo._id.toString();
+    const posterId: string = req.data.user.userId;
+    
+    if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
+      throw new ForbiddenErr("posting to this user's wall is not allowed");
+    }
+    
   const { content } = req.body;
   const postPath = getPostPath(content);
   const post = new Post({ content, createdBy: posterId, postPath });
