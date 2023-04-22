@@ -95,10 +95,10 @@ describe("auth", () => {
     testSignUpFieldIsOfLength("email", 6);
 
     testSignUpFieldIsOfLength("password", 100, { shouldLog: true });
-    testSignUpFieldIsOfLength("password", 9);
+    testSignUpFieldIsOfLength("password", 99);
     testSignUpFieldIsOfLength("password", 101);
     testSignUpFieldIsOfLength("password", 10);
-    testSignUpFieldIsOfLength("password", 50);
+    testSignUpFieldIsOfLength("password", 9);
 
     describe("create user with invalid profile path", () => {
       it("returns 400 BadRequest error", async () => {
