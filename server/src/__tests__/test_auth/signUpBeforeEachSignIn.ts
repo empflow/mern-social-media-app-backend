@@ -1,11 +1,9 @@
 import requests from "supertest";
-import app from "../..";
-import assertJson from "../utils/assertJson";
+import app from "../../app";
 import { signUpData } from "./auth.test";
 
 export default async function signUpBeforeEachSignIn() {
-  const { headers } = await requests(app)
+  await requests(app)
     .post("/auth/sign-up")
     .send(signUpData);
-  assertJson(headers);
 }

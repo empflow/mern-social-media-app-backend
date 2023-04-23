@@ -26,6 +26,7 @@ export async function getOwnAccount(req: IReq, res: IRes) {
 }
 
 export async function deleteAccount(req: IReq, res: IRes) {
+  // TODO: deactivate account instead of removing from db entirely
   const deletedAccount = await User.findByIdAndDelete(
     req.data.user.userId, { projection: userProjection }
   );

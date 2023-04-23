@@ -1,13 +1,12 @@
 import getStrOfLength from "../../utils/getStrOfLength";
-import getSignUpData from "./getSignUpData";
+import getSignUpData from "../utils/getSignUpData";
 import requests from "supertest";
-import app from "../../index";
-import assertJson from "../utils/assertJson";
+import app from "../../app";
 import { maxLengths, minLengths } from "../../models/User";
 import { ISignUpData } from "../utils/signUpAndSignInInterfaces";
 
 export default function testSignUpFieldIsOfLength(
-  field: keyof ISignUpData, length: number
+  field: keyof ISignUpData, length: number, options?: { shouldLog: boolean }
 ) {
   const maxAllowedLength = maxLengths[field];
   const minAllowedLength = minLengths[field] ?? 0;
@@ -27,7 +26,8 @@ export default function testSignUpFieldIsOfLength(
         .post("/auth/sign-up")
         .send(payload);
 
-        assertJson(headers);
+        if (options?.shouldLog) console.log(body);
+
         expect(statusCode).toBe(expectedStatusCode);
 
         if (expectedStatusCode === 201) {

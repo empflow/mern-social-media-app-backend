@@ -34,10 +34,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=dev ts-node-dev ./src/index.ts",
+    "dev": "NODE_ENV=dev ts-node-dev ./src/server.ts",
     "test": "jest",
     "build": "tsc -p ./tsconfig.json",
-    "prod": "NODE_ENV=prod node ./dist/index.js",
+    "prod": "NODE_ENV=prod node ./dist/server.js",
     "test--coverage": "jest --coverage",
     "test--detectOpenHandles": "jest --detectOpenHandles"
   },
