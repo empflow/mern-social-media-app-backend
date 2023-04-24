@@ -1,4 +1,4 @@
-import mongoose, { Types, Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { friendsValidator } from "./validators";

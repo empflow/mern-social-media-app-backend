@@ -8,11 +8,7 @@ const multerDiskStorageConf: DiskStorageOptions = {
   destination(req, file, cb) {
     mkdirIfDoesntExist(uploadPath);
     cb(null, uploadPath);
-  },
-  filename(req, file, cb) {
-    const fileName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, fileName);
-  },
+  }
 }
 
 export default multerDiskStorageConf;

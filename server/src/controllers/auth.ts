@@ -23,6 +23,7 @@ export async function signUp(req: IReq, res: IRes) {
     console.log(fieldname);
     console.log(filename);
     console.log(mimetype);
+  
   }
   const user = await User.create({ ...req.body, profilePath });
   const userNoPwd = omit(user.toJSON(), "password");
