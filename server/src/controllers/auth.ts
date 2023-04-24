@@ -22,12 +22,10 @@ export async function signUp(req: IReq, res: IRes) {
   const profilePath = getRandomProfilePath();
   
   if (req.file) {
-    const fileStream = fs.createReadStream(req.file.path)
-
     const s3UploadResult = await s3.upload({
       Bucket: bucketName,
-      Key: req.file.filename,
-      Body: fileStream
+      Key: req.file.originalname,
+      Body: req.file.buffer
     }).promise();
 
     console.log(s3UploadResult);
