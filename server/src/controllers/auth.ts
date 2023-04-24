@@ -4,7 +4,6 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
 import s3, { bucketName } from "../utils/s3";
-import fs from "node:fs";
 
 
 export async function signUp(req: IReq, res: IRes) {

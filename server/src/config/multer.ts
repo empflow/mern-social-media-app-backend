@@ -1,14 +1,18 @@
-import { DiskStorageOptions } from "multer";
+import { Options } from "multer";
 import path from "node:path";
-import mkdirIfDoesntExist from "../utils/mkdirIfDoesntExist";
 
-const uploadPath = path.join(__dirname, "../../uploads");
+const allowedFileExts = [".png", ".svg", ".jpg", ".jpeg", ".heic"]
 
-const multerDiskStorageConf: DiskStorageOptions = {
-  destination(req, file, cb) {
-    mkdirIfDoesntExist(uploadPath);
-    cb(null, uploadPath);
+const multerOptions: Options = {
+  fileFilter(req, file, callback) {
+    const fileExt = path.extname(file.originalname);
+    if (allowedFileExts.includes(fileExt)) {
+      callback(null, true);
+    } else {
+      const err = new Error(`Forbidden file extension. You can only use ${allowedFileExts} extensions`);
+      callback(err);
+    }
   }
 }
 
-export default multerDiskStorageConf;
+export default multerOptions;
