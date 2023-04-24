@@ -3,7 +3,7 @@ import { HydratedDocument } from "mongoose";
 import User, { IUser } from "../models/User";
 import arrToString from "../utils/arrToString";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
-import { findDocsById } from "../utils/findDocs";
+import { findDocsByIds } from "../utils/findDocs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";

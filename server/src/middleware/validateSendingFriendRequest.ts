@@ -4,7 +4,7 @@ import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
 import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { IUser } from "../models/User";
-import { findDocsById, findDocs } from "../utils/findDocs";
+import { findDocsByIds, findDocs } from "../utils/findDocs";
 import { HydratedDocument } from "mongoose";
 import userProjection from "../utils/projections/userProjection";
 import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";

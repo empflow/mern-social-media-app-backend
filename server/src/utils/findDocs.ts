@@ -1,6 +1,6 @@
 import { FilterQuery, Model, ProjectionType, UpdateQuery } from "mongoose";
 
-export async function findDocsById<T>(
+export async function findDocsByIds<T>(
   model: Model<T>, ids: string[], projection?: ProjectionType<T>
 ) {
   const promises = ids.map(id => model.findById(id, projection));
