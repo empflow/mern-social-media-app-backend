@@ -17,7 +17,6 @@ router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 router.use(morgan("dev"));
 router.use("/uploads", express.static(uploadsPath));
-console.log(uploadsPath);
 
 // make sure req.data is not undefined
 function setDataPropertyOnReqObject(req: IReq, res: IRes, next: NextFunction) {

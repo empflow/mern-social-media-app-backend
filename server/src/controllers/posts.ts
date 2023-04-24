@@ -10,7 +10,6 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
   
-  console.log(profilePath);
   const userToPostTo = await User.findOne(
     { profilePath }, { canAnyonePost: 1 }
     );
