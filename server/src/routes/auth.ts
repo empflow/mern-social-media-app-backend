@@ -7,7 +7,7 @@ import multerDiskStorageConf from "../config/multer";
 const storage = multer.diskStorage(multerDiskStorageConf);
 const upload = multer({ storage });
 
-router.post("/sign-up", upload.single("image"), signUp);
+router.post("/sign-up", upload.single("avatar"), signUp);
 router.post("/sign-in", validateSignInCredentials, signIn);
 
 export default router;

@@ -17,6 +17,13 @@ export async function signUp(req: IReq, res: IRes) {
   if (userWithSameEmail) throw new ConflictErr("user with this email already exists");
   
   const profilePath = getRandomProfilePath();
+
+  if (req.file) {
+    const { fieldname, filename, mimetype } = req.file;
+    console.log(fieldname);
+    console.log(filename);
+    console.log(mimetype);
+  }
   const user = await User.create({ ...req.body, profilePath });
   const userNoPwd = omit(user.toJSON(), "password");
   const token = await (user as any).createJwt();

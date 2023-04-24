@@ -14,6 +14,7 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import getUserDataForModel from "../utils/getUserDataForModel";
+import path from "node:path";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -21,29 +22,76 @@ import getUserDataForModel from "../utils/getUserDataForModel";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
+const defaultAvatarUri50px = process.env.DEFAULT_AVATAR_URI_50_PX;
+const defaultAvatarUri100px = process.env.DEFAULT_AVATAR_URI_100_PX;
+const defaultAvatarUri400px = process.env.DEFAULT_AVATAR_URI_400_PX;
 
 export const userDataForModel = getUserDataForModel();
 
 describe("auth", () => {
   let mongod: MongoMemoryServer;
-
+  
   beforeAll(async () => mongod = await dbConnSetup());
   afterEach(async () => User.deleteMany({}));
   afterAll(async () => await dbConnTeardown(mongod));
-
+  
   describe("sign-up", () => {
     describe("given all correct sign-up data", () => {
-      it("returns 201 created user and token (no password)", async () => {
-        const { body, statusCode } = await requests(app)
-          .post("/auth/sign-up")
-          .send(signUpData);
+      describe("no avatar attached", () => {
+        it("returns 201 created user and token (no password)", async () => {
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .send(signUpData);
+    
+            expect(statusCode).toBe(201);
+            expect(body.user).toBeDefined();
+            expect(body.token).toBeDefined();
+            expect(body.password).toBeUndefined();
+            expect(body.user.avatarUri50px).toBe(defaultAvatarUri50px);
+            expect(body.user.avatarUri100px).toBe(defaultAvatarUri100px);
+            expect(body.user.avatarUri400px).toBe(defaultAvatarUri400px);
+        })
+      })
+    
+      describe("given an attached jpg avatar", () => {
+        it("returns 200 and user with non-default uris to avatar", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.heic");
 
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("avatar", imgPath);
+
+          console.log(body);
           expect(statusCode).toBe(201);
-          expect(body.user).toBeDefined();
-          expect(body.token).toBeDefined();
-          expect(body.password).toBeUndefined();
+          expect(body.user.avatarUri50px).not.toBe(defaultAvatarUri50px);
+          expect(body.user.avatarUri100px).not.toBe(defaultAvatarUri100px);
+          expect(body.user.avatarUri400px).not.toBe(defaultAvatarUri400px);
+        })
+      })
+
+      describe("given a jpg image in an unexpected field", () => {
+        it("returns 400 bad request", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpg")
+    
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("foo", imgPath);
+    
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe("Unexpected field");
+        })
       })
     })
+
+
 
     describe("given user with this email already exists", () => {
       it("returns a duplicate error", async () => {
@@ -76,25 +124,25 @@ describe("auth", () => {
     testMissingSignUpData("email");
     testMissingSignUpData("password");
 
-    testSignUpFieldIsOfLength("firstName", 30, { shouldLog: true });
+    testSignUpFieldIsOfLength("firstName", 30);
     testSignUpFieldIsOfLength("firstName", 29);
     testSignUpFieldIsOfLength("firstName", 31);
     testSignUpFieldIsOfLength("firstName", 3);
     testSignUpFieldIsOfLength("firstName", 2);
 
-    testSignUpFieldIsOfLength("lastName", 30, { shouldLog: true });
+    testSignUpFieldIsOfLength("lastName", 30);
     testSignUpFieldIsOfLength("lastName", 29);
     testSignUpFieldIsOfLength("lastName", 31);
     testSignUpFieldIsOfLength("lastName", 3);
     testSignUpFieldIsOfLength("lastName", 2);
 
-    testSignUpFieldIsOfLength("email", 254, { shouldLog: true });
+    testSignUpFieldIsOfLength("email", 254);
     testSignUpFieldIsOfLength("email", 253);
     testSignUpFieldIsOfLength("email", 255);
     testSignUpFieldIsOfLength("email", 7);
     testSignUpFieldIsOfLength("email", 6);
 
-    testSignUpFieldIsOfLength("password", 100, { shouldLog: true });
+    testSignUpFieldIsOfLength("password", 100);
     testSignUpFieldIsOfLength("password", 99);
     testSignUpFieldIsOfLength("password", 101);
     testSignUpFieldIsOfLength("password", 10);

@@ -11,7 +11,7 @@ export const maxLengths: Record<string, any> = {
   profilePath: 30,
   email: 254,
   password: 100,
-  pictureUrl: 1000,
+  avatarUri: 1000,
   city: 100,
   occupation: 300,
   status: 300
@@ -30,9 +30,9 @@ export interface IUser {
   lastName: string,
   email: string,
   password: string,
-  pictureUrl50px: string,
-  pictureUrl100px: string,
-  pictureUrl400px: string,
+  avatarUri50px: string,
+  avatarUri100px: string,
+  avatarUri400px: string,
   profilePath: string,
   friends: object[],
   friendRequestsReceived: object[],
@@ -46,14 +46,16 @@ export interface IUser {
   updatedAt: string
 }
 
+const defaultAvatarUris = getDefaultAvatarUris();
+
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
   lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
-  pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
-  pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
+  avatarUri50px: { type: String, default: defaultAvatarUris._50, maxlength: maxLengths.pictureUrl },
+  avatarUri100px: { type: String, default: defaultAvatarUris._100, maxlength: maxLengths.pictureUrl },
+  avatarUri400px: { type: String, default: defaultAvatarUris._400, maxlength: maxLengths.pictureUrl },
   profilePath: {
     type: String,
     maxlength: maxLengths.profilePath,
@@ -108,3 +110,21 @@ UserSchema.methods.createJwt = async function () {
 
 const User = mongoose.model<IUser>("User", UserSchema);
 export default User;
+
+
+function getDefaultAvatarUris() {
+  const defaultAvatarUri50px = process.env.DEFAULT_AVATAR_URI_50_PX;
+  const defaultAvatarUri100px = process.env.DEFAULT_AVATAR_URI_100_PX;
+  const defaultAvatarUri400px = process.env.DEFAULT_AVATAR_URI_400_PX;
+  const uriUndefinedSuggestion = "is undefined. You can use 'https://vk.com/images/camera_<50 | 100 | 400>.png'";
+
+  if (!defaultAvatarUri50px) throw new Error(`DEFAULT_AVATAR_URI_50_PX ${uriUndefinedSuggestion}`);
+  if (!defaultAvatarUri100px) throw new Error(`DEFAULT_AVATAR_URI_100_PX ${uriUndefinedSuggestion}`);
+  if (!defaultAvatarUri400px) throw new Error(`DEFAULT_AVATAR_URI_400_PX ${uriUndefinedSuggestion}`);
+
+  return {
+    _50: defaultAvatarUri50px,
+    _100: defaultAvatarUri100px,
+    _400: defaultAvatarUri400px,
+  }
+}
