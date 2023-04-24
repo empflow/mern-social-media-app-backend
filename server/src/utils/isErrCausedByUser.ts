@@ -8,7 +8,8 @@ export default function isErrCausedByUser(err: TErr) {
     isErrJsonSyntaxErr(err) ||
     err.name === "ValidationError" ||
     err.name === "CastError" ||
-    err.name === "MongoServerError"
+    err.name === "MongoServerError" ||
+    err.name === "MulterError"
   ) {
       return true;
   }

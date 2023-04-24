@@ -1,7 +1,7 @@
 import { getRandomProfilePath } from "../utils/pathsGenerators";
 import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
-import { BadRequestErr, ConflictErr, ForbiddenErr } from "../utils/errs";
+import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
 
 export async function signUp(req: IReq, res: IRes) {
@@ -10,9 +10,9 @@ export async function signUp(req: IReq, res: IRes) {
 
   if (!password) throw new BadRequestErr("password is required");
   if (password.length < 10 || password.length > 100) {
-    throw new BadRequestErr("password must be at least 10 and not above 100 characters long");
+    throw new BadRequestErr("password must be at least 10 and not over 100 characters long");
   }
-
+  
   const userWithSameEmail = await User.findOne({ email });
   if (userWithSameEmail) throw new ConflictErr("user with this email already exists");
   
