@@ -4,19 +4,20 @@ import cors from "cors";
 import corsConf from "../config/cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import path from "path";
 import { IReq, IRes } from "../utils/reqResInterfaces";
+import path from "node:path";
+
+const uploadsPath = path.join(__dirname, "../../uploads");
 
 router.use(setDataPropertyOnReqObject);
 router.use(express.json({ limit: "5mb" }));
-// { extended: true } allows the values in req.body to be of any type
-// only strings and arrays are allowed if extended is set to false
 router.use(express.urlencoded({ extended: true }));
 router.use(cors(corsConf));
 router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-router.use(morgan("common"));
-router.use("/assets", express.static(path.join(__dirname, "../public/assets")));
+router.use(morgan("dev"));
+router.use("/uploads", express.static(uploadsPath));
+console.log(uploadsPath);
 
 // make sure req.data is not undefined
 function setDataPropertyOnReqObject(req: IReq, res: IRes, next: NextFunction) {
