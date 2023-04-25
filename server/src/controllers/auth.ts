@@ -3,8 +3,8 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
-import s3, { bucketName } from "../utils/s3";
-import bufferToWebpBuffer from "../utils/bufferToWebpBuffer";
+import s3, { bucketName, compressAndUploadImgAsWebp } from "../utils/s3";
+import bufferToCompressedWebpBuffer from "../utils/bufferToCompressedWebpBuffer";
 import changeFileExt from "../utils/changeFileExt";
 
 
@@ -22,16 +22,8 @@ export async function signUp(req: IReq, res: IRes) {
 
   if (req.file) {
     const { originalname, buffer } = req.file;
-    const webpBuffer = await bufferToWebpBuffer(buffer);
-    const webpFileName = changeFileExt(originalname, ".webp");
-  
-    const s3UploadResult = await s3.upload({
-      Bucket: bucketName,
-      Key: webpFileName,
-      Body: webpBuffer
-    }).promise();
-  
-    console.log(s3UploadResult);
+    const uploadResult = await compressAndUploadImgAsWebp(buffer, originalname);
+    console.log(uploadResult);
   }
 
   const profilePath = getRandomProfilePath();

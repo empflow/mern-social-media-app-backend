@@ -1,4 +1,6 @@
 import S3 from "aws-sdk/clients/s3";
+import bufferToCompressedWebpBuffer from "./bufferToCompressedWebpBuffer";
+import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
 
 export const bucketName = getEnvVar("S3_BUCKET_NAME");
@@ -17,5 +19,16 @@ const s3 = new S3({
   apiVersion: "latest",
   s3ForcePathStyle: true
 })
+
+export async function compressAndUploadImgAsWebp(buffer: Buffer, nameWithFileExt: string) {
+  const webpBuffer = await bufferToCompressedWebpBuffer(buffer);
+  const fileNameWithWebpExt = changeFileExt(nameWithFileExt, ".webp");
+
+  return await s3.upload({
+    Bucket: bucketName,
+    Key: fileNameWithWebpExt,
+    Body: webpBuffer
+  }).promise();
+}
 
 export default s3;
