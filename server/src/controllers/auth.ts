@@ -4,6 +4,8 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
 import s3, { bucketName } from "../utils/s3";
+import bufferToWebpBuffer from "../utils/bufferToWebpBuffer";
+import changeFileExt from "../utils/changeFileExt";
 
 
 export async function signUp(req: IReq, res: IRes) {
@@ -17,18 +19,22 @@ export async function signUp(req: IReq, res: IRes) {
   
   const userWithSameEmail = await User.findOne({ email });
   if (userWithSameEmail) throw new ConflictErr("user with this email already exists");
-  
-  const profilePath = getRandomProfilePath();
-  
+
   if (req.file) {
+    const { originalname, buffer } = req.file;
+    const webpBuffer = await bufferToWebpBuffer(buffer);
+    const webpFileName = changeFileExt(originalname, ".webp");
+  
     const s3UploadResult = await s3.upload({
       Bucket: bucketName,
-      Key: req.file.originalname,
-      Body: req.file.buffer
+      Key: webpFileName,
+      Body: webpBuffer
     }).promise();
-
+  
     console.log(s3UploadResult);
   }
+
+  const profilePath = getRandomProfilePath();
   const user = await User.create({ ...req.body, profilePath });
   const userNoPwd = omit(user.toJSON(), "password");
   const token = await (user as any).createJwt();
