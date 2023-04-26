@@ -1,7 +1,7 @@
 import { Options } from "multer";
 import path from "node:path";
 
-const allowedFileExts = [".png", ".svg", ".jpg", ".jpeg", ".webp", ".avif", ".jfif", ".pjpeg", ".pjp", ".apng"]
+const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 
 const multerOptions: Options = {
   fileFilter(req, file, callback) {
