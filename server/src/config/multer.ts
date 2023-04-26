@@ -5,8 +5,8 @@ const allowedFileExts = [".png", ".svg", ".jpg", ".jpeg", ".heic", ".webp", ".av
 
 const multerOptions: Options = {
   fileFilter(req, file, callback) {
+    console.log(file);
     const fileExt = path.extname(file.originalname);
-
     if (allowedFileExts.includes(fileExt)) {
       callback(null, true);
     } else {

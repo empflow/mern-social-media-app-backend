@@ -1,7 +1,8 @@
 import S3 from "aws-sdk/clients/s3";
-import bufferToCompressedWebpBuffer from "./bufferToCompressedWebpBuffer";
+import optimizeImg from "./bufferToCompressedWebpBuffer";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
+import throwIfFileSizeOverLimit from "./throwIfBufferOverLimit";
 
 export const bucketName = getEnvVar("S3_BUCKET_NAME");
 export const region = getEnvVar("S3_REGION");
@@ -20,14 +21,16 @@ const s3 = new S3({
   s3ForcePathStyle: true
 })
 
-export async function compressAndUploadImgAsWebp(buffer: Buffer, nameWithFileExt: string) {
-  const webpBuffer = await bufferToCompressedWebpBuffer(buffer);
-  const fileNameWithWebpExt = changeFileExt(nameWithFileExt, ".webp");
+export async function optimizeImgAndUpload(img: Buffer, nameWithFileExt: string) {
+  throwIfFileSizeOverLimit(img, 8);
+  const optimizedImg = await optimizeImg(img);
+  throwIfFileSizeOverLimit(optimizedImg, 1, { msg: "File too large" });
+  const imgNameWithWebpExt = changeFileExt(nameWithFileExt, ".webp");
 
   return await s3.upload({
     Bucket: bucketName,
-    Key: fileNameWithWebpExt,
-    Body: webpBuffer
+    Key: imgNameWithWebpExt,
+    Body: optimizedImg
   }).promise();
 }
 

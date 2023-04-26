@@ -3,8 +3,8 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
-import s3, { bucketName, compressAndUploadImgAsWebp } from "../utils/s3";
-import bufferToCompressedWebpBuffer from "../utils/bufferToCompressedWebpBuffer";
+import s3, { bucketName, optimizeImgAndUpload } from "../utils/s3";
+import optimizeImg from "../utils/bufferToCompressedWebpBuffer";
 import changeFileExt from "../utils/changeFileExt";
 
 
@@ -22,7 +22,7 @@ export async function signUp(req: IReq, res: IRes) {
 
   if (req.file) {
     const { originalname, buffer } = req.file;
-    const uploadResult = await compressAndUploadImgAsWebp(buffer, originalname);
+    const uploadResult = await optimizeImgAndUpload(buffer, originalname);
     console.log(uploadResult);
   }
 
