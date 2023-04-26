@@ -2,7 +2,7 @@ import S3 from "aws-sdk/clients/s3";
 import optimizeImg from "./bufferToCompressedWebpBuffer";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
-import throwIfFileSizeOverLimit from "./throwIfBufferOverLimit";
+import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
 export const bucketName = getEnvVar("S3_BUCKET_NAME");
 export const region = getEnvVar("S3_REGION");
