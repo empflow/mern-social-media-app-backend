@@ -1,4 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
+import { nanoid } from "nanoid";
 import optimizeImg from "./bufferToCompressedWebpBuffer";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
@@ -21,15 +22,17 @@ const s3 = new S3({
   s3ForcePathStyle: true
 })
 
-export async function optimizeImgAndUpload(img: Buffer, nameWithFileExt: string) {
+export async function optimizeImgAndUpload(img: Buffer) {
   throwIfFileSizeOverLimit(img, 8);
+
   const optimizedImg = await optimizeImg(img);
   throwIfFileSizeOverLimit(optimizedImg, 1, { msg: "File too large" });
-  const imgNameWithWebpExt = changeFileExt(nameWithFileExt, ".webp");
+
+  const fileName = `${nanoid(20)}-${Date.now()}.webp`;
 
   return await s3.upload({
     Bucket: bucketName,
-    Key: imgNameWithWebpExt,
+    Key: fileName,
     Body: optimizedImg
   }).promise();
 }
