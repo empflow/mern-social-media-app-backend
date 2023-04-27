@@ -1,18 +1,19 @@
 import sharp from "sharp";
 
-export default async function optimizeImg(img: Buffer) {
+export default async function optimizeImg(img: Buffer, size?: { width: number, height: number }) {
   const quality = getCompressionQuality(img.byteLength);
   const shouldCompress = quality !== null;
-  
-  console.log(`${(img.byteLength / 1000000).toFixed(2)}mb`);
-  console.log(`shouldCompress: ${shouldCompress}`);
+
   if (!shouldCompress) return img;
   
-  const optimizedImg = await sharp(img)
+  let optimizedImg = sharp(img)
     .webp({ quality, alphaQuality: 75 })
-    .toBuffer();
+  if (size) optimizedImg = optimizedImg.resize(size);
 
-  return optimizedImg;
+  const optimizedImgBuffer = await optimizedImg.toBuffer();
+
+
+  return optimizedImgBuffer;
 }
 
 function getCompressionQuality(byteLength: number) {
