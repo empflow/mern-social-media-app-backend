@@ -30,9 +30,9 @@ export interface IUser {
   lastName: string,
   email: string,
   password: string,
-  avatarUrl50px: string,
+  avatarUrl550px: string,
+  avatarUrl200px: string,
   avatarUrl100px: string,
-  avatarUrl400px: string,
   profilePath: string,
   friends: object[],
   friendRequestsReceived: object[],
@@ -46,21 +46,21 @@ export interface IUser {
   updatedAt: string
 }
 
-const defaultAvatarUrl50px = process.env.DEFAULT_AVATAR_URL_50_PX;
+const defaultAvatarUrl550px = process.env.DEFAULT_AVATAR_URL_550_PX;
+const defaultAvatarUrl200px = process.env.DEFAULT_AVATAR_URL_200_PX;
 const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
-const defaultAvatarUrl400px = process.env.DEFAULT_AVATAR_URL_400_PX;
-if (!defaultAvatarUrl50px) throw new Error("DEFAULT_AVATAR_URL_50_PX is undefined");
+if (!defaultAvatarUrl550px) throw new Error("DEFAULT_AVATAR_URL_550_PX is undefined");
+if (!defaultAvatarUrl200px) throw new Error("DEFAULT_AVATAR_URL_200_PX is undefined");
 if (!defaultAvatarUrl100px) throw new Error("DEFAULT_AVATAR_URL_100_PX is undefined");
-if (!defaultAvatarUrl400px) throw new Error("DEFAULT_AVATAR_URL_400_PX is undefined");
 
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
   lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  avatarUrl50px: { type: String, default: defaultAvatarUrl50px, maxlength: maxLengths.pictureUrl },
+  avatarUrl550px: { type: String, default: defaultAvatarUrl550px, maxlength: maxLengths.pictureUrl },
+  avatarUrl200px: { type: String, default: defaultAvatarUrl200px, maxlength: maxLengths.pictureUrl },
   avatarUrl100px: { type: String, default: defaultAvatarUrl100px, maxlength: maxLengths.pictureUrl },
-  avatarUrl400px: { type: String, default: defaultAvatarUrl400px, maxlength: maxLengths.pictureUrl },
   profilePath: {
     type: String,
     maxlength: maxLengths.profilePath,

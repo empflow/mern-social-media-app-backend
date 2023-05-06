@@ -22,9 +22,9 @@ import path from "node:path";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
-const defaultAvatarUrl50px = process.env.DEFAULT_AVATAR_URL_50_PX;
+const defaultAvatarUrl550px = process.env.DEFAULT_AVATAR_URL_550_PX;
+const defaultAvatarUrl200px = process.env.DEFAULT_AVATAR_URL_200_PX;
 const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
-const defaultAvatarUrl400px = process.env.DEFAULT_AVATAR_URL_400_PX;
 
 export const userDataForModel = getUserDataForModel();
 
@@ -47,9 +47,9 @@ describe("auth", () => {
             expect(body.user).toBeDefined();
             expect(body.token).toBeDefined();
             expect(body.password).toBeUndefined();
-            expect(body.user.avatarUrl50px).toBe(defaultAvatarUrl50px);
+            expect(body.user.avatarUrl550px).toBe(defaultAvatarUrl550px);
+            expect(body.user.avatarUrl200px).toBe(defaultAvatarUrl200px);
             expect(body.user.avatarUrl100px).toBe(defaultAvatarUrl100px);
-            expect(body.user.avatarUrl400px).toBe(defaultAvatarUrl400px);
         })
       })
     
