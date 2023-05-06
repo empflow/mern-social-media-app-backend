@@ -2,7 +2,6 @@ import sharp from "sharp";
 
 export async function optimizeImgFullSize(img: Buffer) {
   const quality = getCompressionQualityFullSize(img.byteLength);
-  console.log(quality);
   return sharp(img).webp({ quality, alphaQuality: 75 }).toBuffer();
 }
 

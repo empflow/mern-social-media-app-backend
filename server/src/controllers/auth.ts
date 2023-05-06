@@ -46,6 +46,5 @@ async function uploadAvatarIfPresent(file: Express.Multer.File | undefined) {
   if (file) {
     const { buffer } = file;
     const uploadResult = await optimizeImgAndUploadIn4Sizes(buffer);
-    console.log(uploadResult);
   }
 }
