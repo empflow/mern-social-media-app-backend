@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import optimizeImg from "./optimizeImg";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
-import getS3FileNames from "./getS3FileNames";
+import getS3FileName from "./getS3FileNames";
 import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
 export const bucketName = getEnvVar("S3_BUCKET_NAME");
@@ -36,7 +36,9 @@ export async function optimizeImgAndUploadIn3Sizes(img: Buffer) {
   throwIfFileSizeOverLimit(optimizedImg100px, 1, { msg: "File too large" });
   throwIfFileSizeOverLimit(optimizedImg50px, 1, { msg: "File too large" });
 
-  const [img400pxFileName, img100pxFileName, img50pxFileName] = getS3FileNames(3) as string[];
+  const [
+    img400pxFileName, img100pxFileName, img50pxFileName
+  ] = getS3FileName({ amount: 3 }) as string[];
 
   return Promise.all([
     s3Upload(img400pxFileName, optimizedImg400px),
