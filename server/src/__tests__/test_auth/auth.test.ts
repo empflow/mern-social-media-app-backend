@@ -65,15 +65,28 @@ describe("auth", () => {
             .field("password", signUpData.password)
             .attach("avatar", imgPath);
 
-          console.log(body);
           expect(statusCode).toBe(400);
-          expect(body.user.avatarUrl50px).not.toBe(defaultAvatarUrl50px);
-          expect(body.user.avatarUrl100px).not.toBe(defaultAvatarUrl100px);
-          expect(body.user.avatarUrl400px).not.toBe(defaultAvatarUrl400px);
+          expect(body.message).toMatch(/Forbidden file extension/);
         })
       })
 
-      describe("given a jpg image in an unexpected field", () => {
+      describe("given an attached jpeg avatar", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("avatar", imgPath);
+
+          expect(statusCode).toBe(201);
+        })
+      })
+
+      describe("given an avatar in an unexpected field", () => {
         it("returns 400 bad request", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.jpg")
     
