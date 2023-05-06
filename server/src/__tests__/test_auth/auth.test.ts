@@ -16,6 +16,7 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import path from "node:path";
 import getEnvVar from "../../utils/getEnvVar";
+import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -86,12 +87,7 @@ describe("auth", () => {
           console.log(body);
           const { user } = body;
           expect(statusCode).toBe(201);
-          expect(user.avatarUrl400px).toBeDefined();
-          expect(user.avatarUrl400px).not.toBe(defaultAvatarUrl400px);
-          expect(user.avatarUrl200px).toBeDefined();
-          expect(user.avatarUrl200px).not.toBe(defaultAvatarUrl200px);
-          expect(user.avatarUrl100px).toBeDefined();
-          expect(user.avatarUrl100px).not.toBe(defaultAvatarUrl100px);
+          testAvatarUrlsDontMatchDefaultUrls(user);
         })
       })
 
