@@ -3,7 +3,7 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
-import { optimizeImgAndUploadIn4Sizes } from "../utils/s3";
+import { optimizeAvatarAndUploadIn3Sizes } from "../utils/s3";
 
 
 export async function signUp(req: IReq, res: IRes) {
@@ -12,10 +12,11 @@ export async function signUp(req: IReq, res: IRes) {
 
   validatePassword(password);
   await checkForEmailConflict(email);
-  await uploadAvatarIfPresent(req.file);
+
+  const avatarUrls = await uploadAvatarIfPresent(req.file);
 
   const profilePath = getRandomProfilePath();
-  const user = await User.create({ ...req.body, profilePath });
+  const user = await User.create({ ...req.body, ...avatarUrls, profilePath });
   const userNoPwd = omit(user.toJSON(), "password");
   const token = await (user as any).createJwt();
   res.status(201).json({ user: userNoPwd, token });
@@ -42,9 +43,25 @@ async function checkForEmailConflict(email: string) {
   if (userWithSameEmail) throw new ConflictErr("user with this email already exists");
 }
 
-async function uploadAvatarIfPresent(file: Express.Multer.File | undefined) {
+interface IUserAvatarUrls {
+  avatarUrl400px: string | undefined,
+  avatarUrl200px: string | undefined,
+  avatarUrl100px: string | undefined,
+}
+
+async function uploadAvatarIfPresent(
+  file: Express.Multer.File | undefined
+): Promise<IUserAvatarUrls> {
   if (file) {
     const { buffer } = file;
-    const uploadResult = await optimizeImgAndUploadIn4Sizes(buffer);
+    const {
+      avatarImgUpload: { Location: avatarUrl400px },
+      previewImgUpload: { Location: avatarUrl200px },
+      tinyPreviewImgUpload: { Location: avatarUrl100px },
+    } = await optimizeAvatarAndUploadIn3Sizes(buffer);
+
+    return { avatarUrl400px, avatarUrl200px, avatarUrl100px };
   }
+
+  return { avatarUrl400px: undefined, avatarUrl200px: undefined, avatarUrl100px: undefined };
 }

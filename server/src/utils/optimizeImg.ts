@@ -10,15 +10,21 @@ export async function optimizeImgForFeed(img: Buffer) {
   return sharp(img).resize({ width: 550 }).webp({ quality, alphaQuality: 75 }).toBuffer();
 }
 
-export async function optimizeImgForGridPreview(img: Buffer) {
-  const quality = getCompressionQualityForGridPreviewOrAvatar(img.byteLength);
+export async function optimizeImgForAvatar(img: Buffer) {
+  const quality = getCompressionQualityForAvatar(img.byteLength);
+  return sharp(img).resize({ width: 400, height: 400 }).webp({ quality, alphaQuality: 75 }).toBuffer();
+}
+
+export async function optimizeImgForPreview(img: Buffer) {
+  const quality = getCompressionQualityForPreview(img.byteLength);
   return sharp(img).resize({ width: 200, height: 200 }).webp({ quality, alphaQuality: 75 }).toBuffer();
 }
 
-export async function optimizeImgForAvatar(img: Buffer) {
-  const quality = getCompressionQualityForGridPreviewOrAvatar(img.byteLength);
+export async function optimizeImgForTinyPreview(img: Buffer) {
+  const quality = getCompressionQualityForPreview(img.byteLength);
   return sharp(img).resize({ width: 100, height: 100 }).webp({ quality, alphaQuality: 75 }).toBuffer();
 }
+
 
 function getCompressionQualityFullSize(byteLength: number) {
   const sizeInMb = byteLength / 1000000;
@@ -46,7 +52,11 @@ function getCompressionQualityForFeed(byteLength: number) {
   return quality;
 }
 
-function getCompressionQualityForGridPreviewOrAvatar(byteLength: number) {
+function getCompressionQualityForAvatar(byteLength: number) {
+  return getCompressionQualityForFeed(byteLength);
+}
+
+function getCompressionQualityForPreview(byteLength: number) {
   const sizeInMb = byteLength / 1000000;
 
   let quality: number;

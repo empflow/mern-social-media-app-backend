@@ -23,7 +23,7 @@ import getEnvVar from "../../utils/getEnvVar";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
-const defaultAvatarUrl550px = getEnvVar("DEFAULT_AVATAR_URL_550_PX");
+const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
 const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
 const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
@@ -48,7 +48,7 @@ describe("auth", () => {
             expect(body.user).toBeDefined();
             expect(body.token).toBeDefined();
             expect(body.password).toBeUndefined();
-            expect(body.user.avatarUrl550px).toBe(defaultAvatarUrl550px);
+            expect(body.user.avatarUrl400px).toBe(defaultAvatarUrl400px);
             expect(body.user.avatarUrl200px).toBe(defaultAvatarUrl200px);
             expect(body.user.avatarUrl100px).toBe(defaultAvatarUrl100px);
         })
@@ -86,8 +86,8 @@ describe("auth", () => {
           console.log(body);
           const { user } = body;
           expect(statusCode).toBe(201);
-          expect(user.avatarUrl550px).toBeDefined();
-          expect(user.avatarUrl550px).not.toBe(defaultAvatarUrl550px);
+          expect(user.avatarUrl400px).toBeDefined();
+          expect(user.avatarUrl400px).not.toBe(defaultAvatarUrl400px);
           expect(user.avatarUrl200px).toBeDefined();
           expect(user.avatarUrl200px).not.toBe(defaultAvatarUrl200px);
           expect(user.avatarUrl100px).toBeDefined();

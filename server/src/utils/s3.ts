@@ -1,6 +1,6 @@
 import S3 from "aws-sdk/clients/s3";
 import { nanoid } from "nanoid";
-import { optimizeImgFullSize, optimizeImgForFeed, optimizeImgForGridPreview, optimizeImgForAvatar } from "./optimizeImg";
+import { optimizeImgFullSize, optimizeImgForFeed, optimizeImgForPreview, optimizeImgForTinyPreview, optimizeImgForAvatar } from "./optimizeImg";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
 import getS3FileName from "./getS3FileNames";
@@ -21,34 +21,69 @@ const s3 = new S3({
   endpoint,
   apiVersion: "latest",
   s3ForcePathStyle: true
-})
+});
 
-export async function optimizeImgAndUploadIn4Sizes(img: Buffer) {
-  throwIfFileSizeOverLimit(img, 8, { msg: "File too large" });
+type TOptimizeAvatarAndUploadIn3SizesReturnType = {
+  avatarImgUpload: S3.ManagedUpload.SendData,
+  previewImgUpload: S3.ManagedUpload.SendData,
+  tinyPreviewImgUpload: S3.ManagedUpload.SendData,
+};
 
-  const [optimizedImgFullSize, optimizedImgForFeed, optimizedImgForGridPreview, optimizedImgForAvatar] = await Promise.all([
-      optimizeImgFullSize(img),
-      optimizeImgForFeed(img),
-      optimizeImgForGridPreview(img),
-      optimizeImgForAvatar(img),
+export async function optimizeAvatarAndUploadIn3Sizes(
+  img: Buffer
+): Promise<TOptimizeAvatarAndUploadIn3SizesReturnType> {
+  throwIfFileSizeOverLimit(img, 8);
+
+  const [avatarImg, previewImg, tinyPreviewImg] = await Promise.all([
+    optimizeImgForAvatar(img),
+    optimizeImgForPreview(img),
+    optimizeImgForTinyPreview(img)
   ]);
 
-  const opts = { msg: "File too large" };
-  throwIfFileSizeOverLimit(optimizedImgFullSize, 1.2, opts);
-  throwIfFileSizeOverLimit(optimizedImgForFeed, 1, opts);
-  throwIfFileSizeOverLimit(optimizedImgForGridPreview, 0.5, opts);
-  throwIfFileSizeOverLimit(optimizedImgForAvatar, 0.2, opts);
+  throwIfFileSizeOverLimit(avatarImg, 1);
+  throwIfFileSizeOverLimit(previewImg, 0.5);
+  throwIfFileSizeOverLimit(tinyPreviewImg, 0.2);
 
   const [
-    fullSizeImgName, feedImgName, gridPreviewImgName, avatarImgName
+    avatarImgName, previewImgName, tinyPreviewImgName
+  ] = getS3FileName({ amount: 3 }) as string[];
+
+  const [avatarImgUpload, previewImgUpload, tinyPreviewImgUpload] = await Promise.all([
+    s3Upload(avatarImgName, avatarImg),
+    s3Upload(previewImgName, previewImg),
+    s3Upload(tinyPreviewImgName, tinyPreviewImg),
+  ]);
+
+  return { avatarImgUpload, previewImgUpload, tinyPreviewImgUpload };
+}
+
+export async function optimizeImgAndUploadIn4Sizes(img: Buffer) {
+  throwIfFileSizeOverLimit(img, 8);
+
+  const [fullSizeImg, feedImg, previewImg, tinyPreviewImg] = await Promise.all([
+      optimizeImgFullSize(img),
+      optimizeImgForFeed(img),
+      optimizeImgForPreview(img),
+      optimizeImgForTinyPreview(img),
+  ]);
+
+  throwIfFileSizeOverLimit(fullSizeImg, 1.2);
+  throwIfFileSizeOverLimit(feedImg, 1);
+  throwIfFileSizeOverLimit(previewImg, 0.5);
+  throwIfFileSizeOverLimit(tinyPreviewImg, 0.2);
+
+  const [
+    fullSizeImgName, feedImgName, previewImgName, tinyPreviewImgName
   ] = getS3FileName({ amount: 4 }) as string[];
 
-  return Promise.all([
-    s3Upload(fullSizeImgName, optimizedImgFullSize),
-    s3Upload(feedImgName, optimizedImgForFeed),
-    s3Upload(gridPreviewImgName, optimizedImgForGridPreview),
-    s3Upload(avatarImgName, optimizedImgForAvatar)
+  const [fullSizeImgUpload, feedImgUpload, previewImgUpload, tinyPreviewImgUpload] = await Promise.all([
+    s3Upload(fullSizeImgName, fullSizeImg),
+    s3Upload(feedImgName, feedImg),
+    s3Upload(previewImgName, previewImg),
+    s3Upload(tinyPreviewImgName, tinyPreviewImg)
   ]);
+
+  return { fullSizeImgUpload, feedImgUpload, previewImgUpload, tinyPreviewImgUpload };
 }
 
 async function s3Upload(key: string, body: Buffer | Uint8Array | Blob | string) {

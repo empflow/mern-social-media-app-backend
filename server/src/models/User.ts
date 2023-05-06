@@ -31,7 +31,7 @@ export interface IUser {
   lastName: string,
   email: string,
   password: string,
-  avatarUrl550px: string,
+  avatarUrl400px: string,
   avatarUrl200px: string,
   avatarUrl100px: string,
   profilePath: string,
@@ -47,7 +47,7 @@ export interface IUser {
   updatedAt: string
 }
 
-const defaultAvatarUrl550px = getEnvVar("DEFAULT_AVATAR_URL_550_PX");
+const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
 const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
 const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
@@ -56,7 +56,7 @@ const UserSchema = new Schema<IUser>({
   lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  avatarUrl550px: { type: String, default: defaultAvatarUrl550px, maxlength: maxLengths.pictureUrl },
+  avatarUrl400px: { type: String, default: defaultAvatarUrl400px, maxlength: maxLengths.pictureUrl },
   avatarUrl200px: { type: String, default: defaultAvatarUrl200px, maxlength: maxLengths.pictureUrl },
   avatarUrl100px: { type: String, default: defaultAvatarUrl100px, maxlength: maxLengths.pictureUrl },
   profilePath: {
