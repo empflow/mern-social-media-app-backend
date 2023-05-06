@@ -17,6 +17,7 @@ import getUserDataForModel from "../utils/getUserDataForModel";
 import path from "node:path";
 import getEnvVar from "../../utils/getEnvVar";
 import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
+import attachAvatarToSignUpReq from "./attachAvatarToSignUpReq";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -58,14 +59,7 @@ describe("auth", () => {
       describe("given an attached heic avatar", () => {
         it("returns 400 bad request because file ext is unsupported", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.heic");
-
-          const { body, statusCode } = await requests(app)
-            .post("/auth/sign-up")
-            .field("firstName", signUpData.firstName)
-            .field("lastName", signUpData.lastName)
-            .field("email", signUpData.email)
-            .field("password", signUpData.password)
-            .attach("avatar", imgPath);
+          const { body, statusCode } = await attachAvatarToSignUpReq(imgPath);
 
           expect(statusCode).toBe(400);
           expect(body.message).toMatch(/Forbidden file extension/);
