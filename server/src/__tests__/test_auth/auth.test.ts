@@ -55,7 +55,7 @@ describe("auth", () => {
       })
     
       describe("given an attached heic avatar", () => {
-        it("returns 400 bad request", async () => {
+        it("returns 400 bad request because file ext is unsupported", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.heic");
 
           const { body, statusCode } = await requests(app)
@@ -83,7 +83,15 @@ describe("auth", () => {
             .field("password", signUpData.password)
             .attach("avatar", imgPath);
 
+          console.log(body);
+          const { user } = body;
           expect(statusCode).toBe(201);
+          expect(user.avatarUrl550px).toBeDefined();
+          expect(user.avatarUrl550px).not.toBe(defaultAvatarUrl550px);
+          expect(user.avatarUrl200px).toBeDefined();
+          expect(user.avatarUrl200px).not.toBe(defaultAvatarUrl200px);
+          expect(user.avatarUrl100px).toBeDefined();
+          expect(user.avatarUrl100px).not.toBe(defaultAvatarUrl100px);
         })
       })
 
