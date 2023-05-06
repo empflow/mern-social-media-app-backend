@@ -1,5 +1,6 @@
 import { Options } from "multer";
 import path from "node:path";
+import { BadRequestErr } from "../utils/errs";
 
 const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 
@@ -11,7 +12,7 @@ const multerOptions: Options = {
       callback(null, true);
     } else {
       const formattedAllowedFileExts = getFormattedAllowedFileExts();
-      const err = new Error(
+      const err = new BadRequestErr(
         `Forbidden file extension. You can only use ${formattedAllowedFileExts} extensions`
       );
       callback(err);
