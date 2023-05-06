@@ -3,12 +3,12 @@ dotenv.config();
 import "express-async-errors";
 import mongoose from "mongoose";
 import app from "./app";
-import getMongoUri from "./utils/getMongoUri";
+import getMongoUrl from "./utils/getMongoUrl";
 const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, async () => {
   console.log(`app running on port ${PORT}`);
-  await mongoose.connect(getMongoUri());
+  await mongoose.connect(getMongoUrl());
   console.log("DB connected");
 })
 

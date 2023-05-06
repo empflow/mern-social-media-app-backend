@@ -22,9 +22,9 @@ import path from "node:path";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
-const defaultAvatarUri50px = process.env.DEFAULT_AVATAR_URI_50_PX;
-const defaultAvatarUri100px = process.env.DEFAULT_AVATAR_URI_100_PX;
-const defaultAvatarUri400px = process.env.DEFAULT_AVATAR_URI_400_PX;
+const defaultAvatarUrl50px = process.env.DEFAULT_AVATAR_URL_50_PX;
+const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
+const defaultAvatarUrl400px = process.env.DEFAULT_AVATAR_URL_400_PX;
 
 export const userDataForModel = getUserDataForModel();
 
@@ -47,14 +47,14 @@ describe("auth", () => {
             expect(body.user).toBeDefined();
             expect(body.token).toBeDefined();
             expect(body.password).toBeUndefined();
-            expect(body.user.avatarUri50px).toBe(defaultAvatarUri50px);
-            expect(body.user.avatarUri100px).toBe(defaultAvatarUri100px);
-            expect(body.user.avatarUri400px).toBe(defaultAvatarUri400px);
+            expect(body.user.avatarUrl50px).toBe(defaultAvatarUrl50px);
+            expect(body.user.avatarUrl100px).toBe(defaultAvatarUrl100px);
+            expect(body.user.avatarUrl400px).toBe(defaultAvatarUrl400px);
         })
       })
     
       describe("given an attached jpg avatar", () => {
-        it("returns 200 and user with non-default uris to avatar", async () => {
+        it("returns 200 and user with non-default urls to avatar", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.heic");
 
           const { body, statusCode } = await requests(app)
@@ -67,9 +67,9 @@ describe("auth", () => {
 
           console.log(body);
           expect(statusCode).toBe(201);
-          expect(body.user.avatarUri50px).not.toBe(defaultAvatarUri50px);
-          expect(body.user.avatarUri100px).not.toBe(defaultAvatarUri100px);
-          expect(body.user.avatarUri400px).not.toBe(defaultAvatarUri400px);
+          expect(body.user.avatarUrl50px).not.toBe(defaultAvatarUrl50px);
+          expect(body.user.avatarUrl100px).not.toBe(defaultAvatarUrl100px);
+          expect(body.user.avatarUrl400px).not.toBe(defaultAvatarUrl400px);
         })
       })
 

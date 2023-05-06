@@ -11,7 +11,7 @@ export const maxLengths: Record<string, any> = {
   profilePath: 30,
   email: 254,
   password: 100,
-  avatarUri: 1000,
+  avatarUrl: 1000,
   city: 100,
   occupation: 300,
   status: 300
@@ -30,9 +30,9 @@ export interface IUser {
   lastName: string,
   email: string,
   password: string,
-  avatarUri50px: string,
-  avatarUri100px: string,
-  avatarUri400px: string,
+  avatarUrl50px: string,
+  avatarUrl100px: string,
+  avatarUrl400px: string,
   profilePath: string,
   friends: object[],
   friendRequestsReceived: object[],
@@ -46,21 +46,21 @@ export interface IUser {
   updatedAt: string
 }
 
-const defaultAvatarUri50px = process.env.DEFAULT_AVATAR_URI_50_PX;
-const defaultAvatarUri100px = process.env.DEFAULT_AVATAR_URI_100_PX;
-const defaultAvatarUri400px = process.env.DEFAULT_AVATAR_URI_400_PX;
-if (!defaultAvatarUri50px) throw new Error("DEFAULT_AVATAR_URI_50_PX is undefined");
-if (!defaultAvatarUri100px) throw new Error("DEFAULT_AVATAR_URI_100_PX is undefined");
-if (!defaultAvatarUri400px) throw new Error("DEFAULT_AVATAR_URI_400_PX is undefined");
+const defaultAvatarUrl50px = process.env.DEFAULT_AVATAR_URL_50_PX;
+const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
+const defaultAvatarUrl400px = process.env.DEFAULT_AVATAR_URL_400_PX;
+if (!defaultAvatarUrl50px) throw new Error("DEFAULT_AVATAR_URL_50_PX is undefined");
+if (!defaultAvatarUrl100px) throw new Error("DEFAULT_AVATAR_URL_100_PX is undefined");
+if (!defaultAvatarUrl400px) throw new Error("DEFAULT_AVATAR_URL_400_PX is undefined");
 
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
   lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  avatarUri50px: { type: String, default: defaultAvatarUri50px, maxlength: maxLengths.pictureUrl },
-  avatarUri100px: { type: String, default: defaultAvatarUri100px, maxlength: maxLengths.pictureUrl },
-  avatarUri400px: { type: String, default: defaultAvatarUri400px, maxlength: maxLengths.pictureUrl },
+  avatarUrl50px: { type: String, default: defaultAvatarUrl50px, maxlength: maxLengths.pictureUrl },
+  avatarUrl100px: { type: String, default: defaultAvatarUrl100px, maxlength: maxLengths.pictureUrl },
+  avatarUrl400px: { type: String, default: defaultAvatarUrl400px, maxlength: maxLengths.pictureUrl },
   profilePath: {
     type: String,
     maxlength: maxLengths.profilePath,
