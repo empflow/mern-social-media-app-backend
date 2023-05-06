@@ -15,7 +15,7 @@ export default function authorize(req: IReq, res: IRes, next: NextFunction) {
   
   const JWT_SECRET = getEnvVar("JWT_SECRET");
   try {
-    req.data.user = jwt.verify(token, JWT_SECRET as string);
+    req.data.user = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     throw new UnauthorizedErr("jwt verification failed");
   }
