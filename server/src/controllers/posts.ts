@@ -1,5 +1,6 @@
+import { Document, HydratedDocument } from "mongoose";
 import Post from "../models/Post";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 import { ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import { getPostPath } from "../utils/pathsGenerators";
@@ -9,29 +10,29 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
-  
-  const userToPostTo = await User.findOne(
-    { profilePath }, { canAnyonePost: 1 }
-    );
-    if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-    
-    const userToPostToId = userToPostTo._id.toString();
-    const posterId: string = req.data.user.userId;
-    
-    if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
-      throw new ForbiddenErr("posting to this user's wall is not allowed");
-    }
-    
   const { content } = req.body;
+
+  const userToPostTo = await User.findOne({ profilePath }, { canAnyonePost: 1 });
+  if (!userToPostTo) throw new NotFoundErr("user to post to not found");
+
+  const posterId: string = req.data.user.userId;
+  await checkIfAllowedToPost(userToPostTo, posterId);
+
   const postPath = getPostPath(content);
   const post = new Post({ content, createdBy: posterId, postPath });
-  const poster = await findDocByIdAndUpdate(
-    User, posterId, { $push: { posts: post._id }}
-  );
+  const poster = await findDocByIdAndUpdate(User, posterId, { $push: { posts: post._id }});
   if (!poster) throw new NotFoundErr("poster not found");
 
   await post.save();
   res.status(201).json(post);
+}
+
+async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, posterId: string) {
+  const userToPostToId = userToPostTo.id;
+
+  if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
+    throw new ForbiddenErr("posting to this user's wall is not allowed");
+  }
 }
 
 export async function getPost(req: IReq, res: IRes) {
