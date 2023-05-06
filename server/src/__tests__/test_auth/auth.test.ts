@@ -59,7 +59,7 @@ describe("auth", () => {
       describe("given an attached heic avatar", () => {
         it("returns 400 bad request because file ext is unsupported", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.heic");
-          const { body, statusCode } = await attachAvatarToSignUpReq(imgPath);
+          const { body, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
 
           expect(statusCode).toBe(400);
           expect(body.message).toMatch(/Forbidden file extension/);
@@ -69,17 +69,38 @@ describe("auth", () => {
       describe("given an attached jpeg avatar", () => {
         it("returns 201 created", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
 
-          const { body, statusCode } = await requests(app)
-            .post("/auth/sign-up")
-            .field("firstName", signUpData.firstName)
-            .field("lastName", signUpData.lastName)
-            .field("email", signUpData.email)
-            .field("password", signUpData.password)
-            .attach("avatar", imgPath);
+          expect(statusCode).toBe(201);
+          testAvatarUrlsDontMatchDefaultUrls(user);
+        })
+      })
 
-          console.log(body);
-          const { user } = body;
+      describe("given an attached jpg avatar", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpg");
+          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
+
+          expect(statusCode).toBe(201);
+          testAvatarUrlsDontMatchDefaultUrls(user);
+        })
+      })
+
+      describe("given an attached webp avatar", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.webp");
+          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
+
+          expect(statusCode).toBe(201);
+          testAvatarUrlsDontMatchDefaultUrls(user);
+        })
+      })
+
+      describe("given an attached png avatar", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.png");
+          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
+
           expect(statusCode).toBe(201);
           testAvatarUrlsDontMatchDefaultUrls(user);
         })
