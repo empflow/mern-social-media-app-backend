@@ -131,13 +131,14 @@ describe("auth", () => {
 
     describe("given profilePath", () => {
       it("ignores it and returns 201 and a user with a random profilePath", async () => {
-        const profilePath = "empflow";
+        const profilePath = "foobar";
 
         const { body, statusCode } = await requests(app)
           .post("/auth/sign-up")
           .send({ ...signUpData, profilePath });
 
         expect(body.profilePath).not.toBe(profilePath);
+        expect(statusCode).toBe(201);
       })
     })
 
