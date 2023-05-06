@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { friendsValidator } from "./validators";
+import getEnvVar from "../utils/getEnvVar";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -46,12 +47,9 @@ export interface IUser {
   updatedAt: string
 }
 
-const defaultAvatarUrl550px = process.env.DEFAULT_AVATAR_URL_550_PX;
-const defaultAvatarUrl200px = process.env.DEFAULT_AVATAR_URL_200_PX;
-const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
-if (!defaultAvatarUrl550px) throw new Error("DEFAULT_AVATAR_URL_550_PX is undefined");
-if (!defaultAvatarUrl200px) throw new Error("DEFAULT_AVATAR_URL_200_PX is undefined");
-if (!defaultAvatarUrl100px) throw new Error("DEFAULT_AVATAR_URL_100_PX is undefined");
+const defaultAvatarUrl550px = getEnvVar("DEFAULT_AVATAR_URL_550_PX");
+const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
+const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
@@ -105,10 +103,13 @@ UserSchema.methods.comparePasswords = async function (candidatePassword: string)
 }
 
 UserSchema.methods.createJwt = async function () {
+  const JWT_SECRET = getEnvVar("JWT_SECRET");
+  const JWT_EXPIRES_IN = getEnvVar("JWT_EXPIRES_IN");
+
   return jwt.sign(
     { userId: this._id },
-    process.env.JWT_SECRET as string,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
   )
 }
 

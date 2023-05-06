@@ -15,6 +15,7 @@ import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import path from "node:path";
+import getEnvVar from "../../utils/getEnvVar";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -22,9 +23,9 @@ import path from "node:path";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
-const defaultAvatarUrl550px = process.env.DEFAULT_AVATAR_URL_550_PX;
-const defaultAvatarUrl200px = process.env.DEFAULT_AVATAR_URL_200_PX;
-const defaultAvatarUrl100px = process.env.DEFAULT_AVATAR_URL_100_PX;
+const defaultAvatarUrl550px = getEnvVar("DEFAULT_AVATAR_URL_550_PX");
+const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
+const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
 export const userDataForModel = getUserDataForModel();
 

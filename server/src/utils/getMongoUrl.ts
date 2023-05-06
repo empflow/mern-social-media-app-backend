@@ -1,16 +1,20 @@
 import dotenv from "dotenv";
+import getEnvVar from "./getEnvVar";
 dotenv.config();
 
 export default function getMongoUrl() {
-  const NODE_ENV = process.env.NODE_ENV;
+  const NODE_ENV = getEnvVar("NODE_ENV");
+  const DEV_MONGO_URL = getEnvVar("DEV_MONGO_URL");
+  const TEST_MONGO_URL = getEnvVar("TEST_MONGO_URL");
+  const PROD_MONGO_URL = getEnvVar("PROD_MONGO_URL");
 
   switch (NODE_ENV) {
     case "dev":
-      return process.env.DEV_MONGO_URL as string;
+      return DEV_MONGO_URL;
     case "test":
-      return process.env.TEST_MONGO_URL as string;
+      return TEST_MONGO_URL;
     case "prod":
-      return process.env.PROD_MONGO_URL as string;
+      return PROD_MONGO_URL;
     default:
       throw new Error("unknown environement. Possible environments: 'dev', 'test', 'prod'");
   }
