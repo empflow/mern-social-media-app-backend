@@ -1,6 +1,6 @@
 import S3 from "aws-sdk/clients/s3";
 import { nanoid } from "nanoid";
-import optimizeImg from "./bufferToCompressedWebpBuffer";
+import optimizeImg from "./optimizeImg";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
 import getS3FileNames from "./getS3FileNames";
