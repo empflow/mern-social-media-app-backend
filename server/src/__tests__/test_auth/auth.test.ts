@@ -53,8 +53,8 @@ describe("auth", () => {
         })
       })
     
-      describe("given an attached jpg avatar", () => {
-        it("returns 200 and user with non-default urls to avatar", async () => {
+      describe("given an attached heic avatar", () => {
+        it("returns 400 bad request", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.heic");
 
           const { body, statusCode } = await requests(app)
@@ -66,7 +66,7 @@ describe("auth", () => {
             .attach("avatar", imgPath);
 
           console.log(body);
-          expect(statusCode).toBe(201);
+          expect(statusCode).toBe(400);
           expect(body.user.avatarUrl50px).not.toBe(defaultAvatarUrl50px);
           expect(body.user.avatarUrl100px).not.toBe(defaultAvatarUrl100px);
           expect(body.user.avatarUrl400px).not.toBe(defaultAvatarUrl400px);
