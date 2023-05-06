@@ -11,7 +11,7 @@ export async function signUp(req: IReq, res: IRes) {
   const { password, email } = req.body;
 
   validatePassword(password);
-  checkForEmailConflict(email);  
+  await checkForEmailConflict(email);
   await uploadAvatarIfPresent(req.file);
 
   const profilePath = getRandomProfilePath();
