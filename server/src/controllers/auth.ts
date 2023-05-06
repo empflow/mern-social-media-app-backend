@@ -3,7 +3,7 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
-import { optimizeImgAndUploadIn3Sizes } from "../utils/s3";
+import { optimizeImgAndUploadIn4Sizes } from "../utils/s3";
 
 
 export async function signUp(req: IReq, res: IRes) {
@@ -20,7 +20,7 @@ export async function signUp(req: IReq, res: IRes) {
 
   if (req.file) {
     const { buffer } = req.file;
-    const uploadResult = await optimizeImgAndUploadIn3Sizes(buffer);
+    const uploadResult = await optimizeImgAndUploadIn4Sizes(buffer);
     console.log(uploadResult);
   }
 

@@ -1,6 +1,6 @@
 import S3 from "aws-sdk/clients/s3";
 import { nanoid } from "nanoid";
-import optimizeImg from "./optimizeImg";
+import { optimizeImgFullSize, optimizeImgForFeed, optimizeImgForGridPreview, optimizeImgForAvatar } from "./optimizeImg";
 import changeFileExt from "./changeFileExt";
 import getEnvVar from "./getEnvVar";
 import getS3FileName from "./getS3FileNames";
@@ -23,27 +23,31 @@ const s3 = new S3({
   s3ForcePathStyle: true
 })
 
-export async function optimizeImgAndUploadIn3Sizes(img: Buffer) {
-  throwIfFileSizeOverLimit(img, 8);
+export async function optimizeImgAndUploadIn4Sizes(img: Buffer) {
+  throwIfFileSizeOverLimit(img, 8, { msg: "File too large" });
 
-  const [optimizedImg400px, optimizedImg100px, optimizedImg50px] = await Promise.all([
-      optimizeImg(img, { width: 400, height: 400 }),
-      optimizeImg(img, { width: 100, height: 100 }),
-      optimizeImg(img, { width: 50, height: 50 })
+  const [optimizedImgFullSize, optimizedImgForFeed, optimizedImgForGridPreview, optimizedImgForAvatar] = await Promise.all([
+      optimizeImgFullSize(img),
+      optimizeImgForFeed(img),
+      optimizeImgForGridPreview(img),
+      optimizeImgForAvatar(img),
   ]);
 
-  throwIfFileSizeOverLimit(optimizedImg400px, 1, { msg: "File too large" });
-  throwIfFileSizeOverLimit(optimizedImg100px, 1, { msg: "File too large" });
-  throwIfFileSizeOverLimit(optimizedImg50px, 1, { msg: "File too large" });
+  const opts = { msg: "File too large" };
+  throwIfFileSizeOverLimit(optimizedImgFullSize, 1.2, opts);
+  throwIfFileSizeOverLimit(optimizedImgForFeed, 1, opts);
+  throwIfFileSizeOverLimit(optimizedImgForGridPreview, 0.5, opts);
+  throwIfFileSizeOverLimit(optimizedImgForAvatar, 0.2, opts);
 
   const [
-    img400pxFileName, img100pxFileName, img50pxFileName
-  ] = getS3FileName({ amount: 3 }) as string[];
+    fullSizeImgName, feedImgName, gridPreviewImgName, avatarImgName
+  ] = getS3FileName({ amount: 4 }) as string[];
 
   return Promise.all([
-    s3Upload(img400pxFileName, optimizedImg400px),
-    s3Upload(img100pxFileName, optimizedImg100px),
-    s3Upload(img50pxFileName, optimizedImg50px)
+    s3Upload(fullSizeImgName, optimizedImgFullSize),
+    s3Upload(feedImgName, optimizedImgForFeed),
+    s3Upload(gridPreviewImgName, optimizedImgForGridPreview),
+    s3Upload(avatarImgName, optimizedImgForAvatar)
   ]);
 }
 
