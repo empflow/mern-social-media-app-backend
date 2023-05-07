@@ -13,19 +13,26 @@ export async function addPost(req: IReq, res: IRes) {
   const { content } = req.body;
   const createdBy: string = req.data.user.userId;
 
-  const userToPostTo = await User.findOne({ profilePath }, { canAnyonePost: 1 });
+  const userToPostTo = await User.findOne({ profilePath });
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
 
   const poster = await User.findById(createdBy);
   if (!poster) throw new NotFoundErr("poster not found");
 
   await checkIfAllowedToPost(userToPostTo, createdBy);
+  await uploadPostImgs(req.files);
 
   const postPath = getPostPath(content);
   const post = new Post({ onUser: userToPostTo.id, createdBy, content, postPath });
 
   await post.save();
   res.status(201).json(post);
+}
+
+async function uploadPostImgs(
+  imgs: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined
+) {
+  console.log(imgs);
 }
 
 async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, posterId: string) {
