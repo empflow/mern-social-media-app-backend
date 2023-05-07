@@ -3,6 +3,7 @@ import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
+import optimizeAndUploadPostImgs from "../utils/optimizeAndUploadPostImgs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
@@ -20,7 +21,7 @@ export async function addPost(req: IReq, res: IRes) {
   if (!poster) throw new NotFoundErr("poster not found");
 
   await checkIfAllowedToPost(userToPostTo, createdBy);
-  await uploadPostImgs(req.files);
+  await uploadImgsIfPresent(req.files);
 
   const postPath = getPostPath(content);
   const post = new Post({ onUser: userToPostTo.id, createdBy, content, postPath });
@@ -29,10 +30,14 @@ export async function addPost(req: IReq, res: IRes) {
   res.status(201).json(post);
 }
 
-async function uploadPostImgs(
+async function uploadImgsIfPresent(
   imgs: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined
 ) {
-  console.log(imgs);
+  if (!imgs?.length) return;
+
+  const buffers = (imgs as Express.Multer.File[]).map(img => img.buffer);
+  const result = await optimizeAndUploadPostImgs(buffers);
+  console.log(result);
 }
 
 async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, posterId: string) {
