@@ -16,6 +16,8 @@ import getUserDataForModel from "../utils/getUserDataForModel";
 import path from "node:path";
 import getEnvVar from "../../utils/getEnvVar";
 import { testSignUpWithSupportedAvatarExt, testSignUpWithUnsupportedAvatarExt } from "./testSignUpWithAvatar";
+import attachAvatarToSignUpReq from "./attachAvatarToSignUpReq";
+import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -64,6 +66,27 @@ describe("auth", () => {
       testSignUpWithUnsupportedAvatarExt("../data/avatar.svg");
       testSignUpWithUnsupportedAvatarExt("../data/file.txt");
 
+      describe("given an avatar that's just below the size limit", () => {
+        it("returns 201 created", async () => {
+          const avatarPath = path.join(__dirname, "../data/7.99mb.jpeg");
+          const { body, statusCode } = await attachAvatarToSignUpReq(avatarPath);
+
+          expect(statusCode).toBe(201);
+          testAvatarUrlsDontMatchDefaultUrls(body.user);
+        })
+      })
+
+      describe("given an avatar that's above the size limit", () => {
+        it("returns 400 bad request", async () => {
+          const avatarPath = path.join(__dirname, "../data/9mb.jpeg");
+          const { body, statusCode } = await attachAvatarToSignUpReq(avatarPath);
+
+          expect(statusCode).toBe(400);
+          expect(body.user).toBeUndefined();
+          expect(body.message).toMatch(/File too large/);
+        })
+      })
+
       describe("given an avatar in an unexpected field", () => {
         it("returns 400 bad request", async () => {
           // .jpg image in an unexpected field almost always causes `write EPIPE` error (couldn't fix)
@@ -83,8 +106,6 @@ describe("auth", () => {
         })
       })
     })
-
-
 
     describe("given user with this email already exists", () => {
       it("returns a duplicate error", async () => {
