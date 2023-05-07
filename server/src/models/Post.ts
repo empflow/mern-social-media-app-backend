@@ -1,7 +1,8 @@
-import mongoose, { Types, Schema, HydratedDocument } from "mongoose";
+import mongoose, { Types, Schema } from "mongoose";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
 export interface IPost {
+  onUser: Types.ObjectId,
   createdBy: Types.ObjectId,
   content: null | string,
   postPath: string,
@@ -17,6 +18,11 @@ export interface IPost {
 }
 
 const PostSchema = new Schema<IPost>({
+  onUser: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

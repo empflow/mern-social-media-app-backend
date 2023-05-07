@@ -15,12 +15,12 @@ export async function addPost(req: IReq, res: IRes) {
   const userToPostTo = await User.findOne({ profilePath }, { canAnyonePost: 1 });
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
 
-  const posterId: string = req.data.user.userId;
-  await checkIfAllowedToPost(userToPostTo, posterId);
+  const createdBy: string = req.data.user.userId;
+  await checkIfAllowedToPost(userToPostTo, createdBy);
 
   const postPath = getPostPath(content);
-  const post = new Post({ content, createdBy: posterId, postPath });
-  const poster = await findDocByIdAndUpdate(User, posterId, { $push: { posts: post._id }});
+  const post = new Post({ onUser: userToPostTo.id, createdBy, content, postPath });
+  const poster = await findDocByIdAndUpdate(User, createdBy, { $push: { posts: post._id }});
   if (!poster) throw new NotFoundErr("poster not found");
 
   await post.save();
@@ -63,8 +63,8 @@ export async function deleteUserPost(req: IReq, res: IRes) {
   const post = await Post.findOne({ postPath });
   if (!post) throw new NotFoundErr("post not found");
 
-  const postCreatedBy = post.createdBy.toString();
-  if (userId !== postCreatedBy) {
+  const posterId = post.createdBy.toString();
+  if (userId !== posterId) {
     throw new ForbiddenErr("you can only delete your own posts");
   }
 
