@@ -3,7 +3,7 @@ import User from "../models/User";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import { BadRequestErr, ConflictErr } from "../utils/errs";
 import { omit } from "lodash";
-import { optimizeAvatarAndUploadIn3Sizes } from "../utils/s3";
+import optimizeAvatarAndUploadIn3Sizes from "../utils/optimizeAvatarAndUploadIn3Sizes";
 
 
 export async function signUp(req: IReq, res: IRes) {
