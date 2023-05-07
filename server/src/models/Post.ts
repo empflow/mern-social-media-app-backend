@@ -6,6 +6,7 @@ export interface IPost {
   createdBy: Types.ObjectId,
   content: null | string,
   postPath: string,
+  previewImg: string,
   imageAttachments: string[],
   videoAttachments: string[],
   views: number,
@@ -30,6 +31,7 @@ const PostSchema = new Schema<IPost>({
   },
   content: { type: String, default: null },
   postPath: { type: String, required: true },
+  previewImg: { type: String },
   imageAttachments: {
     type: [String],
     validate: imageAttachmentsValidator,

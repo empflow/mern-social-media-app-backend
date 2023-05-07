@@ -11,17 +11,18 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 export async function addPost(req: IReq, res: IRes) {
   const { profilePath } = req.params;
   const { content } = req.body;
+  const createdBy: string = req.data.user.userId;
 
   const userToPostTo = await User.findOne({ profilePath }, { canAnyonePost: 1 });
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
 
-  const createdBy: string = req.data.user.userId;
+  const poster = await User.findById(createdBy);
+  if (!poster) throw new NotFoundErr("poster not found");
+
   await checkIfAllowedToPost(userToPostTo, createdBy);
 
   const postPath = getPostPath(content);
   const post = new Post({ onUser: userToPostTo.id, createdBy, content, postPath });
-  const poster = await findDocByIdAndUpdate(User, createdBy, { $push: { posts: post._id }});
-  if (!poster) throw new NotFoundErr("poster not found");
 
   await post.save();
   res.status(201).json(post);
