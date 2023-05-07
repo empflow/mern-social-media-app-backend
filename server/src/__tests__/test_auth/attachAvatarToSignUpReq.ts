@@ -1,8 +1,8 @@
-import { Express } from "express";
 import requests from "supertest";
 import { signUpData } from "./auth.test";
+import app from "../../app";
 
-export default async function attachAvatarToSignUpReq(app: Express, imgPath: string) {
+export default async function attachAvatarToSignUpReq(imgPath: string) {
   return requests(app)
     .post("/auth/sign-up")
     .field("firstName", signUpData.firstName)

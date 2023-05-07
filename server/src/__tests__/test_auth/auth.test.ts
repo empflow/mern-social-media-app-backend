@@ -5,7 +5,6 @@ import app from "../../app";
 import getSignUpData from "../utils/getSignUpData";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import testMissingSignUpData from "./testMissingSignUpData";
-import { getRandomProfilePath } from "../../utils/pathsGenerators";
 import convertSignUpDataToSignInData from "../utils/convertSignUpDataToSignInData";
 import User from "../../models/User";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
@@ -16,8 +15,7 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import path from "node:path";
 import getEnvVar from "../../utils/getEnvVar";
-import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
-import attachAvatarToSignUpReq from "./attachAvatarToSignUpReq";
+import { testSignUpWithSupportedAvatarExt, testSignUpWithUnsupportedAvatarExt } from "./testSignUpWithAvatar";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -35,11 +33,11 @@ describe("auth", () => {
   let mongod: MongoMemoryServer;
   
   beforeAll(async () => mongod = await dbConnSetup());
-  afterEach(async () => User.deleteMany({}));
+  afterEach(async () => await User.deleteMany({}));
   afterAll(async () => await dbConnTeardown(mongod));
   
   describe("sign-up", () => {
-    describe("given all correct sign-up data", () => {
+    describe("given all correct sign-up string data", () => {
       describe("no avatar attached", () => {
         it("returns 201 created user and token (no password)", async () => {
           const { body, statusCode } = await requests(app)
@@ -55,60 +53,22 @@ describe("auth", () => {
             expect(body.user.avatarUrl100px).toBe(defaultAvatarUrl100px);
         })
       })
-    
-      describe("given an attached heic avatar", () => {
-        it("returns 400 bad request because file ext is unsupported", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.heic");
-          const { body, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
 
-          expect(statusCode).toBe(400);
-          expect(body.message).toMatch(/Forbidden file extension/);
-        })
-      })
+      // these may occasionally throw `write EPIPE` error (couldn't fix)
+      testSignUpWithSupportedAvatarExt("../data/avatar.jpg");
+      testSignUpWithSupportedAvatarExt("../data/avatar.jpeg"); // timed out once
+      testSignUpWithSupportedAvatarExt("../data/avatar.webp");
+      testSignUpWithSupportedAvatarExt("../data/avatar.png");
 
-      describe("given an attached jpeg avatar", () => {
-        it("returns 201 created", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
-          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
-
-          expect(statusCode).toBe(201);
-          testAvatarUrlsDontMatchDefaultUrls(user);
-        })
-      })
-
-      describe("given an attached jpg avatar", () => {
-        it("returns 201 created", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpg");
-          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
-
-          expect(statusCode).toBe(201);
-          testAvatarUrlsDontMatchDefaultUrls(user);
-        })
-      })
-
-      describe("given an attached webp avatar", () => {
-        it("returns 201 created", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.webp");
-          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
-
-          expect(statusCode).toBe(201);
-          testAvatarUrlsDontMatchDefaultUrls(user);
-        })
-      })
-
-      describe("given an attached png avatar", () => {
-        it("returns 201 created", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.png");
-          const { body: { user }, statusCode } = await attachAvatarToSignUpReq(app, imgPath);
-
-          expect(statusCode).toBe(201);
-          testAvatarUrlsDontMatchDefaultUrls(user);
-        })
-      })
+      testSignUpWithUnsupportedAvatarExt("../data/avatar.heic");
+      testSignUpWithUnsupportedAvatarExt("../data/avatar.svg");
+      testSignUpWithUnsupportedAvatarExt("../data/file.txt");
 
       describe("given an avatar in an unexpected field", () => {
         it("returns 400 bad request", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpg")
+          // .jpg image in an unexpected field almost always causes `write EPIPE` error (couldn't fix)
+          // so using .jpeg instead
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
     
           const { body, statusCode } = await requests(app)
             .post("/auth/sign-up")
