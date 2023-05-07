@@ -6,9 +6,9 @@ export interface IPost {
   createdBy: Types.ObjectId,
   content: null | string,
   postPath: string,
-  previewImg: string,
-  imageAttachments: string[],
-  videoAttachments: string[],
+  tinyPreview: string,
+  imgs: { fullSize: string, previewSize: string, feedSize: string }[],
+  vids: { preview: string, vid: string }[],
   views: number,
   likes: number,
   dislikes: number,
@@ -31,14 +31,14 @@ const PostSchema = new Schema<IPost>({
   },
   content: { type: String, default: null },
   postPath: { type: String, required: true },
-  previewImg: { type: String },
-  imageAttachments: {
-    type: [String],
+  tinyPreview: { type: String },
+  imgs: {
+    type: [{ fullSize: String, previewSize: String, feedSize: String }],
     validate: imageAttachmentsValidator,
     default: []
   },
-  videoAttachments: {
-    type: [String],
+  vids: {
+    type: [{ preview: String, vid: String }],
     validate: videoAttachmentsValidator,
     default: []
   },
