@@ -9,7 +9,7 @@ interface IOptimizeAndUploadPostImgsReturnType {
 }
 
 
-interface IImgUploadResult {
+export interface IImgUploadResult {
   fullSize: string,
   feedSize: string,
   previewSize: string

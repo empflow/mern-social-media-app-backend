@@ -10,6 +10,7 @@ import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import { HydratedDocument } from "mongoose";
 import path from "node:path";
+import { IImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
 
 
 let authHeader1: string;
@@ -74,8 +75,8 @@ describe("posts", () => {
         })
       })
 
-      describe("given 1 .jpeg image", () => {
-        it("returns 201 created and image url", async () => {
+      describe("given 1 .jpeg image and no text content", () => {
+        it("returns 201 created and image url and tiny preview url", async () => {
           const imgPath = path.join(__dirname, "../data/avatar.jpeg");
           const { body, statusCode } = await requests(app)
             .post(`/users/${user1.profilePath}/posts`)
@@ -90,6 +91,41 @@ describe("posts", () => {
           expect(body.imgs[0].fullSize).toMatch(/https:\/\//);
           expect(body.imgs[0].feedSize).toMatch(/https:\/\//);
           expect(body.imgs[0].previewSize).toMatch(/https:\/\//);
+          expect(body.content).toBe(null);
+          expect(body.comments).toEqual([]);
+          expect(body.vids).toEqual([]);
+          const { views, likes, dislikes, shares } = body;
+          expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
+        })
+      })
+
+      describe("given 10 .jpeg images an no text content", () => {
+        it("returns 201 created an 10 image urls and tiny preview url", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .attach("imgs", imgPath)
+            .set("Authorization", authHeader1);
+
+          expect(statusCode).toBe(201);
+          expect(body.onUser).toBe(user1.id);
+          expect(body.createdBy).toBe(user1.id);
+          expect(body.tinyPreview).toMatch(/https:\/\//);
+          expect(body.imgs.length).toBe(10);
+          body.imgs.forEach((img: IImgUploadResult) => {
+            expect(img.fullSize).toMatch(/https:\/\//);
+            expect(img.feedSize).toMatch(/https:\/\//);
+            expect(img.previewSize).toMatch(/https:\/\//);
+          });
           expect(body.content).toBe(null);
           expect(body.comments).toEqual([]);
           expect(body.vids).toEqual([]);
