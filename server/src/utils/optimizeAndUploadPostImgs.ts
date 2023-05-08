@@ -27,7 +27,7 @@ export default async function optimizeAndUploadPostImgs(
   imgs: Buffer[]
 ): Promise<IOptimizeAndUploadPostImgsReturnType> {
   if (!imgs.length) return { tinyPreview: undefined, imgs: undefined };
-  checkImgsSizesBeforeUploading(imgs);
+  checkImgsSizesBelowLimit(imgs, 8);
 
   const [optimizedTinyPreview, optimizedImgs] = await getOptimizedTinyPreviewAndImgs(imgs);
   const [optimizedTinyPreviewUpload, optimizedImgsUploads] = await uploadOptimizedTinyPreviewAndImgs(
@@ -41,8 +41,8 @@ export default async function optimizeAndUploadPostImgs(
 }
 
 
-function checkImgsSizesBeforeUploading(imgs: Buffer[]) {
-  imgs.forEach(img => throwIfFileSizeOverLimit(img, 8));
+function checkImgsSizesBelowLimit(imgs: Buffer[], limitInMb: number) {
+  imgs.forEach(img => throwIfFileSizeOverLimit(img, limitInMb));
 }
 
 
