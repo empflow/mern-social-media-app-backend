@@ -41,7 +41,10 @@
     "build": "tsc -p ./tsconfig.json",
     "prod": "NODE_ENV=prod node ./dist/server.js",
     "test--coverage": "jest --coverage",
-    "test--detectOpenHandles": "jest --detectOpenHandles"
+    "test--detectOpenHandles": "jest --detectOpenHandles",
+    "testAuth": "jest --testPathPattern=auth.test.ts",
+    "testUsers": "jest --testPathPattern=users.test.ts",
+    "testPosts": "jest --testPathPattern=posts.test.ts"
   },
   "keywords": [],
   "author": "",
