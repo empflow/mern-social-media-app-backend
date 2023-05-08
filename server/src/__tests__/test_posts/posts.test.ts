@@ -20,6 +20,8 @@ let user2: HydratedDocument<IUser>;
 
 let mongod: MongoMemoryServer;
 
+const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
+
 
 describe("posts", () => {
   beforeAll(beforeAllCb);
@@ -78,21 +80,21 @@ describe("posts", () => {
       given1JpegImgAndPossiblyNoTextContent("this is the content");
       given1JpegImgAndPossiblyNoTextContent(undefined);
 
-      describe("given 10 .jpeg images an no text content", () => {
+      describe("given 10 .jpeg images and no text content", () => {
         it("returns 201 created an 10 image urls and tiny preview url", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          
           const { body, statusCode } = await requests(app)
             .post(`/users/${user1.profilePath}/posts`)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
-            .attach("imgs", imgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
+            .attach("imgs", jpegImgPath)
             .set("Authorization", authHeader1);
 
           expect(statusCode).toBe(201);
@@ -111,6 +113,19 @@ describe("posts", () => {
           const { views, likes, dislikes, shares } = body;
           expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
         }, 10000)
+      })
+
+      describe("given 11 .jpeg images", () => {
+        it("returns 400 bad request and message", async () => {
+          const request = requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", authHeader1);
+            for (let i = 0; i < 11; i++) request.attach("imgs", jpegImgPath);
+          const { body, statusCode } = await request;
+          
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch("you've exceeded the limit of 10 images per post");
+        })
       })
     })
   })
@@ -138,10 +153,9 @@ function getAuthHeadersFor2Users(user1: HydratedDocument<IUser>, user2: Hydrated
 function given1JpegImgAndPossiblyNoTextContent(textContent: string | undefined) {
   describe(`given 1 .jpeg image and ${textContent ? " " : "no"}text content`, () => {
     it("returns 201 created and image url and tiny preview url", async () => {
-      const imgPath = path.join(__dirname, "../data/avatar.jpeg");
       const request = requests(app)
         .post(`/users/${user1.profilePath}/posts`)
-        .attach("imgs", imgPath)
+        .attach("imgs", jpegImgPath)
         .set("Authorization", authHeader1);
         if (textContent) request.field("content", textContent);
 
