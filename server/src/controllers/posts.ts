@@ -22,10 +22,12 @@ export async function addPost(req: IReq, res: IRes) {
   if (!poster) throw new NotFoundErr("poster not found");
 
   await checkIfAllowedToPost(userToPostTo, createdBy);
-  await uploadImgsIfPresent(req.files);
+  const { tinyPreview, imgs } = await uploadImgsIfPresent(req.files);
 
   const postPath = getPostPath(content);
-  const post = new Post({ onUser: userToPostTo.id, createdBy, content, postPath });
+  const post = new Post({
+    onUser: userToPostTo.id, createdBy, content, postPath, tinyPreview, imgs
+  });
 
   await post.save();
   res.status(201).json(post);
@@ -35,11 +37,10 @@ export async function addPost(req: IReq, res: IRes) {
 async function uploadImgsIfPresent(
   imgs: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined
 ) {
-  if (!imgs?.length) return;
+  if (!imgs?.length) return { tinyPreview: undefined, imgs: undefined };
 
   const buffers = (imgs as Express.Multer.File[]).map(img => img.buffer);
-  const result = await optimizeAndUploadPostImgs(buffers);
-  console.log(result);
+  return optimizeAndUploadPostImgs(buffers);
 }
 
 

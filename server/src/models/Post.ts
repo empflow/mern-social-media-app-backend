@@ -19,6 +19,20 @@ export interface IPost {
   updatedAt: Date
 }
 
+interface IImgs {
+  fullSize: string,
+  previewSize: string,
+  feedSize: string
+}
+
+
+// imgs subdocuments
+const ImgsSchema = new Schema<IImgs>({
+  fullSize: { type: String, required: true },
+  feedSize: { type: String, required: true },
+  previewSize: { type: String, required: true }
+}, { _id: false });
+
 
 const PostSchema = new Schema<IPost>({
   onUser: {
@@ -33,9 +47,9 @@ const PostSchema = new Schema<IPost>({
   },
   content: { type: String, default: null },
   postPath: { type: String, required: true },
-  tinyPreview: { type: String },
+  tinyPreview: { type: String, default: null },
   imgs: {
-    type: [{ fullSize: String, previewSize: String, feedSize: String }],
+    type: [ImgsSchema],
     validate: imageAttachmentsValidator,
     default: []
   },
