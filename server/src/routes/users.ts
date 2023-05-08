@@ -6,6 +6,7 @@ const router = express.Router();
 import { upload } from "../config/multer";
 import uploadArray from "../utils/handleMulterUpload";
 
+
 const imgsLimit = 10;
 const uploadMw = upload.array("imgs", imgsLimit);
 
