@@ -30,20 +30,10 @@ export default async function optimizeAndUploadPostImgs(
   if (!imgs.length) return { tinyPreview: undefined, imgs: undefined };
   checkImgsSizesBeforeUploading(imgs);
 
-  const firstImg = imgs[0];
-  const optimizedTinyPreviewPromise = optimizeImgForTinyPreview(firstImg);
-  const optimizedImgsPromise = getOptimziedImgsPromise(imgs);
-
-  const [
+  const [optimizedTinyPreview, optimizedImgs] = await getOptimizedTinyPreviewAndImgs(imgs);
+  const [optimizedTinyPreviewUpload, optimizedImgsUploads] = await uploadOptimizedTinyPreviewAndImgs(
     optimizedTinyPreview, optimizedImgs
-  ] = await Promise.all([optimizedTinyPreviewPromise, optimizedImgsPromise]);
-
-  const optimizedTinyPreivewUploadPromise = s3Upload(optimizedTinyPreview);
-  const optimizedImgsUploadsPromise = getOptimizedImgsUploadsPromise(optimizedImgs);
-
-  const [optimizedTinyPreviewUpload, optimizedImgsUploads] = await Promise.all([
-    optimizedTinyPreivewUploadPromise, optimizedImgsUploadsPromise
-  ]);
+  );
 
   return {
     tinyPreview: optimizedTinyPreviewUpload.Location,
@@ -57,7 +47,16 @@ function checkImgsSizesBeforeUploading(imgs: Buffer[]) {
 }
 
 
-function getOptimziedImgsPromise(imgs: Buffer[]) {
+async function getOptimizedTinyPreviewAndImgs(imgs: Buffer[]): Promise<[Buffer, IImg[]]> {
+  const tinyPreviewUnoptimized = imgs[0];
+  const optimizedTinyPreviewPromise = optimizeImgForTinyPreview(tinyPreviewUnoptimized);
+  const optimizedImgsPromise = getOptimziedImgsPromise(imgs);
+
+  return Promise.all([optimizedTinyPreviewPromise, optimizedImgsPromise]);
+}
+
+
+function getOptimziedImgsPromise(imgs: Buffer[]): Promise<IImg[]> {
   return Promise.all(imgs.map(async img => {
     const [fullSizeImg, feedImg, previewImg] = await Promise.all([
         optimizeImgForFullSize(img),
@@ -67,6 +66,18 @@ function getOptimziedImgsPromise(imgs: Buffer[]) {
 
     return { fullSize: fullSizeImg, feedSize: feedImg, previewSize: previewImg };
   }));
+}
+
+
+async function uploadOptimizedTinyPreviewAndImgs(
+  optimizedTinyPreview: Buffer, optimizedImgs: IImg[]
+) {
+  const optimizedTinyPreivewUploadPromise = s3Upload(optimizedTinyPreview);
+  const optimizedImgsUploadsPromise = getOptimizedImgsUploadsPromise(optimizedImgs);
+
+  return Promise.all([
+    optimizedTinyPreivewUploadPromise, optimizedImgsUploadsPromise
+  ]);
 }
 
 
