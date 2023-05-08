@@ -1,4 +1,3 @@
-import getS3FileName from "./getS3FileNames";
 import { optimizeImgForFeed, optimizeImgForPreview, optimizeImgForTinyPreview, optimizeImgForFullSize } from "./optimizeImg";
 import { s3Upload } from "./s3";
 import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
@@ -47,7 +46,7 @@ function checkImgsSizesBeforeUploading(imgs: Buffer[]) {
 }
 
 
-async function getOptimizedTinyPreviewAndImgs(imgs: Buffer[]): Promise<[Buffer, IImg[]]> {
+async function getOptimizedTinyPreviewAndImgs(imgs: Buffer[]) {
   const tinyPreviewUnoptimized = imgs[0];
   const optimizedTinyPreviewPromise = optimizeImgForTinyPreview(tinyPreviewUnoptimized);
   const optimizedImgsPromise = getOptimziedImgsPromise(imgs);
@@ -56,7 +55,7 @@ async function getOptimizedTinyPreviewAndImgs(imgs: Buffer[]): Promise<[Buffer, 
 }
 
 
-function getOptimziedImgsPromise(imgs: Buffer[]): Promise<IImg[]> {
+function getOptimziedImgsPromise(imgs: Buffer[]) {
   return Promise.all(imgs.map(async img => {
     const [fullSizeImg, feedImg, previewImg] = await Promise.all([
         optimizeImgForFullSize(img),
@@ -81,7 +80,7 @@ async function uploadOptimizedTinyPreviewAndImgs(
 }
 
 
-function getOptimizedImgsUploadsPromise(optimizedImgs: IImg[]): Promise<IImgUploadResult[]> {
+function getOptimizedImgsUploadsPromise(optimizedImgs: IImg[]) {
   // need to use Promise.all to convert Promise<IImgUploadResult>[] (array of promises)
   // to Promise<IImgUploadResult[]> (promise array)
   return Promise.all(optimizedImgs.map(async imgObj => {
