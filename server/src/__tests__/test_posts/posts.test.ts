@@ -9,8 +9,7 @@ import Post from "../../models/Post";
 import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import { HydratedDocument } from "mongoose";
-import jwt from "jsonwebtoken";
-import getEnvVar from "../../utils/getEnvVar";
+import path from "node:path";
 
 
 let authHeader1: string;
@@ -72,6 +71,30 @@ describe("posts", () => {
 
           expect(statusCode).toBe(400);
           expect(body.message).toMatch(/no content/);
+        })
+      })
+
+      describe("given 1 .jpeg image", () => {
+        it("returns 201 created and image url", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .attach("imgs", imgPath)
+            .set("Authorization", authHeader1);
+
+          expect(statusCode).toBe(201);
+          expect(body.onUser).toBe(user1.id);
+          expect(body.createdBy).toBe(user1.id);
+          expect(body.tinyPreview).toMatch(/https:\/\//);
+          expect(body.imgs.length).toBe(1);
+          expect(body.imgs[0].fullSize).toMatch(/https:\/\//);
+          expect(body.imgs[0].feedSize).toMatch(/https:\/\//);
+          expect(body.imgs[0].previewSize).toMatch(/https:\/\//);
+          expect(body.content).toBe(null);
+          expect(body.comments).toEqual([]);
+          expect(body.vids).toEqual([]);
+          const { views, likes, dislikes, shares } = body;
+          expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
         })
       })
     })
