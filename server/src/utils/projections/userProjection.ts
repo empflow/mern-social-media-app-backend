@@ -1,5 +1,6 @@
 import { IUser } from "../../models/User";
 
+
 const userProjection: Partial<Record<keyof IUser, number>> = {
   firstName: 1,
   lastName: 1,
@@ -15,5 +16,6 @@ const userProjection: Partial<Record<keyof IUser, number>> = {
   status: 1,
   createdAt: 1,
 }
+
 
 export default userProjection;

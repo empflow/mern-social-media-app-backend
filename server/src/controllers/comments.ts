@@ -4,11 +4,13 @@ import { NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 export async function getComments(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const comments = await Comment.find({ onPost: postPath });
   res.status(200).json(comments);
 }
+
 
 export async function addComment(req: IReq, res: IRes) {
   const { postPath } = req.params;
@@ -29,6 +31,7 @@ export async function addComment(req: IReq, res: IRes) {
   res.status(200).json(comment);
 }
 
+
 export async function patchComment(req: IReq, res: IRes) {
   const { commentId } = req.params;
   const { content, replyTo, videoAttachments, imageAttachments } = req.body;
@@ -42,6 +45,7 @@ export async function patchComment(req: IReq, res: IRes) {
 
   res.status(200).json(updatedComment);
 }
+
 
 export async function deleteComment(req: IReq, res: IRes) {
   const { commentId } = req.params;

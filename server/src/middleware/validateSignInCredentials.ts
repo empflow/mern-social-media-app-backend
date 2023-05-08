@@ -3,6 +3,7 @@ import User from "../models/User";
 import { BadRequestErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 export async function validateSignInCredentials(req: IReq, res: IRes, next: NextFunction) {
   const { email, password } = req.body;
 

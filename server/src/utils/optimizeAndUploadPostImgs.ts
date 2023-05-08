@@ -3,10 +3,12 @@ import { optimizeImgForFeed, optimizeImgForPreview, optimizeImgForTinyPreview, o
 import { s3Upload } from "./s3";
 import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
+
 interface IOptimizeAndUploadPostImgsReturnType {
   tinyPreview: string | undefined,
   imgs: IImgUploadResult[] | undefined
 }
+
 
 interface IImgUploadResult {
   fullSize: string,
@@ -14,11 +16,13 @@ interface IImgUploadResult {
   previewSize: string
 }
 
+
 interface IImg {
   fullSize: Buffer,
   feedSize: Buffer,
   previewSize: Buffer
 }
+
 
 export default async function optimizeAndUploadPostImgs(
   imgs: Buffer[]
@@ -47,9 +51,11 @@ export default async function optimizeAndUploadPostImgs(
   }
 }
 
+
 function checkImgsSizesBeforeUploading(imgs: Buffer[]) {
   imgs.forEach(img => throwIfFileSizeOverLimit(img, 8));
 }
+
 
 function getOptimziedImgsPromise(imgs: Buffer[]) {
   return Promise.all(imgs.map(async img => {
@@ -62,6 +68,7 @@ function getOptimziedImgsPromise(imgs: Buffer[]) {
     return { fullSize: fullSizeImg, feedSize: feedImg, previewSize: previewImg };
   }));
 }
+
 
 function getOptimizedImgsUploadsPromise(optimizedImgs: IImg[]): Promise<IImgUploadResult[]> {
   // need to use Promise.all to convert Promise<IImgUploadResult>[] (array of promises)

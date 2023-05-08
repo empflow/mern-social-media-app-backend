@@ -1,6 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { Schema } from "mongoose";
 
+
 export interface IComment {
   createdBy: Types.ObjectId,
   onPost: string,
@@ -13,6 +14,7 @@ export interface IComment {
   createdAt: Date,
   updatedAt: Date
 }
+
 
 const CommentSchema = new Schema<IComment>({
   createdBy: {
@@ -44,6 +46,7 @@ const CommentSchema = new Schema<IComment>({
     default: []
   }
 }, { timestamps: true });
+
 
 const Comment = mongoose.model<IComment>("Comment", CommentSchema);
 export default Comment;

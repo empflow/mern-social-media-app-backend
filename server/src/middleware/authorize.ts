@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import getEnvVar from "../utils/getEnvVar";
 
+
 export default function authorize(req: IReq, res: IRes, next: NextFunction) {
   const authHeader = req.headers.authorization;
 

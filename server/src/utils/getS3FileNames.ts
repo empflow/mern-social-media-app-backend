@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 
+
 export default function getS3FileName(options?: { amount: number }) {
   if (!options?.amount) {
     return `${nanoid(20)}-${Date.now()}.webp`;

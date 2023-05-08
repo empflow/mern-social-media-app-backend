@@ -2,6 +2,7 @@ import path from "node:path";
 import attachAvatarToSignUpReq from "./attachAvatarToSignUpReq";
 import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
 
+
 export async function testSignUpWithUnsupportedAvatarExt(relativeAvatarPath: string) {
   const avatarExt = path.extname(relativeAvatarPath);
 
@@ -16,6 +17,7 @@ export async function testSignUpWithUnsupportedAvatarExt(relativeAvatarPath: str
     }, 10000)
   })
 }
+
 
 export async function testSignUpWithSupportedAvatarExt(relativeAvatarPath: string) {
   const avatarExt = path.extname(relativeAvatarPath);

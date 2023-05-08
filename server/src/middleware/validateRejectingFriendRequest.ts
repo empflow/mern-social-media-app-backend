@@ -6,6 +6,7 @@ import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import userProjection from "../utils/projections/userProjection";
 import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
 
+
 export default async function validateRejectingFriendRequest(
   req: IReq, res: IRes, next: NextFunction
 ) {

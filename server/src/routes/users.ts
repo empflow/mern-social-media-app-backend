@@ -5,6 +5,7 @@ import { getUser, getUsers } from "../controllers/users";
 const router = express.Router();
 import { upload } from "../config/multer";
 
+
 router.get("/", getUsers);
 router.get("/:profilePath", getUser);
 router.get("/id/:userId", getUserById);

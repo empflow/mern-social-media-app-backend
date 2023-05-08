@@ -31,6 +31,7 @@ export async function signIn(req: IReq, res: IRes) {
   });
 }
 
+
 function validatePassword(password: string | undefined) {
   if (!password) throw new BadRequestErr("password is required");
   if (password.length < 10 || password.length > 100) {
@@ -38,16 +39,19 @@ function validatePassword(password: string | undefined) {
   }
 }
 
+
 async function checkForEmailConflict(email: string) {
   const userWithSameEmail = await User.findOne({ email });
   if (userWithSameEmail) throw new ConflictErr("user with this email already exists");
 }
+
 
 interface IUserAvatarUrls {
   avatarUrl400px: string | undefined,
   avatarUrl200px: string | undefined,
   avatarUrl100px: string | undefined,
 }
+
 
 async function uploadAvatarIfPresent(
   file: Express.Multer.File | undefined

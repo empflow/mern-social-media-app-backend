@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import getEnvVar from "./getEnvVar";
 
+
 export default function signJwt(payload: string | Buffer | object) {
   const secretKey = getEnvVar("JWT_SECRET");
   const expiresIn = getEnvVar("JWT_EXPIRES_IN");

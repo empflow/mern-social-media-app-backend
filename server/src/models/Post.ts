@@ -1,6 +1,7 @@
 import mongoose, { Types, Schema } from "mongoose";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
+
 export interface IPost {
   onUser: Types.ObjectId,
   createdBy: Types.ObjectId,
@@ -17,6 +18,7 @@ export interface IPost {
   createdAt: Date,
   updatedAt: Date
 }
+
 
 const PostSchema = new Schema<IPost>({
   onUser: {
@@ -51,6 +53,7 @@ const PostSchema = new Schema<IPost>({
     default: []
   }
 }, { timestamps: true });
+
 
 const Post = mongoose.model<IPost>("Post", PostSchema);
 export default Post;

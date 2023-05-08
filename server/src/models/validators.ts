@@ -12,6 +12,7 @@ export function friendsValidator(friends: object[]) {
   return true;
 }
 
+
 export function imageAttachmentsValidator(urls: string[]) {
   const limit = 10;
   const msg = `you cannot upload more than ${limit} images in a single comment`;
@@ -19,6 +20,7 @@ export function imageAttachmentsValidator(urls: string[]) {
   if (urls.length <= limit) return true;
   return msg;
 }
+
 
 export function videoAttachmentsValidator(urls: string[]) {
   const limit = 2;

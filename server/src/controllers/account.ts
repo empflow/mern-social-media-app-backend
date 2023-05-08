@@ -6,6 +6,7 @@ import { findDocByIdAndUpdate } from "../utils/findDocs";
 import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
   const update = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
@@ -18,6 +19,7 @@ export async function patchAccount(req: IReq, res: IRes) {
   res.status(200).json(patchedAccount);
 }
 
+
 export async function getOwnAccount(req: IReq, res: IRes) {
   const userId = req.data.user.userId;
   // { password: -1 } projection didn't work here :/
@@ -25,6 +27,7 @@ export async function getOwnAccount(req: IReq, res: IRes) {
   if (!user) throw new NotFoundErr("user not found");
   res.status(200).json(user);
 }
+
 
 export async function deleteAccount(req: IReq, res: IRes) {
   // TODO: deactivate account instead of removing from db entirely
@@ -35,6 +38,7 @@ export async function deleteAccount(req: IReq, res: IRes) {
   await Post.deleteMany({ createdBy: deletedAccount.id });
   res.status(200).json(deletedAccount);
 }
+
 
 export async function sendFriendRequest(req: IReq, res: IRes) {
   const { friendId: receiverId } = req.params;
@@ -54,6 +58,7 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
 
   res.status(200).json({ updatedSender, updatedReceiver });
 }
+
 
 export async function acceptFriendRequest(req: IReq, res: IRes) {
   const { friendId: senderId } = req.params;
@@ -77,6 +82,7 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
   res.send({ updatedSender, updatedReceiver });
 }
 
+
 export async function rejectFriendRequest(req: IReq, res: IRes) {
   const sender: HydratedDocument<IUser> = req.data.sender;
   const receiver: HydratedDocument<IUser> = req.data.receiver;
@@ -98,6 +104,7 @@ export async function rejectFriendRequest(req: IReq, res: IRes) {
 
   res.status(200).json({ updatedSender, updatedReceiver });
 }
+
 
 export async function deleteFriend(req: IReq, res: IRes) {
   const { friendId: friendToDeleteId } = req.params;

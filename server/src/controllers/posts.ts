@@ -7,6 +7,7 @@ import optimizeAndUploadPostImgs from "../utils/optimizeAndUploadPostImgs";
 import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 // TODO: add getFeed
 
 export async function addPost(req: IReq, res: IRes) {
@@ -30,6 +31,7 @@ export async function addPost(req: IReq, res: IRes) {
   res.status(201).json(post);
 }
 
+
 async function uploadImgsIfPresent(
   imgs: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined
 ) {
@@ -40,6 +42,7 @@ async function uploadImgsIfPresent(
   console.log(result);
 }
 
+
 async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, posterId: string) {
   const userToPostToId = userToPostTo.id;
 
@@ -47,6 +50,7 @@ async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, poste
     throw new ForbiddenErr("posting to this user's wall is not allowed");
   }
 }
+
 
 export async function getPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
@@ -56,6 +60,7 @@ export async function getPost(req: IReq, res: IRes) {
 
   res.status(200).json(post);
 }
+
 
 export async function getUserPosts(req: IReq, res: IRes) {
   const { profilePath: profilePathToGetPostsFrom } = req.params;
@@ -68,6 +73,7 @@ export async function getUserPosts(req: IReq, res: IRes) {
   const posts = await Post.find({ createdBy: user.id });
   res.status(200).json(posts);
 }
+
 
 export async function deleteUserPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
@@ -84,6 +90,7 @@ export async function deleteUserPost(req: IReq, res: IRes) {
   const deletedPost = await Post.findByIdAndDelete(post.id);
   res.status(200).json(deletedPost);
 }
+
 
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;

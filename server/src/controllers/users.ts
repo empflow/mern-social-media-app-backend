@@ -4,10 +4,12 @@ import friendProjection from "../utils/projections/friendProjection";
 import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 export async function getUsers(req: IReq, res: IRes) {
   const users = await User.find({}, userProjection);
   res.status(200).json(users);
 }
+
 
 export async function getUser(req: IReq, res: IRes) {
   const { profilePath } = req.params;
@@ -16,12 +18,14 @@ export async function getUser(req: IReq, res: IRes) {
   res.status(200).json(user);
 }
 
+
 export async function getUserById(req: IReq, res: IRes) {
   const { userId } = req.params;
   const user = await User.findById(userId, userProjection);
   if (!user) throw new NotFoundErr("user not found");
   res.status(200).json(user);
 }
+
 
 export async function getUserFriends(req: IReq, res: IRes) {
   const { profilePath } = req.params;

@@ -9,6 +9,7 @@ import { HydratedDocument } from "mongoose";
 import userProjection from "../utils/projections/userProjection";
 import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
 
+
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: receiverId } = req.params;
   const senderId: string = req.data.user.userId;
@@ -23,11 +24,13 @@ export async function validateSendingFriendRequest(req: IReq, res: IRes, next: N
   next();
 }
 
+
 function validateIds(senderId: string, receiverId: string) {
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot send a friend request to yourself");
   }
 }
+
 
 function validateSenderAndReceiver(
   sender: HydratedDocument<IUser> | null, receiver: HydratedDocument<IUser> | null
@@ -49,6 +52,7 @@ function validateSenderAndReceiver(
     isReqAlreadySent, isReqAlreadySentByReceiver, isFriendAlreadyAdded
   )
 }
+
 
 function throwIfNeeded(
   isReqAlreadySent: boolean,

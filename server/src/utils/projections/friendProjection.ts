@@ -1,5 +1,6 @@
 import { IUser } from "../../models/User";
 
+
 const friendProjection: Partial<Record<keyof IUser, number>> = {
   firstName: 1,
   lastName: 1,
@@ -7,5 +8,6 @@ const friendProjection: Partial<Record<keyof IUser, number>> = {
   avatarUrl100px: 1,
   profilePath: 1
 }
+
 
 export default friendProjection;

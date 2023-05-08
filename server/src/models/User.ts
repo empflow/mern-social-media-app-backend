@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { friendsValidator } from "./validators";
 import getEnvVar from "../utils/getEnvVar";
 
+
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export const maxLengths: Record<string, any> = {
@@ -47,9 +48,11 @@ export interface IUser {
   updatedAt: string
 }
 
+
 const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
 const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
 const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
+
 
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },

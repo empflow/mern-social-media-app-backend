@@ -5,6 +5,7 @@ import validateRejectingFriendRequest from "../middleware/validateRejectingFrien
 import { validateSendingFriendRequest } from "../middleware/validateSendingFriendRequest";
 const router = express.Router();
 
+
 router.get("/", getOwnAccount);
 router.patch("/", patchAccount);
 router.delete("/", deleteAccount);

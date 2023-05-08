@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import getEnvVar from "./getEnvVar";
 dotenv.config();
 
+
 export default function getMongoUrl() {
   const NODE_ENV = getEnvVar("NODE_ENV");
   const DEV_MONGO_URL = getEnvVar("DEV_MONGO_URL");

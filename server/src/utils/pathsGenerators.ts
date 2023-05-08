@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 
+
 export function getRandomProfilePath() {
   const randomCharsLength = 9;
   return `user-${nanoid(randomCharsLength)}`;

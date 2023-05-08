@@ -5,6 +5,7 @@ import { MongoError } from "mongodb";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import isErrCausedByUser from "../utils/isErrCausedByUser";
 
+
 export type TErr = TApiErrs | Error | MongoError | SyntaxError;
 
 interface IErrObject {
@@ -12,6 +13,7 @@ interface IErrObject {
   code?: number,
   duplicates?: string[]
 }
+
 
 export default function errHandler(
   err: TErr, req: IReq, res: IRes, next: NextFunction

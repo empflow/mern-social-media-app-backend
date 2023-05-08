@@ -3,6 +3,7 @@ import path from "node:path";
 import { BadRequestErr } from "../utils/errs";
 import multer from "multer";
 
+
 const multerOptions: Options = {
   fileFilter(req, file, callback) {
     const fileExt = path.extname(file.originalname);
@@ -19,8 +20,9 @@ const multerOptions: Options = {
   }
 }
 
-const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 
+
+const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 function getFormattedAllowedFileExts() {
   let result = "";
   allowedFileExts.forEach((ext, i) => (
@@ -29,6 +31,7 @@ function getFormattedAllowedFileExts() {
   
   return result;
 }
-  
+
+
 export const upload = multer(multerOptions);
 export default multerOptions;

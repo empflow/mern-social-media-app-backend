@@ -8,6 +8,7 @@ import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
 
+
 export default async function validateAcceptingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: senderId } = req.params;
   const receiverId = req.data.user.userId;
@@ -22,11 +23,13 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
   next();
 }
 
+
 function validateIds(senderId: string, receiverId: string) {
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot accept a friend request from yourself");
   }
 }
+
 
 function validateSenderAndReceiver(
   sender: HydratedDocument<IUser> | null, receiver: HydratedDocument<IUser> | null
