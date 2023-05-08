@@ -75,29 +75,8 @@ describe("posts", () => {
         })
       })
 
-      describe("given 1 .jpeg image and no text content", () => {
-        it("returns 201 created and image url and tiny preview url", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
-          const { body, statusCode } = await requests(app)
-            .post(`/users/${user1.profilePath}/posts`)
-            .attach("imgs", imgPath)
-            .set("Authorization", authHeader1);
-
-          expect(statusCode).toBe(201);
-          expect(body.onUser).toBe(user1.id);
-          expect(body.createdBy).toBe(user1.id);
-          expect(body.tinyPreview).toMatch(/https:\/\//);
-          expect(body.imgs.length).toBe(1);
-          expect(body.imgs[0].fullSize).toMatch(/https:\/\//);
-          expect(body.imgs[0].feedSize).toMatch(/https:\/\//);
-          expect(body.imgs[0].previewSize).toMatch(/https:\/\//);
-          expect(body.content).toBe(null);
-          expect(body.comments).toEqual([]);
-          expect(body.vids).toEqual([]);
-          const { views, likes, dislikes, shares } = body;
-          expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
-        })
-      })
+      given1JpegImgAndPossiblyNoTextContent("this is the content");
+      given1JpegImgAndPossiblyNoTextContent(undefined);
 
       describe("given 10 .jpeg images an no text content", () => {
         it("returns 201 created an 10 image urls and tiny preview url", async () => {
@@ -131,7 +110,7 @@ describe("posts", () => {
           expect(body.vids).toEqual([]);
           const { views, likes, dislikes, shares } = body;
           expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
-        })
+        }, 10000)
       })
     })
   })
@@ -154,4 +133,37 @@ async function create2Users() {
 
 function getAuthHeadersFor2Users(user1: HydratedDocument<IUser>, user2: HydratedDocument<IUser>) {
   return [getAuthHeader(user1.id), getAuthHeader(user2.id)]
+}
+
+function given1JpegImgAndPossiblyNoTextContent(textContent: string | undefined) {
+  describe(`given 1 .jpeg image and ${textContent ? " " : "no"}text content`, () => {
+    it("returns 201 created and image url and tiny preview url", async () => {
+      const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+      const request = requests(app)
+        .post(`/users/${user1.profilePath}/posts`)
+        .attach("imgs", imgPath)
+        .set("Authorization", authHeader1);
+        if (textContent) request.field("content", textContent);
+
+      const { body, statusCode } = await request;
+
+      expect(statusCode).toBe(201);
+      expect(body.onUser).toBe(user1.id);
+      expect(body.createdBy).toBe(user1.id);
+      expect(body.tinyPreview).toMatch(/https:\/\//);
+      expect(body.imgs.length).toBe(1);
+      expect(body.imgs[0].fullSize).toMatch(/https:\/\//);
+      expect(body.imgs[0].feedSize).toMatch(/https:\/\//);
+      expect(body.imgs[0].previewSize).toMatch(/https:\/\//);
+      if (textContent) {
+        expect(body.content).toBe(textContent);
+      } else {
+        expect(body.content).toBe(null);
+      }
+      expect(body.comments).toEqual([]);
+      expect(body.vids).toEqual([]);
+      const { views, likes, dislikes, shares } = body;
+      expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
+    })
+  })
 }
