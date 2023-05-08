@@ -63,6 +63,17 @@ describe("posts", () => {
           expect(body.vids).toEqual([]);
         })
       })
+
+      describe("not given anything", () => {
+        it("returns 400 bad request", async () => {
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", authHeader1);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(/no content/);
+        })
+      })
     })
   })
 })

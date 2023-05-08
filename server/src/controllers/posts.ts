@@ -1,7 +1,7 @@
 import { Document, HydratedDocument } from "mongoose";
 import Post from "../models/Post";
 import User, { IUser } from "../models/User";
-import { ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
+import { BadRequestErr, ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
 import optimizeAndUploadPostImgs from "../utils/optimizeAndUploadPostImgs";
 import { getPostPath } from "../utils/pathsGenerators";
@@ -15,13 +15,15 @@ export async function addPost(req: IReq, res: IRes) {
   const { content } = req.body;
   const createdBy: string = req.data.user.userId;
 
+  checkIfAnyContentIsProvided(req);
+
   const userToPostTo = await User.findOne({ profilePath });
   if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-
+  await checkIfAllowedToPost(userToPostTo, createdBy);
+  
   const poster = await User.findById(createdBy);
   if (!poster) throw new NotFoundErr("poster not found");
 
-  await checkIfAllowedToPost(userToPostTo, createdBy);
   const { tinyPreview, imgs } = await uploadImgsIfPresent(req.files);
 
   const postPath = getPostPath(content);
@@ -31,6 +33,13 @@ export async function addPost(req: IReq, res: IRes) {
 
   await post.save();
   res.status(201).json(post);
+}
+
+
+function checkIfAnyContentIsProvided(req: IReq) {
+  if (!req.body.content && !req.file && !req.files) {
+    throw new BadRequestErr("no content was provided");
+  }
 }
 
 
