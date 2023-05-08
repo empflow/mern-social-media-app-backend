@@ -29,7 +29,7 @@ const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
 const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
 const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
-export const userDataForModel = getUserDataForModel();
+const userDataForModel = getUserDataForModel();
 
 describe("auth", () => {
   let mongod: MongoMemoryServer;
