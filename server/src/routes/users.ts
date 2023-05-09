@@ -5,9 +5,9 @@ import { getUser, getUsers } from "../controllers/users";
 const router = express.Router();
 import { upload } from "../config/multer";
 import uploadArray from "../utils/handleMulterUpload";
+import { imgsLimit, vidsLimit } from "../models/Post";
 
 
-const imgsLimit = 10;
 const uploadMw = upload.array("imgs", imgsLimit);
 
 router.get("/", getUsers);

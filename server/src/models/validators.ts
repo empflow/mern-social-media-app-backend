@@ -1,3 +1,6 @@
+import { imgsLimit, vidsLimit } from "./Post";
+
+
 export function friendsValidator(friends: object[]) {
   const len = friends.length;
   const msg = "this person already exists in the list of your friends";
@@ -14,18 +17,16 @@ export function friendsValidator(friends: object[]) {
 
 
 export function imageAttachmentsValidator(urls: string[]) {
-  const limit = 10;
-  const msg = `you cannot upload more than ${limit} images in a single comment`;
+  if (urls.length <= imgsLimit) return true;
 
-  if (urls.length <= limit) return true;
+  const msg = `you cannot upload more than ${imgsLimit} images in a single post`;
   return msg;
 }
 
 
 export function videoAttachmentsValidator(urls: string[]) {
-  const limit = 2;
-  const msg = `you cannot upload more than ${limit} videos in a single comment`;
+  if (urls.length <= vidsLimit) return true;
 
-  if (urls.length <= limit) return true;
+  const msg = `you cannot upload more than ${vidsLimit} videos in a single post`;
   return msg;
 }

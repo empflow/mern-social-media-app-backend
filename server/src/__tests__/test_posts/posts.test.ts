@@ -42,7 +42,7 @@ describe("posts", () => {
 
     describe("given own auth header (creating post on own wall)", () => {
       describe("given text content", () => {
-        it("returns 201 and post", async () => {
+        it("returns 201 and post and text content", async () => {
           const textContent = "foo bar";
 
           const { body, statusCode } = await requests(app)
