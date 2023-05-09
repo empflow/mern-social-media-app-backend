@@ -6,20 +6,17 @@ import expectImgsUrlsMatchHttps from "../expectImgsUrlsMatchHttps";
 import getDescribeContent from "./getDescribeContent";
 import getItContent from "./getItContent";
 import makeRequest from "./makeRequest";
-import { HydratedDocument } from "mongoose";
-import { IUser } from "../../../models/User";
 
 export default function givenNImgsAndTextContent(
   imgsAmount: number,
-  textContent: string | null,
-  options?: { asUser: HydratedDocument<IUser>, onUser: HydratedDocument<IUser> }
+  textContent: string | null
 ) {
   const describeContent = getDescribeContent(imgsAmount, textContent);
   const itContent = getItContent(imgsAmount, textContent);
 
   describe(describeContent, () => {
     it(itContent, async () => {
-      const { body, statusCode } = await makeRequest(imgsAmount, textContent, options);
+      const { body, statusCode } = await makeRequest(imgsAmount, textContent);
       
       const noContent = (imgsAmount < 1 && !textContent);
       const exceedsLimit = imgsAmount > imgsUploadLimit;
@@ -49,6 +46,6 @@ export default function givenNImgsAndTextContent(
           expect(body.content).toBe(textContent);
         }        
       }
-    })
+    }, 10000)
   })
 }

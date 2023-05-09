@@ -5,7 +5,6 @@ export default function getDescribeContent(imgsAmount: number, textContent: stri
 
   if (noContent) return "not given any content";
 
-  console.log(imgsAmount, textContent);
   if (imgsAmount < 1) content = "not given any imgs";
   else content = `given ${imgsAmount} .jpeg image${wordEnding}`;
 

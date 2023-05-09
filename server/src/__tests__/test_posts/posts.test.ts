@@ -20,6 +20,7 @@ export let authHeader1: string;
 export let authHeader2: string;
 export let user1: HydratedDocument<IUser>;
 export let user2: HydratedDocument<IUser>;
+export let userWithRestrictedPosting: HydratedDocument<IUser>;
 
 let mongod: MongoMemoryServer;
 
@@ -43,8 +44,8 @@ describe("posts", () => {
       })
     });
 
+    const content = "this is the content";
     describe("given own auth header (creating post on own wall)", () => {
-      const content = "this is the content";
       givenNImgsAndTextContent(0, null);
       
       givenNImgsAndTextContent(0, content);
@@ -66,18 +67,26 @@ describe("posts", () => {
 
 async function beforeAllCb() {
   mongod = await dbConnSetup();
-  [user1, user2] = await create2Users();
-  [authHeader1, authHeader2] = getAuthHeadersFor2Users(user1, user2);
+  
+  [user1, user2] = await createNUsers(2);
+  [userWithRestrictedPosting] = await createNUsers(1, { canAnyonePost: false });
+  [authHeader1, authHeader2] = getAuthHeadersForUsers(user1, user2);
 }
 
 
-async function create2Users() {
-  return Promise.all([
-    await User.create(getUserDataForModel()),
-    await User.create(getUserDataForModel())
-  ])
+async function createNUsers(
+  amount: number,
+  customModelData: Partial<IUser> = {}
+) {
+  const promises = [];
+  for (let i = 0; i < amount; i++) {
+    promises.push(User.create({ ...getUserDataForModel(), ...customModelData }));
+  }
+
+  return Promise.all(promises);
 }
 
-function getAuthHeadersFor2Users(user1: HydratedDocument<IUser>, user2: HydratedDocument<IUser>) {
-  return [getAuthHeader(user1.id), getAuthHeader(user2.id)]
+
+function getAuthHeadersForUsers(...users: HydratedDocument<IUser>[]) {
+  return users.map(user => getAuthHeader(user.id));
 }
