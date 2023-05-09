@@ -6,6 +6,7 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
 import getAuthHeader from "../utils/getToken";
 import Post from "../../models/Post";
+import { imgsUploadLimit, vidsUploadLimit } from "../../utils/s3";
 import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import { HydratedDocument } from "mongoose";
@@ -77,59 +78,87 @@ describe("posts", () => {
         })
       })
 
-      given1JpegImgAndPossiblyNoTextContent("this is the content");
-      given1JpegImgAndPossiblyNoTextContent(undefined);
+      givenNImgsAndTextContent(1, "this is the content");
+      givenNImgsAndTextContent(1, null);
 
-      describe("given 10 .jpeg images and no text content", () => {
-        it("returns 201 created an 10 image urls and tiny preview url", async () => {
-          
-          const { body, statusCode } = await requests(app)
-            .post(`/users/${user1.profilePath}/posts`)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .attach("imgs", jpegImgPath)
-            .set("Authorization", authHeader1);
+      givenNImgsAndTextContent(10, "this is the content");
+      givenNImgsAndTextContent(10, null);
 
-          expect(statusCode).toBe(201);
-          expect(body.onUser).toBe(user1.id);
-          expect(body.createdBy).toBe(user1.id);
-          expect(body.tinyPreview).toMatch(/https:\/\//);
-          expect(body.imgs.length).toBe(10);
-          body.imgs.forEach((img: IImgUploadResult) => {
-            expect(img.fullSize).toMatch(/https:\/\//);
-            expect(img.feedSize).toMatch(/https:\/\//);
-            expect(img.previewSize).toMatch(/https:\/\//);
-          });
-          expect(body.content).toBe(null);
-          expect(body.comments).toEqual([]);
-          expect(body.vids).toEqual([]);
-          const { views, likes, dislikes, shares } = body;
-          expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
-        }, 10000)
-      })
-
-      describe("given 11 .jpeg images", () => {
-        it("returns 400 bad request and message", async () => {
-          const request = requests(app)
-            .post(`/users/${user1.profilePath}/posts`)
-            .set("Authorization", authHeader1);
-            for (let i = 0; i < 11; i++) request.attach("imgs", jpegImgPath);
-          const { body, statusCode } = await request;
-          
-          expect(statusCode).toBe(400);
-          expect(body.message).toMatch("you've exceeded the limit of 10 images per post");
-        })
-      })
+      givenNImgsAndTextContent(11, "this is the content");
+      givenNImgsAndTextContent(11, null);
     })
   })
 })
+
+
+function givenNImgsAndTextContent(imgsAmount: number, textContent: string | null) {
+  let describeContent = getDescribeContent();
+  let itContent = getItContent();
+
+  describe(describeContent, () => {
+    it(itContent, async () => {
+      const request = requests(app)
+        .post(`/users/${user1.profilePath}/posts`)
+        .set("Authorization", authHeader1);
+
+      if (textContent) request.field("content", textContent);
+
+      for (let i = 0; i < imgsAmount; i++) {
+        request.attach("imgs", jpegImgPath);
+      }
+
+      const { body, statusCode } = await request;
+      const isLimitExceeded = imgsAmount > imgsUploadLimit;
+
+      if (isLimitExceeded) {
+        expect(statusCode).toBe(400);
+        const expectRegex = `you've exceeded the limit of ${imgsUploadLimit} images per post`;
+        expect(body.message).toMatch(new RegExp(expectRegex));
+      } else {
+        expect(statusCode).toBe(201);
+        expectMetadataToBeZero(body);
+        expectPostIsOnCreatorsWall(body, user1);
+        if (textContent) {
+          expect(body.content).toBe(textContent);
+        }
+      }
+    })
+  })
+
+  function getDescribeContent() {
+    const wordEnding = imgsAmount > 1 ? "s" : "";
+    let content = `given ${imgsAmount} .jpeg image${wordEnding}`;
+    if (textContent) content += " and text content";
+
+    return content;
+  }
+
+  function getItContent() {
+    const wordEnding = imgsAmount > 1 ? "s" : "";
+    let content: string;
+
+    if (imgsAmount <= imgsUploadLimit) {
+      content = `returns 201 created and img${wordEnding} url${wordEnding}`;
+      if (textContent) content += " and textContent";
+    } else {
+      content = `returns 400 bad request because img limit of ${imgsUploadLimit} was exceeded`;
+    }
+
+    return content;
+  }
+}
+
+
+function expectPostIsOnCreatorsWall(body: any, user: HydratedDocument<IUser>) {
+  expect(body.onUser).toBe(user.id);
+  expect(body.createdBy).toBe(user.id);
+}
+
+
+function expectMetadataToBeZero(body: any) {
+  const { views, likes, dislikes, shares } = body;
+  expect([views, likes, dislikes, shares]).toEqual([0, 0, 0, 0]);
+}
 
 
 async function beforeAllCb() {
@@ -150,7 +179,7 @@ function getAuthHeadersFor2Users(user1: HydratedDocument<IUser>, user2: Hydrated
   return [getAuthHeader(user1.id), getAuthHeader(user2.id)]
 }
 
-function given1JpegImgAndPossiblyNoTextContent(textContent: string | undefined) {
+function given1JpegImgAndPossiblyNoTextContent(textContent: string | null) {
   describe(`given 1 .jpeg image and ${textContent ? " " : "no"}text content`, () => {
     it("returns 201 created and image url and tiny preview url", async () => {
       const request = requests(app)

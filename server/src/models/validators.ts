@@ -1,4 +1,4 @@
-import { imgsLimit, vidsLimit } from "./Post";
+import { imgsUploadLimit as imgsLimit, vidsUploadLimit as vidsLimit } from "../utils/s3";
 
 
 export function friendsValidator(friends: object[]) {

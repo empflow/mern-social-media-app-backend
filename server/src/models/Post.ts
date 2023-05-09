@@ -33,8 +33,6 @@ const ImgsSchema = new Schema<IImgs>({
   previewSize: { type: String, required: true }
 }, { _id: false });
 
-export const imgsLimit = 10;
-export const vidsLimit = 2;
 
 const PostSchema = new Schema<IPost>({
   onUser: {
