@@ -3,7 +3,6 @@ MERN social media app
 .env variables required to run:<br />
 
 DEV_MONGO_URL=mongo url<br />
-TEST_MONGO_URL=works fastest with 'mongodb://localhost:27017'<br />
 PROD_MONGO_URL=mongo url<br />
 
 JWT_SECRET=this is like a password. Better make it long and random><br />
