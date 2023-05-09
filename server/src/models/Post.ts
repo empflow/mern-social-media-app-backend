@@ -8,8 +8,8 @@ export interface IPost {
   content: null | string,
   postPath: string,
   tinyPreview: string,
-  imgs: { fullSize: string, previewSize: string, feedSize: string }[],
-  vids: { preview: string, vid: string }[],
+  imgs: IImg[],
+  vids: IVid[],
   views: number,
   likes: number,
   dislikes: number,
@@ -19,15 +19,20 @@ export interface IPost {
   updatedAt: Date
 }
 
-interface IImgs {
+export interface IImg {
   fullSize: string,
   previewSize: string,
   feedSize: string
 }
 
+export interface IVid {
+  preview: string,
+  vid: string
+}
 
-// imgs subdocuments
-const ImgsSchema = new Schema<IImgs>({
+
+// imgs subdocuments (also used for Comment schema)
+export const ImgsSchema = new Schema<IImg>({
   fullSize: { type: String, required: true },
   feedSize: { type: String, required: true },
   previewSize: { type: String, required: true }

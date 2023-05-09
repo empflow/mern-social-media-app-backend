@@ -1,5 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { Schema } from "mongoose";
+import { IImg, ImgsSchema, IVid } from "./Post";
+import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
 
 export interface IComment {
@@ -9,8 +11,8 @@ export interface IComment {
   likes: number,
   dislikes: number,
   replyTo: null | Types.ObjectId,
-  imageAttachments: string[],
-  videoAttachments: string[],
+  imgs: IImg[],
+  vids: IVid[],
   createdAt: Date,
   updatedAt: Date
 }
@@ -37,14 +39,16 @@ const CommentSchema = new Schema<IComment>({
     type: Schema.Types.ObjectId,
     ref: "Comment"
   },
-  imageAttachments: {
-    type: [String],
+  imgs: {
+    type: [ImgsSchema],
+    validate: imageAttachmentsValidator,
     default: []
   },
-  videoAttachments: {
-    type: [String],
+  vids: {
+    type: [{ preview: String, vid: String }],
+    validate: videoAttachmentsValidator,
     default: []
-  }
+  },
 }, { timestamps: true });
 
 
