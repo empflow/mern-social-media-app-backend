@@ -5,11 +5,11 @@ import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
 interface IOptimizeAndUploadPostImgsReturnType {
   tinyPreview: string | undefined,
-  imgs: IImgUploadResult[] | undefined
+  imgs: IPostImgUploadResult[] | undefined
 }
 
 
-export interface IImgUploadResult {
+export interface IPostImgUploadResult {
   fullSize: string,
   feedSize: string,
   previewSize: string
