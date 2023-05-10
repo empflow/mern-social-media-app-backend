@@ -1,5 +1,4 @@
-import path from "node:path";
-import supertest, { Response, SuperTest } from "supertest";
+import supertest from "supertest";
 
 export default async function attachNFiles(
   field: string,
@@ -10,6 +9,6 @@ export default async function attachNFiles(
   for (let i = 0; i < amount; i++) {
     reqToAttachFilesTo.attach(field, absoluteFilePath);
   }
-  
+
   return reqToAttachFilesTo;
 }

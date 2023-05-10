@@ -10,7 +10,6 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
   const update = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
-  // TODO: check if profilePath is available
   const userId: string = req.data.user.userId;
   const patchedAccount = await findDocByIdAndUpdate(
     User, userId, update, userProjection
