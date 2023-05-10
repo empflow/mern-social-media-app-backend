@@ -5,7 +5,7 @@ MERN social media app
 DEV_MONGO_URL=mongo url<br />
 PROD_MONGO_URL=mongo url<br />
 
-JWT_SECRET=this is like a password. Better make it long and random><br />
+JWT_SECRET=this is like a password. Better make it long and random<br />
 JWT_EXPIRES_IN='30d' or something similar<br />
 
 the default avatar url used if the user hasn't uploaded one
