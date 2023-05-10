@@ -1,10 +1,10 @@
-import { findDocsByIds } from "../utils/findDocs";
-import User from "../models/User";
-import { IReq, IRes } from "../utils/reqResInterfaces";
+import { findDocsByIds } from "../../utils/findDocs";
+import User from "../../models/User";
+import { IReq, IRes } from "../../utils/reqResInterfaces";
 import { NextFunction } from "express";
-import { ForbiddenErr, NotFoundErr } from "../utils/errs";
-import userProjection from "../utils/projections/userProjection";
-import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
+import { ForbiddenErr, NotFoundErr } from "../../utils/errs";
+import userProjection from "../../utils/projections/userProjection";
+import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
 
 
 export default async function validateRejectingFriendRequest(

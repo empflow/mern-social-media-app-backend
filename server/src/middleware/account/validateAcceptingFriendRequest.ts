@@ -1,12 +1,12 @@
 import { NextFunction } from "express";
 import { HydratedDocument } from "mongoose";
-import User, { IUser } from "../models/User";
-import arrToString from "../utils/arrToString";
-import { ConflictErr, ForbiddenErr, NotFoundErr } from "../utils/errs";
-import { findDocsByIds } from "../utils/findDocs";
-import idExistsInIdsArr from "../utils/idAlreadyExistsInArrayOfIds";
-import { IReq, IRes } from "../utils/reqResInterfaces";
-import findFriendInFriendRequestsContext from "../utils/reqs/findFriendInFriendRequestsContext";
+import User, { IUser } from "../../models/User";
+import arrToString from "../../utils/arrToString";
+import { ConflictErr, ForbiddenErr, NotFoundErr } from "../../utils/errs";
+import { findDocsByIds } from "../../utils/findDocs";
+import idExistsInIdsArr from "../../utils/idAlreadyExistsInArrayOfIds";
+import { IReq, IRes } from "../../utils/reqResInterfaces";
+import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
 
 
 export default async function validateAcceptingFriendRequest(req: IReq, res: IRes, next: NextFunction) {

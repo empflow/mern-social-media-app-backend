@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
-import User from "../models/User";
-import { BadRequestErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
-import { IReq, IRes } from "../utils/reqResInterfaces";
+import User from "../../models/User";
+import { BadRequestErr, NotFoundErr, UnauthorizedErr } from "../../utils/errs";
+import { IReq, IRes } from "../../utils/reqResInterfaces";
 
 
 export async function validateSignInCredentials(req: IReq, res: IRes, next: NextFunction) {

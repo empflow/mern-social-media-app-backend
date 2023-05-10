@@ -1,9 +1,9 @@
 import express from "express";
 import { acceptFriendRequest, deleteAccount, deleteFriend, getOwnAccount, patchAccount, rejectFriendRequest, sendFriendRequest } from "../controllers/account";
-import checkProfilePathAvailable from "../middleware/isProfilePathAvailable";
-import validateAcceptingFriendRequest from "../middleware/validateAcceptingFriendRequest";
-import validateRejectingFriendRequest from "../middleware/validateRejectingFriendRequest";
-import { validateSendingFriendRequest } from "../middleware/validateSendingFriendRequest";
+import checkProfilePathAvailable from "../middleware/account/checkProfilePathAvailable";
+import validateAcceptingFriendRequest from "../middleware/account/validateAcceptingFriendRequest";
+import validateRejectingFriendRequest from "../middleware/account/validateRejectingFriendRequest";
+import { validateSendingFriendRequest } from "../middleware/account/validateSendingFriendRequest";
 const router = express.Router();
 
 

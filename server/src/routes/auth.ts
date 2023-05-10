@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import { signUp, signIn } from "../controllers/auth";
-import { validateSignInCredentials } from "../middleware/validateSignInCredentials";
+import { validateSignInCredentials } from "../middleware/auth/validateSignInCredentials";
 import { upload } from "../config/multer";
 
 
