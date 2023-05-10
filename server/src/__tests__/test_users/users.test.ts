@@ -2,7 +2,7 @@ import requests from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
-import getAuthHeader from "../utils/getToken";
+import getAuthHeader from "../utils/getAuthHeader";
 import getSignUpData from "../utils/getSignUpData";
 import User from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";

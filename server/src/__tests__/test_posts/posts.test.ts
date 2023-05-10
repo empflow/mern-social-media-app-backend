@@ -4,7 +4,7 @@ import requests from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
-import getAuthHeader from "../utils/getToken";
+import getAuthHeader from "../utils/getAuthHeader";
 import Post from "../../models/Post";
 import { imgsUploadLimit, vidsUploadLimit } from "../../utils/s3";
 import User, { IUser } from "../../models/User";
@@ -16,6 +16,8 @@ import expectImgsUrlsMatchHttps from "./expectImgsUrlsMatchHttps";
 import givenNImgsAndTextContent from "./givenNImgsAndTextContent/givenNImgsAndTextContent";
 import expectMetadataToBeZero from "./expectMetadataToBeZero";
 import attachNFiles from "../utils/attachNImgs";
+import createNUsers from "../utils/createNUsers";
+import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 
 
 export let user1: HydratedDocument<IUser>;
@@ -283,22 +285,4 @@ async function beforeAllCb() {
   [
     user1AuthHeader, user2AuthHeader, userWithRestrictedPostingAuthHeader
   ] = getAuthHeadersForUsers(user1, user2, userWithRestrictedPosting);
-}
-
-
-async function createNUsers(
-  amount: number,
-  customModelData: Partial<IUser> = {}
-) {
-  const promises = [];
-  for (let i = 0; i < amount; i++) {
-    promises.push(User.create({ ...getUserDataForModel(), ...customModelData }));
-  }
-
-  return Promise.all(promises);
-}
-
-
-function getAuthHeadersForUsers(...users: HydratedDocument<IUser>[]) {
-  return users.map(user => getAuthHeader(user.id));
 }
