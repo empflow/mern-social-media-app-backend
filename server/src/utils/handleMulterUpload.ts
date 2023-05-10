@@ -3,7 +3,7 @@ import { BadRequestErr } from "./errs";
 import express from "express";
 
 
-export default function handleMulterUploadArray(
+export default function handleMulterUpload(
   uploadMw: express.RequestHandler, limit?: number
 ): express.RequestHandler {
   return function (req, res, next) {
