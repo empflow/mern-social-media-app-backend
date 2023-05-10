@@ -5,10 +5,7 @@ import corsConf from "../config/cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { IReq, IRes } from "../utils/reqResInterfaces";
-import path from "node:path";
 
-
-const uploadsPath = path.join(__dirname, "../../uploads");
 
 router.use(setDataPropertyOnReqObject);
 router.use(express.json({ limit: "5mb" }));
@@ -17,7 +14,6 @@ router.use(cors(corsConf));
 router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 router.use(morgan("dev"));
-router.use("/uploads", express.static(uploadsPath));
 
 
 // make sure req.data is not undefined
