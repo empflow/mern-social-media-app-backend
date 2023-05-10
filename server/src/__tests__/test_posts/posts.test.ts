@@ -198,7 +198,7 @@ describe("posts", () => {
       })
 
       // i don't think i should check that it's handling the images as expected so many fucking times
-      describe("posting on own wall when others aren't allowed to post(no images)", () => {
+      describe("posting on own wall when others aren't allowed to post (no images)", () => {
         it("returns 201 created", async () => {
           const { body, statusCode } = await requests(app)
             .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
@@ -210,6 +210,64 @@ describe("posts", () => {
           expect(body.createdBy).toBe(userWithRestrictedPosting.id);
           expect(body.onUser).toBe(userWithRestrictedPosting.id);
           expect([body.imgs, body.vids]).toEqual([[], []]);
+        }, 10000)
+      })
+
+      describe("posting on own wall when others aren't allowed to post (1 image)", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 1;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", userWithRestrictedPostingAuthHeader)
+            .field("content", textContent);
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(201);
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(userWithRestrictedPosting.id);
+          expect(body.onUser).toBe(userWithRestrictedPosting.id);
+          expect(body.vids).toEqual([]);
+          expect(body.imgs.length).toBe(imgsAmount);
+          expectImgsUrlsMatchHttps(body, imgsAmount);
+        }, 10000)
+      })
+
+      describe("posting on own wall when others aren't allowed to post (10 images)", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 10;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", userWithRestrictedPostingAuthHeader)
+            .field("content", textContent);
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(201);
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(userWithRestrictedPosting.id);
+          expect(body.onUser).toBe(userWithRestrictedPosting.id);
+          expect(body.vids).toEqual([]);
+          expect(body.imgs.length).toBe(imgsAmount);
+          expectImgsUrlsMatchHttps(body, imgsAmount);
+        }, 10000)
+      })
+
+      describe("posting on own wall when others aren't allowed to post (11 images)", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 11;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", userWithRestrictedPostingAuthHeader)
+            .field("content", textContent);
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(new RegExp(imgsLimitExceededMsgMatch));
         }, 10000)
       })
     })
