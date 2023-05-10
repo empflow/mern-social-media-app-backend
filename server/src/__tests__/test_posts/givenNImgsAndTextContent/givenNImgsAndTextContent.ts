@@ -1,4 +1,4 @@
-import { authHeader1, jpegImgPath, user1 } from "../posts.test";
+import { user1AuthHeader, jpegImgPath, user1 } from "../posts.test";
 import { imgsUploadLimit } from "../../../utils/s3";
 import expectMetadataToBeZero from "../expectMetadataToBeZero";
 import expectPostIsOnCreatorsWall from "../expectPostIsOnCreatorsWall";

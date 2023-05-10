@@ -14,17 +14,21 @@ import path from "node:path";
 import { IImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
 import expectImgsUrlsMatchHttps from "./expectImgsUrlsMatchHttps";
 import givenNImgsAndTextContent from "./givenNImgsAndTextContent/givenNImgsAndTextContent";
+import expectMetadataToBeZero from "./expectMetadataToBeZero";
+import attachNFiles from "../utils/attachNImgs";
 
 
-export let authHeader1: string;
-export let authHeader2: string;
 export let user1: HydratedDocument<IUser>;
 export let user2: HydratedDocument<IUser>;
 export let userWithRestrictedPosting: HydratedDocument<IUser>;
+export let user1AuthHeader: string;
+export let user2AuthHeader: string;
+export let userWithRestrictedPostingAuthHeader: string;
 
 let mongod: MongoMemoryServer;
 
 export const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
+const imgsLimitExceededMsgMatch = `you've exceeded the limit of ${imgsUploadLimit} images per post`;
 
 
 describe("posts", () => {
@@ -44,24 +48,172 @@ describe("posts", () => {
       })
     });
 
-    const content = "this is the content";
-    describe("given own auth header (creating post on own wall)", () => {
+    const textContent = "this is the content";
+    describe("creating post on own wall", () => {
       givenNImgsAndTextContent(0, null);
       
-      givenNImgsAndTextContent(0, content);
+      givenNImgsAndTextContent(0, textContent);
 
-      givenNImgsAndTextContent(1, content);
+      givenNImgsAndTextContent(1, textContent);
       givenNImgsAndTextContent(1, null);
 
-      givenNImgsAndTextContent(10, content);
+      givenNImgsAndTextContent(10, textContent);
       givenNImgsAndTextContent(10, null);
 
-      givenNImgsAndTextContent(11, content);
+      givenNImgsAndTextContent(11, textContent);
       givenNImgsAndTextContent(11, null);
     })
-  })
 
-  // TODO: write the rest of the tests
+    describe("creating post on someone else's wall", () => {
+      describe("posting on user who allows others to post (no images)", () => {
+        it("returns 201 created", async () => {
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent);
+
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(user2.id);
+          expect(body.onUser).toBe(user1.id);
+          expect([body.imgs, body.vids]).toEqual([[], []]);
+        })
+      })
+
+      describe("posting on user who allows others to post (with 1 image)", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 1;
+          const request = requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(201);
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(user2.id);
+          expect(body.onUser).toBe(user1.id);
+          expect(body.vids).toEqual([]);
+          expect(body.imgs.length).toBe(imgsAmount);
+          expectImgsUrlsMatchHttps(body, imgsAmount);
+        })
+      })
+
+      describe("posting on user who allows others to post (with 10 images)", () => {
+        it("returns 201 created", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 10;
+          const request = requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(201);
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(user2.id);
+          expect(body.onUser).toBe(user1.id);
+          expect(body.vids).toEqual([]);
+          expect(body.imgs.length).toBe(imgsAmount);
+          expectImgsUrlsMatchHttps(body, imgsAmount);
+        }, 10000)
+      })
+
+      describe("posting on user who allows others to post (with 11 images)", () => {
+        it("returns 400 bad request", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 11;
+          const request = requests(app)
+            .post(`/users/${user1.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(imgsLimitExceededMsgMatch);
+        }, 10000)
+      })
+
+      describe("posting on user who does not allow others to post (no images)", () => {
+        it("returns 403 forbidden", async () => {
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+
+          expect(statusCode).toBe(403);
+          expect(body.message).toMatch(/posting to this user's wall is not allowed/);
+        }, 10000)
+      })
+
+      describe("posting on user who does not allow others to post (with 1 image)", () => {
+        it("returns 403 forbidden", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 1;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(403);
+          expect(body.message).toMatch(/posting to this user's wall is not allowed/);
+        }, 10000)
+      })
+
+      describe("posting on user who does not allow others to post (with 10 images)", () => {
+        it("returns 403 forbidden", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 10;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(403);
+          expect(body.message).toMatch(/posting to this user's wall is not allowed/);
+        }, 10000)
+      })
+
+      describe("posting on user who does not allow others to post (with 11 images)", () => {
+        it("returns 403 forbidden", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 11;
+          const request = requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", user2AuthHeader)
+            .field("content", textContent)
+          attachNFiles("imgs", imgPath, imgsAmount, request);
+          const { body, statusCode } = await request;
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(new RegExp(imgsLimitExceededMsgMatch));
+        }, 10000)
+      })
+
+      // i don't think i should check that it's handling the images as expected so many fucking times
+      describe("posting on own wall when others aren't allowed to post(no images)", () => {
+        it("returns 201 created", async () => {
+          const { body, statusCode } = await requests(app)
+            .post(`/users/${userWithRestrictedPosting.profilePath}/posts`)
+            .set("Authorization", userWithRestrictedPostingAuthHeader)
+            .field("content", textContent)
+
+          expect(statusCode).toBe(201);
+          expectMetadataToBeZero(body);
+          expect(body.createdBy).toBe(userWithRestrictedPosting.id);
+          expect(body.onUser).toBe(userWithRestrictedPosting.id);
+          expect([body.imgs, body.vids]).toEqual([[], []]);
+        }, 10000)
+      })
+    })
+  })
 })
 
 
@@ -70,7 +222,9 @@ async function beforeAllCb() {
   
   [user1, user2] = await createNUsers(2);
   [userWithRestrictedPosting] = await createNUsers(1, { canAnyonePost: false });
-  [authHeader1, authHeader2] = getAuthHeadersForUsers(user1, user2);
+  [
+    user1AuthHeader, user2AuthHeader, userWithRestrictedPostingAuthHeader
+  ] = getAuthHeadersForUsers(user1, user2, userWithRestrictedPosting);
 }
 
 
