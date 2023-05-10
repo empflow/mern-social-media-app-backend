@@ -9,12 +9,16 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 
 export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
-  const update = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
+  const { avatarUrl400px, avatarUrl200px, avatarUrl100px } = req.data.avatarUrls ?? {};
+  const update: Partial<IUser> = {
+    firstName, lastName, email, profilePath,
+    birthday, city, occupation, status, canAnyonePost,
+    avatarUrl400px, avatarUrl200px, avatarUrl100px
+  };
   const userId: string = req.data.user.userId;
   const patchedAccount = await findDocByIdAndUpdate(
     User, userId, update, userProjection
   );
-  if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
 
