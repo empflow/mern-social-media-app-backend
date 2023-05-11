@@ -59,7 +59,9 @@ async function uploadAvatarIfPresent(
   if (file) {
     const { buffer } = file;
     const {
-      avatarUrl400px, avatarUrl200px, avatarUrl100px
+      avatarImgUpload: { Location: avatarUrl400px },
+      previewImgUpload: { Location: avatarUrl200px },
+      tinyPreviewImgUpload: { Location: avatarUrl100px },
     } = await optimizeAvatarAndUploadIn3Sizes(buffer);
 
     return { avatarUrl400px, avatarUrl200px, avatarUrl100px };

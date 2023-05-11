@@ -11,7 +11,7 @@ import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
 import { HydratedDocument } from "mongoose";
 import path from "node:path";
-import { IPostImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
+import { IImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
 import expectImgsUrlsMatchHttps from "./expectImgsUrlsMatchHttps";
 import givenNImgsAndTextContent from "./givenNImgsAndTextContent/givenNImgsAndTextContent";
 import expectMetadataToBeZero from "./expectMetadataToBeZero";

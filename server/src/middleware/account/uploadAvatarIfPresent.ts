@@ -5,7 +5,12 @@ import { IReq, IRes } from "../../utils/reqResInterfaces";
 
 export default async function uploadAvatarIfPresent(req: IReq, res: IRes, next: NextFunction) {
   if (req.file) {
-    const avatarUrls = await optimizeAvatarAndUploadIn3Sizes(req.file.buffer);
+    const uploadResult = await optimizeAvatarAndUploadIn3Sizes(req.file.buffer);
+    const avatarUrls: Partial<IUser> = {
+      avatarUrl400px: uploadResult.avatarImgUpload.Location,
+      avatarUrl200px: uploadResult.previewImgUpload.Location,
+      avatarUrl100px: uploadResult.tinyPreviewImgUpload.Location,
+    };
     req.data.avatarUrls = avatarUrls;
   }
 

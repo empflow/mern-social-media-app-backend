@@ -1,14 +1,19 @@
 import { S3 } from "aws-sdk";
-import { IAvatarUrls } from "../models/User";
 import getS3FileName from "./getS3FileNames";
 import { optimizeImgForAvatar, optimizeImgForPreview, optimizeImgForTinyPreview } from "./optimizeImg";
 import { s3Upload } from "./s3";
 import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
 
+type TOptimizeAvatarAndUploadIn3SizesReturnType = {
+  avatarImgUpload: S3.ManagedUpload.SendData,
+  previewImgUpload: S3.ManagedUpload.SendData,
+  tinyPreviewImgUpload: S3.ManagedUpload.SendData,
+};
+
 export default async function optimizeAvatarAndUploadIn3Sizes(
   img: Buffer
-): Promise<IAvatarUrls> {
+): Promise<TOptimizeAvatarAndUploadIn3SizesReturnType> {
   throwIfFileSizeOverLimit(img, 8);
 
   const [avatarImg, previewImg, tinyPreviewImg] = await Promise.all([
@@ -31,9 +36,5 @@ export default async function optimizeAvatarAndUploadIn3Sizes(
     s3Upload(tinyPreviewImgName),
   ]);
 
-  return {
-    avatarUrl400px: avatarImgUpload.Location,
-    avatarUrl200px: previewImgUpload.Location,
-    avatarUrl100px: tinyPreviewImgUpload.Location
-  }
+  return { avatarImgUpload, previewImgUpload, tinyPreviewImgUpload };
 }
