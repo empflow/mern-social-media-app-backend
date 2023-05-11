@@ -48,6 +48,11 @@ export interface IUser {
   updatedAt: string
 }
 
+export interface IAvatarUrls {
+  avatarUrl400px: string,
+  avatarUrl200px: string,
+  avatarUrl100px: string
+}
 
 const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
 const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
