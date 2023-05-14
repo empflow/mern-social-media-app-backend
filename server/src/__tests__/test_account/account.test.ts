@@ -103,6 +103,7 @@ describe("account", () => {
         .attach("avatar", avatarPath);
     
       expect(statusCode).toBe(400);
+      expect(body.message).toMatch(/Forbidden file extension/);
     })
   })
 
