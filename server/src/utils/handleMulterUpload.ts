@@ -8,12 +8,14 @@ export default function handleMulterUpload(
 ): express.RequestHandler {
   return function (req, res, next) {
     uploadMw(req, res, (err) => {
-      if (!(err instanceof multer.MulterError)) return next();
+      if (!(err instanceof multer.MulterError)) return next(err);
 
       if (err.code === "LIMIT_UNEXPECTED_FILE") {
         return next(new BadRequestErr(
           `you've exceeded the limit of ${`${limit} ` ?? ""}images per post`
         ));
+      } else {
+        return next(err);
       }
     })
   }

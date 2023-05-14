@@ -7,6 +7,7 @@ import multer from "multer";
 const multerOptions: Options = {
   fileFilter(req, file, callback) {
     const fileExt = path.extname(file.originalname);
+
     if (allowedFileExts.includes(fileExt)) {
       callback(null, true);
     } else {
