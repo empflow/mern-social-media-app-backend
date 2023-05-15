@@ -105,18 +105,12 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const { content } = req.body;
-  const userId = req.data.user.userId;
 
-  const updateQuery = { content }
+  const update = { content };
   const updatedPost = await Post.findOneAndUpdate(
-    { postPath, createdBy: userId },
-    updateQuery,
+    { postPath },
+    update,
     { new: true, runValidators: true }
   );
-
-  if (!updatedPost) {
-    throw new NotFoundErr("this post was not created by you or may not exist");
-  }
-
   res.status(200).json(updatedPost);
 }
