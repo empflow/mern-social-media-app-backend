@@ -105,6 +105,26 @@ describe("auth", () => {
           expect(body.message).toBe("Unexpected field");
         })
       })
+
+      describe("given 2 avatars in the correct field", () => {
+        it("returns 400 bad request", async () => {
+          // .jpg image in an unexpected field almost always causes `write EPIPE` error (couldn't fix)
+          // so using .jpeg instead
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("avatar", imgPath)
+            .attach("avatar", imgPath);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe("Unexpected field");
+        })
+      })
     })
 
     describe("given user with this email already exists", () => {
