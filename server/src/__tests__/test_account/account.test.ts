@@ -36,7 +36,7 @@ describe("account", () => {
     })
 
     describe("given an already used profile path", () => {
-      it("returns 406 conflict", async () => {
+      it("returns 409 conflict", async () => {
         const { body, statusCode } = await requests(app)
           .patch("/account")
           .send({ profilePath: user1.profilePath })
