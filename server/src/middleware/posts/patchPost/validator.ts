@@ -3,7 +3,7 @@ import Post from "../../../models/Post";
 import { ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
-export default async function validate(req: IReq, res: IRes, next: NextFunction) {
+export default async function patchPostValidator(req: IReq, res: IRes, next: NextFunction) {
   const { postPath } = req.params;
   const userId = req.data.user.userId;
 

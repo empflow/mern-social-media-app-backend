@@ -14,17 +14,9 @@ export async function getComments(req: IReq, res: IRes) {
 
 export async function addComment(req: IReq, res: IRes) {
   const { postPath } = req.params;
-  const { replyTo, content } = req.body;
-  const userId: string = req.data.user.userId
-  if (replyTo) {
-    const hostComment = await Comment.findById(replyTo)
-    const msg = "the comment you're trying to reply to does not exist";
-    if (!hostComment) throw new NotFoundErr(msg)
-  };
+  const { content, replyTo } = req.body;
+  const { userId } = req.data.user;
 
-  const post = await Post.findOne({ postPath });
-  if (!post) throw new NotFoundErr("post not found");
-  
   const comment = await Comment.create({  
     createdBy: userId, onPost: postPath, content, replyTo
   });
