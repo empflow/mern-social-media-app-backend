@@ -10,7 +10,6 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import path from "path";
 import getEnvVar from "../../utils/getEnvVar";
-import test from "./test";
 import Post, { IPost } from "../../models/Post";
 
 let mongod: MongoMemoryServer;
@@ -31,6 +30,28 @@ describe("comments", () => {
         
         expect(statusCode).toBe(401);
         expect(body.message).toMatch(/unauthorized/);
+      })
+    })
+
+    describe("given user 1 auth header", () => {
+      describe("given text content", () => {
+        const content = "foo bar";
+        it("returns 201 created", async () => {
+          const { statusCode, body } = await requests(app)
+            .post(`/posts/${postByUser1.postPath}/comments`)
+            .send({ content })
+            .set("Authorization", user1AuthHeader);
+
+          expect(statusCode).toBe(201);
+          expect(body.createdBy).toBe(user1.id);
+          expect(body.content).toBe(content);
+          expect(body.onPost).toBe(postByUser1.postPath);
+          expect([body.likes, body.dislikes]).toEqual([0, 0]);
+          expect(body.replyTo).toBe(null);
+          expect([body.imgs, body.vids]).toEqual([[], []]);
+          expect(body.createdAt).toBeDefined();
+          expect(body.updatedAt).toBe(body.createdAt);
+        })
       })
     })
   })
