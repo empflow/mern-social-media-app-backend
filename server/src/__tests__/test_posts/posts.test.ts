@@ -12,7 +12,7 @@ import getUserDataForModel from "../utils/getUserDataForModel";
 import { HydratedDocument } from "mongoose";
 import path from "node:path";
 import { IPostImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
-import expectImgsUrlsMatchHttps from "./expectImgsUrlsMatchHttps";
+import expectImgsUrlsMatchHttps from "../utils/expectImgsUrlsMatchHttps";
 import givenNImgsAndTextContent from "./givenNImgsAndTextContent/givenNImgsAndTextContent";
 import expectMetadataToBeZero from "./expectMetadataToBeZero";
 import attachNFiles from "../utils/attachNImgs";

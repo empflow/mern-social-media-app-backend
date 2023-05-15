@@ -2,7 +2,7 @@ import { user1AuthHeader, jpegImgPath, user1 } from "../posts.test";
 import { imgsUploadLimit } from "../../../utils/s3";
 import expectMetadataToBeZero from "../expectMetadataToBeZero";
 import expectPostIsOnCreatorsWall from "../expectPostIsOnCreatorsWall";
-import expectImgsUrlsMatchHttps from "../expectImgsUrlsMatchHttps";
+import expectImgsUrlsMatchHttps from "../../utils/expectImgsUrlsMatchHttps";
 import getDescribeContent from "./getDescribeContent";
 import getItContent from "./getItContent";
 import makeRequest from "./makeRequest";

@@ -12,6 +12,9 @@ import path from "path";
 import getEnvVar from "../../utils/getEnvVar";
 import Post, { IPost } from "../../models/Post";
 import addComment from "./addComment";
+import expectImgsUrlsMatchHttps from "../utils/expectImgsUrlsMatchHttps";
+import attachNFiles from "../utils/attachNImgs";
+import expectMetadataToBeZero from "./expectMetadataToBeZero";
 
 let mongod: MongoMemoryServer;
 
@@ -20,6 +23,9 @@ let user2: HydratedDocument<IUser>;
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let postByUser1: HydratedDocument<IPost>;
+
+const content = "foo bar";
+
 
 describe("comments", () => {
   describe("add comment", () => {
@@ -36,7 +42,6 @@ describe("comments", () => {
 
     describe("given user 1 auth header", () => {
       describe("given text content", () => {
-        const content = "foo bar";
         it("returns 201 created", async () => {
           const { statusCode, body } = await requests(app)
             .post(`/posts/${postByUser1.postPath}/comments`)
@@ -53,20 +58,36 @@ describe("comments", () => {
           expect(body.createdAt).toBeDefined();
           expect(body.updatedAt).toBe(body.createdAt);
         })
+      })
 
-        describe("given reply to comment (which exists)", () => {
-          it("returns 201 & comment & reply to", async () => {
-            // const { body: body1 } = await requests(app).post(`/posts/${postByUser1.postPath}/comments`).send({ content: "foo" })
-            const { body: comm1, statusCode: statusCodeComm1 } = await addComment("foo");
-            const { body: comm2, statusCode: statusCodeComm2 } = await addComment("bar", comm1._id);
+      describe("given reply to comment (which exists) & text content", () => {
+        it("returns 201 & comment & reply to", async () => {
+          // const { body: body1 } = await requests(app).post(`/posts/${postByUser1.postPath}/comments`).send({ content: "foo" })
+          const { body: comm1, statusCode: statusCodeComm1 } = await addComment("foo");
+          const { body: comm2, statusCode: statusCodeComm2 } = await addComment("bar", comm1._id);
 
-            expect(statusCodeComm1).toBe(201);
-            expect(statusCodeComm2).toBe(201);
-            expect(comm1.onPost).toBe(postByUser1.postPath);
-            expect(comm1.replyTo).toBe(null);
-            expect(comm2.onPost).toBe(postByUser1.postPath);
-            expect(comm2.replyTo).toBe(comm1._id);
-          })
+          expect(statusCodeComm1).toBe(201);
+          expect(statusCodeComm2).toBe(201);
+          expect(comm1.onPost).toBe(postByUser1.postPath);
+          expect(comm1.replyTo).toBe(null);
+          expect(comm2.onPost).toBe(postByUser1.postPath);
+          expect(comm2.replyTo).toBe(comm1._id);
+        })
+      })
+
+      describe("given text content & 1 .jpeg img", () => {
+        it("returns 201 created & img urls", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+          const imgsAmount = 1;
+          const request = requests(app)
+            .post(`/posts/${postByUser1.postPath}/comments`)
+            .field("content", content)
+            .set("Authorization", user1AuthHeader);
+          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
+
+          expect(statusCode).toBe(201);
+          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectMetadataToBeZero(body);
         })
       })
     })
