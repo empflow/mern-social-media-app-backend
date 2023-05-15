@@ -11,14 +11,15 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import path from "path";
 import getEnvVar from "../../utils/getEnvVar";
 import Post, { IPost } from "../../models/Post";
+import addComment from "./addComment";
 
 let mongod: MongoMemoryServer;
 
 let user1: HydratedDocument<IUser>;
 let user2: HydratedDocument<IUser>;
-let user1AuthHeader: string;
-let user2AuthHeader: string;
-let postByUser1: HydratedDocument<IPost>;
+export let user1AuthHeader: string;
+export let user2AuthHeader: string;
+export let postByUser1: HydratedDocument<IPost>;
 
 describe("comments", () => {
   describe("add comment", () => {
@@ -51,6 +52,21 @@ describe("comments", () => {
           expect([body.imgs, body.vids]).toEqual([[], []]);
           expect(body.createdAt).toBeDefined();
           expect(body.updatedAt).toBe(body.createdAt);
+        })
+
+        describe("given reply to comment (which exists)", () => {
+          it("returns 201 & comment & reply to", async () => {
+            // const { body: body1 } = await requests(app).post(`/posts/${postByUser1.postPath}/comments`).send({ content: "foo" })
+            const { body: comm1, statusCode: statusCodeComm1 } = await addComment("foo");
+            const { body: comm2, statusCode: statusCodeComm2 } = await addComment("bar", comm1._id);
+
+            expect(statusCodeComm1).toBe(201);
+            expect(statusCodeComm2).toBe(201);
+            expect(comm1.onPost).toBe(postByUser1.postPath);
+            expect(comm1.replyTo).toBe(null);
+            expect(comm2.onPost).toBe(postByUser1.postPath);
+            expect(comm2.replyTo).toBe(comm1._id);
+          })
         })
       })
     })
