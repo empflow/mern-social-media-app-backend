@@ -45,7 +45,8 @@
     "testAuth": "jest --testPathPattern=auth.test.ts",
     "testUsers": "jest --testPathPattern=users.test.ts",
     "testPosts": "jest --testPathPattern=posts.test.ts",
-    "testAccount": "jest --testPathPattern=account.test.ts"
+    "testAccount": "jest --testPathPattern=account.test.ts",
+    "testComments": "jest --testPathPattern=comments.test.ts"
   },
   "keywords": [],
   "author": "",
