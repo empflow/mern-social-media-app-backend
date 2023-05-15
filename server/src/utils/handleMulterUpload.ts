@@ -3,8 +3,8 @@ import { BadRequestErr } from "./errs";
 import express from "express";
 
 
-export default function handleMulterUpload(
-  uploadMw: express.RequestHandler, limit?: number
+export default function handleMulterUploadArray(
+  uploadMw: express.RequestHandler, limit: number
 ): express.RequestHandler {
   return function (req, res, next) {
     uploadMw(req, res, (err) => {
@@ -12,7 +12,7 @@ export default function handleMulterUpload(
 
       if (err.code === "LIMIT_UNEXPECTED_FILE") {
         return next(new BadRequestErr(
-          `you've exceeded the limit of ${`${limit} ` ?? ""}images per post`
+          `you've exceeded the limit of ${limit} images per post`
         ));
       } else {
         return next(err);
