@@ -107,6 +107,19 @@ describe("account", () => {
     })
   })
 
+  describe("given an avatar in an unexpected field", () => {
+    it("returns 400 bad request", async () => {
+      const avatarPath = path.join(__dirname, "../data/avatar.jpeg");
+      const { body, statusCode } = await requests(app)
+        .patch("/account")
+        .set("Authorization", user1AuthHeader)
+        .attach("foo", avatarPath);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toMatch(/Unexpected field/);
+    })
+  })
+
   beforeAll(async () => mongod = await dbConnSetup());
   beforeEach(async () => {
     [user1, user2] = await createNUsers(2);
