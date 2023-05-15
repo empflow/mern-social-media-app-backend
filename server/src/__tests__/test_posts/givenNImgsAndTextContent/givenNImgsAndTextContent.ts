@@ -33,7 +33,7 @@ export default function givenNImgsAndTextContent(
 
       function expectIfExceedsLimit() {
         expect(statusCode).toBe(400);
-        const expectRegex = `you've exceeded the limit of ${imgsUploadLimit} images per post`;
+        const expectRegex = `you've exceeded the limit of ${imgsUploadLimit} images`;
         expect(body.message).toMatch(new RegExp(expectRegex));
       }
 

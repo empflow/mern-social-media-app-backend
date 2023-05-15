@@ -8,15 +8,15 @@ export default function handleMulterUploadArray(
 ): express.RequestHandler {
   return function (req, res, next) {
     uploadMw(req, res, (err) => {
-      if (!(err instanceof multer.MulterError)) return next(err);
-
-      if (err.code === "LIMIT_UNEXPECTED_FILE") {
-        return next(new BadRequestErr(
-          `you've exceeded the limit of ${limit} images per post`
-        ));
-      } else {
-        return next(err);
+      if (Array.isArray(req.files) && req.files.length > 0) {
+        const filesLen = req.files.length;
+          if (filesLen > limit) {
+            next(new BadRequestErr(`you've exceeded the limit of ${limit} images`));
+          }
       }
+
+      if (err) return next(err);
+      next();
     })
   }
 }

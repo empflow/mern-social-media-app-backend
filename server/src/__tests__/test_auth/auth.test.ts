@@ -100,7 +100,7 @@ describe("auth", () => {
             .field("email", signUpData.email)
             .field("password", signUpData.password)
             .attach("foo", imgPath);
-    
+
           expect(statusCode).toBe(400);
           expect(body.message).toBe("Unexpected field");
         })

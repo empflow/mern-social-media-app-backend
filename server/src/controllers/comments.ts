@@ -14,7 +14,7 @@ export async function getComments(req: IReq, res: IRes) {
 
 export async function addComment(req: IReq, res: IRes) {
   const { postPath } = req.params;
-  let { replyTo, content } = req.body;
+  const { replyTo, content } = req.body;
   const userId: string = req.data.user.userId
   if (replyTo) {
     const hostComment = await Comment.findById(replyTo)

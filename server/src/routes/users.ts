@@ -5,10 +5,10 @@ import { getUser, getUsers } from "../controllers/users";
 const router = express.Router();
 import { upload } from "../config/multer";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
-import { imgsUploadLimit as imgsLimit, vidsUploadLimit as vidsLimit } from "../utils/s3";
+import { imgsUploadLimit, vidsUploadLimit } from "../utils/s3";
 
 
-const uploadMw = upload.array("imgs", imgsLimit);
+const uploadMw = upload.array("imgs");
 
 router.get("/", getUsers);
 router.get("/:profilePath", getUser);
@@ -17,6 +17,6 @@ router.get("/:profilePath/friends", getUserFriends)
 
 router.route("/:profilePath/posts")
   .get(getUserPosts)
-  .post(handleMulterUploadArray(uploadMw, imgsLimit), addPost);
+  .post(handleMulterUploadArray(uploadMw, imgsUploadLimit), addPost);
 
 export default router;
