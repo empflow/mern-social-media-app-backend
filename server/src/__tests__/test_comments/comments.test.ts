@@ -12,7 +12,7 @@ import path from "path";
 import getEnvVar from "../../utils/getEnvVar";
 import Post, { IPost } from "../../models/Post";
 import addComment from "./addComment";
-import expectImgsUrlsMatchHttps from "../utils/expectImgsUrlsMatchHttps";
+import expectCommentImgsUrlsMatchHttps from "./expectCommentImgsUrlsMatchHttps";
 import attachNFiles from "../utils/attachNImgs";
 import expectMetadataToBeZero from "./expectMetadataToBeZero";
 
@@ -86,7 +86,24 @@ describe("comments", () => {
           const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
 
           expect(statusCode).toBe(201);
-          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectCommentImgsUrlsMatchHttps(body);
+          expectMetadataToBeZero(body);
+        })
+      })
+
+      describe("given text content & 10 .jpg img", () => {
+        it("returns 201 created & img urls", async () => {
+          const imgPath = path.join(__dirname, "../data/avatar.jpg");
+          const imgsAmount = 10;
+          const request = requests(app)
+            .post(`/posts/${postByUser1.postPath}/comments`)
+            .field("content", content)
+            .set("Authorization", user1AuthHeader);
+          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
+          console.log(body);
+
+          expect(statusCode).toBe(201);
+          expectCommentImgsUrlsMatchHttps(body);
           expectMetadataToBeZero(body);
         })
       })
