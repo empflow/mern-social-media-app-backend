@@ -46,7 +46,7 @@ const CommentSchema = new Schema<IComment>({
   },
   content: {
     type: String,
-    required: true
+    default: null
   },
   likes: { type: Number, default: 0 },
   dislikes: { type: Number, default: 0 },
