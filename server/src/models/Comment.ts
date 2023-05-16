@@ -1,8 +1,13 @@
 import mongoose, { Types } from "mongoose";
 import { Schema } from "mongoose";
-import { IImg, ImgsSchema, IVid } from "./Post";
+import { IVid } from "./Post";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
+
+export interface ICommentImg {
+  previewSize: string,
+  fullSize: string
+}
 
 export interface IComment {
   createdBy: Types.ObjectId,
@@ -11,11 +16,22 @@ export interface IComment {
   likes: number,
   dislikes: number,
   replyTo: null | Types.ObjectId,
-  imgs: IImg[],
+  imgs: ICommentImg[],
   vids: IVid[],
   createdAt: Date,
   updatedAt: Date
 }
+
+const ImgsSchema = new Schema<ICommentImg>({
+  previewSize: {
+    type: String,
+    required: true
+  },
+  fullSize: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
 
 
 const CommentSchema = new Schema<IComment>({

@@ -15,10 +15,10 @@ export async function getComments(req: IReq, res: IRes) {
 export async function addComment(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const { content, replyTo } = req.body;
-  const { userId } = req.data.user;
+  const { upload: imgsUpload, user: { userId } } = req.data;
 
-  const comment = await Comment.create({  
-    createdBy: userId, onPost: postPath, content, replyTo
+  const comment = await Comment.create({
+    createdBy: userId, onPost: postPath, content, replyTo, imgs: imgsUpload
   });
   res.status(201).json(comment);
 }
