@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import { HydratedDocument } from "mongoose";
 import { getFileCountExceedsLimitMsg } from "../../../config/multer";
 import Comment, { IComment } from "../../../models/Comment";
+import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
 import deepCopy from "../../../utils/deepCopy";
 import doesArrHaveDuplicates from "../../../utils/doesArrHaveDuplicates";
 import { BadRequestErr, NotFoundErr } from "../../../utils/errs";
@@ -11,9 +12,11 @@ import { imgsUploadLimit } from "../../../utils/s3";
 
 export default async function patchCommentValidator(req: IReq, res: IRes, next: NextFunction) {
   const { commentId } = req.params;
+  const { replyTo } = req.body;
   const comment = await Comment.findById(commentId);
   if (!comment) throw new NotFoundErr("comment not found");
-
+  
+  await checkReplyToCommentExists(replyTo);
   checkFilesCountExceedLimit(req, comment);
 
   req.data.comment = deepCopy(comment);
