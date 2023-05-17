@@ -2,7 +2,8 @@ import { NextFunction } from "express";
 import { HydratedDocument } from "mongoose";
 import { getFileCountExceedsLimitMsg } from "../../../config/multer";
 import Comment, { IComment } from "../../../models/Comment";
-import doesArrHaveStrDuplicates from "../../../utils/doesArrHaveStrDuplicates";
+import deepCopy from "../../../utils/deepCopy";
+import doesArrHaveDuplicates from "../../../utils/doesArrHaveDuplicates";
 import { BadRequestErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import { imgsUploadLimit } from "../../../utils/s3";
@@ -14,14 +15,18 @@ export default async function patchCommentValidator(req: IReq, res: IRes, next: 
   if (!comment) throw new NotFoundErr("comment not found");
 
   checkFilesCountExceedLimit(req, comment);
+
+  req.data.comment = deepCopy(comment);
   next();
 }
 
 
 function checkFilesCountExceedLimit(req: IReq, comment: HydratedDocument<IComment>) {
+  const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
   const files = req.files as Express.Multer.File[] | undefined;
-  if (!files || !files.length) return; // impossible to exceed the limit if no new files are provided
+  validateFilesToDeleteIds(comment, filesToDeleteIds);
 
+  if (!files || !files.length) return; // impossible to exceed the limit if no new files are provided
   const totalFileCount = getTotalFileCount(req, comment, files);
   throwIfTotalFileCountOverLimit(totalFileCount, imgsUploadLimit);
 }
@@ -29,7 +34,6 @@ function checkFilesCountExceedLimit(req: IReq, comment: HydratedDocument<ICommen
 
 function getTotalFileCount(req: IReq, comment: HydratedDocument<IComment>, files: Express.Multer.File[]) {
   const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
-  validateFilesToDeleteIds(comment, filesToDeleteIds);
 
   const filesToDeleteIdsLen = getFilesToDeleteIdsLen(filesToDeleteIds);
   const newFilesLen = files.length ?? 0;
@@ -46,7 +50,7 @@ function validateFilesToDeleteIds(
     filesToDeleteIds = [filesToDeleteIds];
   } else if (!filesToDeleteIds) return;
 
-  if (doesArrHaveStrDuplicates(filesToDeleteIds)) {
+  if (doesArrHaveDuplicates(filesToDeleteIds)) {
     throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
   }
 
@@ -60,15 +64,25 @@ function validateFilesToDeleteIds(
 
 
 function getFilesToDeleteIdsLen(filesToDeleteIds: string | string[] | undefined) {
-  let filesToDeleteIdsLen: number;
-
-  if (Array.isArray(filesToDeleteIds)) {
-    filesToDeleteIdsLen = filesToDeleteIds.length;
-  } else if (typeof filesToDeleteIds === "string") {
-    filesToDeleteIdsLen = 1;
-  } else filesToDeleteIdsLen = 0;
+  const filesToDeleteIdsLen = convertFilesToDeleteIdsToArr(
+    filesToDeleteIds
+  ).length;
 
   return filesToDeleteIdsLen;
+}
+
+export function convertFilesToDeleteIdsToArr(filesToDeleteIds: string | string[] | undefined) {
+  let result: string[];
+
+  if (typeof filesToDeleteIds === "string") {
+    result = [filesToDeleteIds];
+  } else if (!filesToDeleteIds) {
+    result = [];
+  } else {
+    result = JSON.parse(JSON.stringify(filesToDeleteIds));
+  }
+
+  return result;
 }
 
 

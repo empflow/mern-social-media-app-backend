@@ -1,5 +1,6 @@
 import Comment from "../models/Comment";
 import Post from "../models/Post";
+import deepCopy from "../utils/deepCopy";
 import { NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
 import { IReq, IRes } from "../utils/reqResInterfaces";
@@ -27,13 +28,13 @@ export async function addComment(req: IReq, res: IRes) {
 export async function patchComment(req: IReq, res: IRes) {
   const { commentId } = req.params;
   const { content, replyTo } = req.body;
-
+  const comment = deepCopy(req.data.comment);
+  
   const updatedComment = await findDocByIdAndUpdate(
     Comment,
     commentId,
-    { content, replyTo }
+    { ...comment, content, replyTo }
   )
-  if (!updatedComment) throw new NotFoundErr("comment not found");
 
   res.status(200).json(updatedComment);
 }
