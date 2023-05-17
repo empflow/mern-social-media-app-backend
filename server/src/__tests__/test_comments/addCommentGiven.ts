@@ -83,29 +83,22 @@ function sendReq(data: { imgPath: string, imgsAmount: number, content: string | 
 
 function runExpectations(data: { imgsAmount: number, body: any, statusCode: number, extname: string, content: string | null }) {
   const { imgsAmount, statusCode, body, extname, content } = data;
-  console.log(`imgsAmount: ${imgsAmount}`);
-  console.log(`content: ${content}`);
-  console.log(`extname: ${extname}`);
 
   if (!imgsAmount && !content) {
     expect(statusCode).toBe(400);
     expect(body.message).toMatch(/no data provided/);
   }
   if (imgsAmount > imgsUploadLimit) {
-    console.log("400 exceeds imgs amount limit");
     expect(statusCode).toBe(400);
     const matchStr = getFileCountExceedsLimitMsg(imgsUploadLimit);
     expect(body.message).toMatch(matchStr);
   } else if (!allowedFileExts.includes(extname)) {
-    console.log("400 forbidden extension");
     expect(statusCode).toBe(400);
     expect(body.message).toMatch(/Forbidden file extension/);
   } else {
-    console.log("201 created");
     expect(statusCode).toBe(201);
     expectMetadataToBeZero(body);
     if (imgsAmount) {
-      console.log("img urls match https");
       expectCommentImgsUrlsMatchHttps(body);
     }
   }
