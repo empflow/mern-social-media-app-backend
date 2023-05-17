@@ -26,12 +26,13 @@ export async function addComment(req: IReq, res: IRes) {
 
 export async function patchComment(req: IReq, res: IRes) {
   const { commentId } = req.params;
-  const { content, replyTo, videoAttachments, imageAttachments } = req.body;
+  const { content, replyTo } = req.body;
 
+  console.log(req.body);
   const updatedComment = await findDocByIdAndUpdate(
     Comment,
     commentId,
-    { content, replyTo, videoAttachments, imageAttachments }
+    { content, replyTo }
   )
   if (!updatedComment) throw new NotFoundErr("comment not found");
 
