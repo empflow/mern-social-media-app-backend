@@ -20,8 +20,6 @@ const multerOptions: Options = {
   }
 }
 
-
-
 const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 function getFormattedAllowedFileExts() {
   let result = "";
@@ -30,6 +28,10 @@ function getFormattedAllowedFileExts() {
   ));
   
   return result;
+}
+
+export function getFileCountExceedsLimitMsg(limit: number) {
+  return `you've exceeded the limit of ${limit} files`;
 }
 
 

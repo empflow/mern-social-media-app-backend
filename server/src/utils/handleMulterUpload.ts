@@ -1,6 +1,7 @@
 import multer from "multer";
 import { BadRequestErr } from "./errs";
 import express from "express";
+import { getFileCountExceedsLimitMsg } from "../config/multer";
 
 
 export default function handleMulterUploadArray(
@@ -11,7 +12,8 @@ export default function handleMulterUploadArray(
       if (Array.isArray(req.files) && req.files.length > 0) {
         const filesLen = req.files.length;
           if (filesLen > limit) {
-            next(new BadRequestErr(`you've exceeded the limit of ${limit} images`));
+            const msg = getFileCountExceedsLimitMsg(limit);
+            next(new BadRequestErr(msg));
           }
       }
 
