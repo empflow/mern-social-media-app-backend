@@ -60,8 +60,8 @@ describe("comments", () => {
       describe("given reply to comment (which exists) & text content", () => {
         it("returns 201 & comment & reply to", async () => {
           // const { body: body1 } = await requests(app).post(`/posts/${postByUser1.postPath}/comments`).send({ content: "foo" })
-          const { body: comm1, statusCode: statusCodeComm1 } = await addComment("foo");
-          const { body: comm2, statusCode: statusCodeComm2 } = await addComment("bar", comm1._id);
+          const { body: comm1, statusCode: statusCodeComm1 } = await addComment({ content: "foo" });
+          const { body: comm2, statusCode: statusCodeComm2 } = await addComment({ content: "bar", replyTo: comm1._id });
 
           expect(statusCodeComm1).toBe(201);
           expect(statusCodeComm2).toBe(201);
@@ -90,6 +90,19 @@ describe("comments", () => {
       addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content });
       addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content: null });
       addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content: null });
+    })
+  })
+
+  describe("patch comment", () => {
+    describe("not given auth header", () => {
+      it("returns 401 unauthorized", async () => {
+        const initComment = await addComment({ content });
+        const { statusCode, body } = await requests(app)
+          .patch(`/comments/${initComment.body._id}`);
+
+        expect(statusCode).toBe(401);
+        expect(body.message).toMatch(/unauthorized/);
+      })
     })
   })
 
