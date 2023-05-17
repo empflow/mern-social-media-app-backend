@@ -51,7 +51,6 @@ function validateFilesToDeleteIds(
   }
 
   const existingImgsIds = comment.imgs.map(imgObj => (imgObj as any).id);
-  console.log(existingImgsIds);
   filesToDeleteIds.forEach(id => {
     if (!existingImgsIds.includes(id)) {
       throw new BadRequestErr(`${id} does not match any files`);

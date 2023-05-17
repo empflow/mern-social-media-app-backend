@@ -28,7 +28,6 @@ export async function patchComment(req: IReq, res: IRes) {
   const { commentId } = req.params;
   const { content, replyTo } = req.body;
 
-  console.log(req.body);
   const updatedComment = await findDocByIdAndUpdate(
     Comment,
     commentId,
