@@ -2,7 +2,7 @@ import express from "express";
 import { upload } from "../config/multer";
 import { addComment, getComments } from "../controllers/comments";
 import { addPost, deleteUserPost, getPost, getUserPosts, patchPost } from "../controllers/posts";
-import addCommentUploadImgsIfPresent from "../middleware/comments/addComment/uploadImgsIfPresent";
+import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent";
 import addCommentValidator from "../middleware/comments/addComment/validator";
 import patchPostuploadNewImgsIfPresent from "../middleware/posts/patchPost/uploadNewImgsIfPresent";
 import patchPostValidator from "../middleware/posts/patchPost/validator";
@@ -23,7 +23,7 @@ router.route("/:postPath/comments")
   .post(
     handleMulterUploadArray(uploadMw, imgsUploadLimit),
     addCommentValidator,
-    addCommentUploadImgsIfPresent,
+    commentUploadImgsIfPresent,
     addComment
   );
 
