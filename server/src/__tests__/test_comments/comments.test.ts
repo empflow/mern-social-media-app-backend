@@ -119,7 +119,7 @@ describe("comments", () => {
           const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
 
           expect(statusCode).toBe(400);
-          const regexString = `you've exceeded the limit of ${imgsUploadLimit} images`;
+          const regexString = `you've exceeded the limit of ${imgsUploadLimit} files`;
           const regex = new RegExp(regexString);
           expect(body.message).toMatch(regex);
         })

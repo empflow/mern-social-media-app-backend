@@ -30,7 +30,7 @@ export let userWithRestrictedPostingAuthHeader: string;
 let mongod: MongoMemoryServer;
 
 export const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
-const imgsLimitExceededMsgMatch = `you've exceeded the limit of ${imgsUploadLimit} images`;
+const imgsLimitExceededMsgMatch = `you've exceeded the limit of ${imgsUploadLimit} files`;
 
 
 describe("posts", () => {
