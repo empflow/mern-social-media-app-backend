@@ -18,6 +18,7 @@ import expectMetadataToBeZero from "./expectMetadataToBeZero";
 import attachNFiles from "../utils/attachNImgs";
 import createNUsers from "../utils/createNUsers";
 import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
+import { getFileCountExceedsLimitMsg } from "../../config/multer";
 
 
 export let user1: HydratedDocument<IUser>;
@@ -30,7 +31,7 @@ export let userWithRestrictedPostingAuthHeader: string;
 let mongod: MongoMemoryServer;
 
 export const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
-const imgsLimitExceededMsgMatch = `you've exceeded the limit of ${imgsUploadLimit} files`;
+const imgsLimitExceededMsgMatch = getFileCountExceedsLimitMsg(imgsUploadLimit);
 
 
 describe("posts", () => {

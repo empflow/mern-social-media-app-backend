@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { HydratedDocument } from "mongoose"
-import User, { IUser } from "../../models/User"
+import { IUser } from "../../models/User"
 import createNUsers from "../utils/createNUsers";
 import requests from "supertest";
 import app from "../../app";
@@ -9,13 +9,9 @@ import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import path from "path";
-import getEnvVar from "../../utils/getEnvVar";
-import Post, { IPost } from "../../models/Post";
+import { IPost } from "../../models/Post";
 import addComment from "./addComment";
-import expectCommentImgsUrlsMatchHttps from "./expectCommentImgsUrlsMatchHttps";
-import attachNFiles from "../utils/attachNImgs";
-import expectMetadataToBeZero from "./expectMetadataToBeZero";
-import { imgsUploadLimit } from "../../utils/s3";
+import addCommentGiven from "./addCommentGiven";
 
 let mongod: MongoMemoryServer;
 
@@ -76,116 +72,24 @@ describe("comments", () => {
         })
       })
 
-      describe("given text content & 1 .jpeg img", () => {
-        it("returns 201 created & img urls", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
-          const imgsAmount = 1;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
+      const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
+      const jpgImgPath = path.join(__dirname, "../data/avatar.jpg");
+      const pngImgPath = path.join(__dirname, "../data/avatar.png");
+      const webpImgPath = path.join(__dirname, "../data/avatar.webp");
+      const svgImgPath = path.join(__dirname, "../data/avatar.svg");
+      const textFilePath = path.join(__dirname, "../data/file.txt");
 
-          expect(statusCode).toBe(201);
-          expectCommentImgsUrlsMatchHttps(body);
-          expectMetadataToBeZero(body);
-        })
-      })
-
-      describe("given text content & 10 .jpg imgs", () => {
-        it("returns 201 created & img urls", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpg");
-          const imgsAmount = 10;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(201);
-          expectCommentImgsUrlsMatchHttps(body);
-          expectMetadataToBeZero(body);
-        })
-      })
-
-      describe("given text content & 11 .jpg imgs", () => {
-        it("returns 400 bad request", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpg");
-          const imgsAmount = 11;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(400);
-          const regexString = `you've exceeded the limit of ${imgsUploadLimit} files`;
-          const regex = new RegExp(regexString);
-          expect(body.message).toMatch(regex);
-        })
-      })
-
-      describe("given text content & 1 .png img", () => {
-        it("returns 201 created & img urls", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.png");
-          const imgsAmount = 1;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(201);
-          expectCommentImgsUrlsMatchHttps(body);
-          expectMetadataToBeZero(body);
-        })
-      })
-
-      describe("given text content & 1 .svg img", () => {
-        it("returns 400 bad request", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.svg");
-          const imgsAmount = 1;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(400);
-          expect(body.message).toMatch(/Forbidden file extension/);
-        })
-      })
-
-      describe("given text content & 1 .txt avatar", () => {
-        it("returns 400 bad request", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.txt");
-          const imgsAmount = 1;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .field("content", content)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(400);
-          expect(body.message).toMatch(/Forbidden file extension/);
-        })
-      })
-
-      describe("given 1 .jpeg avatar (no text content)", () => {
-        it("returns 201 created & img urls & null content", async () => {
-          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
-          const imgsAmount = 1;
-          const request = requests(app)
-            .post(`/posts/${postByUser1.postPath}/comments`)
-            .set("Authorization", user1AuthHeader);
-          const { body, statusCode } = await attachNFiles("imgs", imgPath, imgsAmount, request);
-
-          expect(statusCode).toBe(201);
-          expectCommentImgsUrlsMatchHttps(body);
-          expectMetadataToBeZero(body);
-          expect(body.content).toBe(null);
-        })
-      })
+      addCommentGiven({ imgPath: jpegImgPath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: pngImgPath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: webpImgPath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: svgImgPath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: textFilePath, imgsAmount: 1, content });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 10, content });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 11, content });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content: null });
+      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content: null });
     })
   })
 

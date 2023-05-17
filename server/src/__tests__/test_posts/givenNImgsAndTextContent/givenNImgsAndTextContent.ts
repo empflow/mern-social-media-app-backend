@@ -6,6 +6,7 @@ import expectImgsUrlsMatchHttps from "../../utils/expectImgsUrlsMatchHttps";
 import getDescribeContent from "./getDescribeContent";
 import getItContent from "./getItContent";
 import makeRequest from "./makeRequest";
+import { getFileCountExceedsLimitMsg } from "../../../config/multer";
 
 export default function givenNImgsAndTextContent(
   imgsAmount: number,
@@ -33,7 +34,7 @@ export default function givenNImgsAndTextContent(
 
       function expectIfExceedsLimit() {
         expect(statusCode).toBe(400);
-        const expectRegex = `you've exceeded the limit of ${imgsUploadLimit} files`;
+        const expectRegex = getFileCountExceedsLimitMsg(imgsUploadLimit);
         expect(body.message).toMatch(new RegExp(expectRegex));
       }
 
