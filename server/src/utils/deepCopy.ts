@@ -1,3 +1,7 @@
-export default function deepCopy(obj: object) {
-  return JSON.parse(JSON.stringify(obj));
+export default function deepCopy<T>(val: T): T {
+  try {
+    return JSON.parse(JSON.stringify(val));
+  } catch (err) {
+    return val;
+  }
 }
