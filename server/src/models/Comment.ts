@@ -31,7 +31,7 @@ const ImgsSchema = new Schema<ICommentImg>({
     type: String,
     required: true
   }
-}, { _id: false });
+});
 
 
 const CommentSchema = new Schema<IComment>({
