@@ -27,7 +27,7 @@ export const minLengths: Record<string, any> = {
   password: 10
 }
 
-export interface IUser {
+export interface IUser extends mongoose.Document {
   firstName: string,
   lastName: string,
   email: string,

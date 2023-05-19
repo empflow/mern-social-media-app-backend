@@ -2,7 +2,7 @@ import mongoose, { Types, Schema } from "mongoose";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
 
-export interface IPost {
+export interface IPost extends mongoose.Document {
   onUser: Types.ObjectId,
   createdBy: Types.ObjectId,
   content: null | string,

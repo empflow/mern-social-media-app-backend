@@ -9,7 +9,7 @@ export interface ICommentImg {
   fullSize: string
 }
 
-export interface IComment {
+export interface IComment extends mongoose.Document {
   createdBy: Types.ObjectId,
   onPost: string,
   content: string,
