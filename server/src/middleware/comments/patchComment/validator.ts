@@ -24,7 +24,7 @@ export default async function patchCommentValidator(req: IReq, res: IRes, next: 
 }
 
 
-function checkFilesCountExceedLimit(req: IReq, comment: HydratedDocument<IComment>) {
+function checkFilesCountExceedLimit(req: IReq, comment: IComment) {
   const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
   const files = req.files as Express.Multer.File[] | undefined;
   validateFilesToDeleteIds(comment, filesToDeleteIds);
@@ -35,7 +35,7 @@ function checkFilesCountExceedLimit(req: IReq, comment: HydratedDocument<ICommen
 }
 
 
-function getTotalFileCount(req: IReq, comment: HydratedDocument<IComment>, files: Express.Multer.File[]) {
+function getTotalFileCount(req: IReq, comment: IComment, files: Express.Multer.File[]) {
   const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
 
   const filesToDeleteIdsLen = getFilesToDeleteIdsLen(filesToDeleteIds);
@@ -47,7 +47,7 @@ function getTotalFileCount(req: IReq, comment: HydratedDocument<IComment>, files
 
 
 function validateFilesToDeleteIds(
-  comment: HydratedDocument<IComment>, filesToDeleteIds: string | string[] | undefined
+  comment: IComment, filesToDeleteIds: string | string[] | undefined
 ) {
   if (typeof filesToDeleteIds === "string") {
     filesToDeleteIds = [filesToDeleteIds];

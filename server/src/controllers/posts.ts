@@ -53,7 +53,7 @@ async function uploadImgsIfPresent(
 }
 
 
-async function checkIfAllowedToPost(userToPostTo: HydratedDocument<IUser>, posterId: string) {
+async function checkIfAllowedToPost(userToPostTo: IUser, posterId: string) {
   const userToPostToId = userToPostTo.id;
 
   if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {

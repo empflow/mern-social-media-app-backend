@@ -13,8 +13,8 @@ import getEnvVar from "../../utils/getEnvVar";
 
 let mongod: MongoMemoryServer;
 
-let user1: HydratedDocument<IUser>;
-let user2: HydratedDocument<IUser>;
+let user1: IUser;
+let user2: IUser;
 let user1AuthHeader: string;
 let user2AuthHeader: string;
 

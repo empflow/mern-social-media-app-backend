@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { HydratedDocument } from "mongoose"
+import mongoose, { HydratedDocument } from "mongoose"
 import { IUser } from "../../models/User"
 import createNUsers from "../utils/createNUsers";
 import requests from "supertest";
@@ -12,14 +12,16 @@ import path from "path";
 import { IPost } from "../../models/Post";
 import addComment from "./addComment";
 import addCommentGiven from "./addCommentGiven";
+import patchComment from "./patchComment";
+import Comment from "../../models/Comment";
 
 let mongod: MongoMemoryServer;
 
-let user1: HydratedDocument<IUser>;
-let user2: HydratedDocument<IUser>;
+let user1: IUser;
+let user2: IUser;
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
-export let postByUser1: HydratedDocument<IPost>;
+export let postByUser1: IPost;
 
 const content = "foo bar";
 

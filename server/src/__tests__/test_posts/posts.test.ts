@@ -21,9 +21,9 @@ import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 
 
-export let user1: HydratedDocument<IUser>;
-export let user2: HydratedDocument<IUser>;
-export let userWithRestrictedPosting: HydratedDocument<IUser>;
+export let user1: IUser;
+export let user2: IUser;
+export let userWithRestrictedPosting: IUser;
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let userWithRestrictedPostingAuthHeader: string;

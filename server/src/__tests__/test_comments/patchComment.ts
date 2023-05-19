@@ -1,4 +1,3 @@
-import { HydratedDocument } from "mongoose";
 import { IComment } from "../../models/Comment";
 import requests from "supertest";
 import app from "../../app";
@@ -8,17 +7,18 @@ import { user1AuthHeader } from "./comments.test";
 interface IData {
   content?: string,
   replyTo?: string,
-  commentToPatch: HydratedDocument<IComment>,
+  commentToPatch: IComment,
   filesToDeleteIds?: string[],
   newImgs?: { path: string, amount: number }
 };
 
+
 export default async function patchComment(data: IData) {
-  const { commentToPatch, content, filesToDeleteIds, newImgs, replyTo } = data;
   const { statusCode, body } = await sendReq(data);
   console.log(statusCode);
   console.log(body);
 }
+
 
 function sendReq(data: IData) {
   const { commentToPatch, content, filesToDeleteIds, newImgs, replyTo } = data;

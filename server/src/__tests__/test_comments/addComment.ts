@@ -32,6 +32,7 @@ export default async function addComment(data: IData) {
   return request;
 }
 
+
 function validatePassedData(data: IData) {
   const { media: { imgPath, imgsAmount } = {} } = data;
   if (

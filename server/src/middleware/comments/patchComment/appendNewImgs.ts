@@ -5,7 +5,7 @@ import deepCopy from "../../../utils/deepCopy";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
 export default function patchCommentAppendNewImgsToCommentIfNeeded(req: IReq, res: IRes, next: NextFunction) {
-  const comment: HydratedDocument<IComment> = deepCopy(req.data.comment);
+  const comment: IComment = deepCopy(req.data.comment);
   const uploadResult: ICommentImg[] | undefined = deepCopy(req.data.upload);
 
   if (uploadResult) {

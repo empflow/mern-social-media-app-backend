@@ -10,7 +10,7 @@ export default async function patchCommentDeleteImgsIfNeeded(req: IReq, res: IRe
   const { filesToDeleteIds } = req.body;
   const { commentId } = req.params;
   const filesToDeleteIdsArr = convertFilesToDeleteIdsToArr(filesToDeleteIds);
-  const comment: HydratedDocument<IComment> = deepCopy(req.data.comment);
+  const comment: IComment = deepCopy(req.data.comment);
   const updatedImgsArr = deepCopy(comment.imgs)
     .filter(imgObj => filterImgs(imgObj, filesToDeleteIdsArr));
 

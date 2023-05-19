@@ -87,8 +87,8 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
 
 
 export async function rejectFriendRequest(req: IReq, res: IRes) {
-  const sender: HydratedDocument<IUser> = req.data.sender;
-  const receiver: HydratedDocument<IUser> = req.data.receiver;
+  const sender: IUser = req.data.sender;
+  const receiver: IUser = req.data.receiver;
 
   const hasReqBeenSent = receiver.friendRequestsReceived.indexOf(sender.id) !== -1;
   if (!hasReqBeenSent) {

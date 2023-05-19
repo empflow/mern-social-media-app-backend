@@ -33,7 +33,7 @@ function validateIds(senderId: string, receiverId: string) {
 
 
 function validateSenderAndReceiver(
-  sender: HydratedDocument<IUser> | null, receiver: HydratedDocument<IUser> | null
+  sender: IUser | null, receiver: IUser | null
 ) {
   if (!sender) throw new NotFoundErr("sender not found");
   if (!receiver) throw new NotFoundErr("receiver not found");
