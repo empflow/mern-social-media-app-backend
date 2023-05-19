@@ -1,14 +1,40 @@
 import { HydratedDocument } from "mongoose";
 import { IComment } from "../../models/Comment";
+import requests from "supertest";
+import app from "../../app";
+import { user1AuthHeader } from "./comments.test";
 
-export default async function patchComment(
-  data: {
-    content?: string,
-    replyTo?: string,
-    commentToPatch: HydratedDocument<IComment>,
-    imgsToDeleteIds?: string[],
-    newImgs?: { path: string, amount: number }
+
+interface IData {
+  content?: string,
+  replyTo?: string,
+  commentToPatch: HydratedDocument<IComment>,
+  filesToDeleteIds?: string[],
+  newImgs?: { path: string, amount: number }
+};
+
+export default async function patchComment(data: IData) {
+  const { commentToPatch, content, filesToDeleteIds, newImgs, replyTo } = data;
+  const { statusCode, body } = await sendReq(data);
+  console.log(statusCode);
+  console.log(body);
+}
+
+function sendReq(data: IData) {
+  const { commentToPatch, content, filesToDeleteIds, newImgs, replyTo } = data;
+
+  const req = requests(app).patch(`/comments/${commentToPatch.id}`);
+  if (content) req.field("content", content);
+  if (replyTo) req.field("replyTo", replyTo);
+  if (filesToDeleteIds) {
+    filesToDeleteIds.forEach(id => req.field("filesToDeleteIds", id));
   }
-) {
+  if (newImgs) {
+    for (let i = 0; i < newImgs.amount; i++) {
+      req.attach("imgs", newImgs.path);
+    }
+  }
+  req.set("Authorization", user1AuthHeader);
 
+  return req;
 }
