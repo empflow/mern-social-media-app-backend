@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import mongoose, { HydratedDocument } from "mongoose"
-import { IUser } from "../../models/User"
+import User, { IUser } from "../../models/User"
 import createNUsers from "../utils/createNUsers";
 import requests from "supertest";
 import app from "../../app";
@@ -14,6 +14,7 @@ import addComment from "./addComment";
 import addCommentGiven from "./addCommentGiven";
 import patchComment from "./patchComment";
 import Comment from "../../models/Comment";
+import { jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath, jpegImgPath } from "../utils/imgsPaths";
 
 let mongod: MongoMemoryServer;
 
@@ -33,7 +34,7 @@ describe("comments", () => {
         const { statusCode, body } = await requests(app)
           .post(`/posts/${postByUser1.postPath}/comments`)
           .send({ content: "foo" });
-        
+
         expect(statusCode).toBe(401);
         expect(body.message).toMatch(/unauthorized/);
       })
@@ -74,13 +75,6 @@ describe("comments", () => {
         })
       })
 
-      const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
-      const jpgImgPath = path.join(__dirname, "../data/avatar.jpg");
-      const pngImgPath = path.join(__dirname, "../data/avatar.png");
-      const webpImgPath = path.join(__dirname, "../data/avatar.webp");
-      const svgImgPath = path.join(__dirname, "../data/avatar.svg");
-      const textFilePath = path.join(__dirname, "../data/file.txt");
-
       addCommentGiven({ imgPath: jpegImgPath, imgsAmount: 1, content });
       addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content });
       addCommentGiven({ imgPath: pngImgPath, imgsAmount: 1, content });
@@ -104,6 +98,34 @@ describe("comments", () => {
 
         expect(statusCode).toBe(401);
         expect(body.message).toMatch(/unauthorized/);
+      })
+    })
+    
+    describe("given content", () => {
+      it("returns commment with updated content", async () => {
+        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+        patchComment({ comment, content: "foo bar" });
+      })
+    })
+
+    describe("given content and valid reply to", () => {
+      it("returns comment with updated content and replyTo", async () => {
+        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+        await patchComment({ comment, content: "foo bar", replyTo: comment.id });
+      })
+    })
+
+    describe("given replyTo of a non-existent comment and content", () => {
+      it("returns 400 bad request", async () => {
+        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+        await patchComment({ comment, content: "foo bar", replyTo: "doesnotexist" });
+      })
+    })
+
+    describe("given 2 new imgs and content", () => {
+      it("returns comment with 2 new imgs and content", async () => {
+        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+        await patchComment({ comment, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
       })
     })
   })
