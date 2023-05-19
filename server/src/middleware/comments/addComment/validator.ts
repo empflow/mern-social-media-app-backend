@@ -10,7 +10,6 @@ export default async function addCommentValidator(req: IReq, res: IRes, next: Ne
   const { replyTo, content } = req.body;
   const filesLen = req.files ? (req.files.length) : 0;
 
-  console.log(filesLen);
   if (!content && !replyTo && !filesLen) throw new BadRequestErr("no data provided");
 
   await checkReplyToCommentExists(replyTo);

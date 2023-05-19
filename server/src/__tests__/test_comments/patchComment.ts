@@ -15,8 +15,7 @@ interface IData {
 
 export default async function patchComment(data: IData) {
   const { statusCode, body } = await sendReq(data);
-  console.log(statusCode);
-  console.log(body);
+  
 }
 
 
@@ -37,4 +36,9 @@ function sendReq(data: IData) {
   req.set("Authorization", user1AuthHeader);
 
   return req;
+}
+
+
+function runExpectations(data: IData) {
+  
 }
