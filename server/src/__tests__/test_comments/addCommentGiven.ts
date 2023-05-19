@@ -87,8 +87,7 @@ function runExpectations(data: { imgsAmount: number, body: any, statusCode: numb
   if (!imgsAmount && !content) {
     expect(statusCode).toBe(400);
     expect(body.message).toMatch(/no data provided/);
-  }
-  if (imgsAmount > imgsUploadLimit) {
+  } else if (imgsAmount > imgsUploadLimit) {
     expect(statusCode).toBe(400);
     const matchStr = getFileCountExceedsLimitMsg(imgsUploadLimit);
     expect(body.message).toMatch(matchStr);
