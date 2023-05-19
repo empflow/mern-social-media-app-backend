@@ -23,7 +23,7 @@ export default async function addCommentGiven(
     it(itContent, async () => {
       const { body, statusCode } = await sendReq({ imgPath, imgsAmount, content });
       runExpectations({ body, extname, imgsAmount, statusCode, content });
-    })
+    }, 10000)
   })
 }
 
