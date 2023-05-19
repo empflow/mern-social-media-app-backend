@@ -6,7 +6,7 @@ import checkReplyToCommentExists from "../../utils/checkReplyToCommentExists";
 import request from "superagent";
 
 
-interface IData {
+interface IParams {
   content?: string,
   replyTo?: string,
   comment: IComment,
@@ -14,14 +14,23 @@ interface IData {
   newImgs?: { path: string, amount: number }
 };
 
-
-export default async function patchComment(data: IData) {
-  const response = await sendReq(data);
-  runExpectations(data, response);
+interface IExpecterFnParams {
+  response: request.Response,
+  replyTo: string | undefined,
+  replyToCommExists: boolean | undefined,
+  content: string | undefined
 }
 
 
-function sendReq(data: IData) {
+export default async function patchComment(data: IParams) {
+  const comment = await data.comment;
+  const argsWithResolvedComm = { ...data, comment };
+  const response = await sendReq(argsWithResolvedComm);
+  runExpectations(argsWithResolvedComm, response);
+}
+
+
+function sendReq(data: IParams) {
   const { comment, content, filesToDeleteIds, newImgs, replyTo } = data;
 
   const req = requests(app).patch(`/comments/${comment.id}`);
@@ -41,7 +50,7 @@ function sendReq(data: IData) {
 }
 
 
-async function runExpectations(data: IData, response: request.Response) {
+async function runExpectations(data: IParams, response: request.Response) {
   const { content, replyTo } = data;
   const replyToCommExists = await checkReplyToCommentExists(replyTo, { shouldReturnBool: true });
 
@@ -51,14 +60,6 @@ async function runExpectations(data: IData, response: request.Response) {
   contentExpecter(expecterArgs);
   givenReplyToAndReplyToCommExistsExpecter(expecterArgs);
   totalImgsAmountExpecter(data, expecterArgs);
-}
-
-
-interface IExpecterFnParams {
-  response: request.Response,
-  replyTo: string | undefined,
-  replyToCommExists: boolean | undefined,
-  content: string | undefined
 }
 
 
@@ -90,7 +91,7 @@ function contentExpecter({ response: { body }, content }: IExpecterFnParams) {
 
 
 function totalImgsAmountExpecter(
-  data: IData, { response: { body } }: IExpecterFnParams
+  data: IParams, { response: { body } }: IExpecterFnParams
 ) {
   const { newImgs, filesToDeleteIds, comment } = data;
 
