@@ -29,8 +29,6 @@ export let user2AuthHeader: string;
 export let userWithRestrictedPostingAuthHeader: string;
 
 let mongod: MongoMemoryServer;
-
-export const jpegImgPath = path.join(__dirname, "../data/avatar.jpeg");
 const imgsLimitExceededMsgMatch = getFileCountExceedsLimitMsg(imgsUploadLimit);
 
 
@@ -99,7 +97,7 @@ describe("posts", () => {
           expect(body.onUser).toBe(user1.id);
           expect(body.vids).toEqual([]);
           expect(body.imgs.length).toBe(imgsAmount);
-          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectImgsUrlsMatchHttps(body);
         })
       })
 
@@ -120,7 +118,7 @@ describe("posts", () => {
           expect(body.onUser).toBe(user1.id);
           expect(body.vids).toEqual([]);
           expect(body.imgs.length).toBe(imgsAmount);
-          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectImgsUrlsMatchHttps(body);
         }, 10000)
       })
 
@@ -233,7 +231,7 @@ describe("posts", () => {
           expect(body.onUser).toBe(userWithRestrictedPosting.id);
           expect(body.vids).toEqual([]);
           expect(body.imgs.length).toBe(imgsAmount);
-          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectImgsUrlsMatchHttps(body);
         }, 10000)
       })
 
@@ -254,7 +252,7 @@ describe("posts", () => {
           expect(body.onUser).toBe(userWithRestrictedPosting.id);
           expect(body.vids).toEqual([]);
           expect(body.imgs.length).toBe(imgsAmount);
-          expectImgsUrlsMatchHttps(body, imgsAmount);
+          expectImgsUrlsMatchHttps(body);
         }, 10000)
       })
 

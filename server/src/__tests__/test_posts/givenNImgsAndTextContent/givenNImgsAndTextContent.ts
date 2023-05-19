@@ -1,4 +1,5 @@
-import { user1AuthHeader, jpegImgPath, user1 } from "../posts.test";
+import { user1AuthHeader, user1 } from "../posts.test";
+import { jpegImgPath } from "../../utils/imgsPaths";
 import { imgsUploadLimit } from "../../../utils/s3";
 import expectMetadataToBeZero from "../expectMetadataToBeZero";
 import expectPostIsOnCreatorsWall from "../expectPostIsOnCreatorsWall";
@@ -42,7 +43,7 @@ export default function givenNImgsAndTextContent(
         expect(statusCode).toBe(201);
         expectMetadataToBeZero(body);
         expectPostIsOnCreatorsWall(body, user1);
-        expectImgsUrlsMatchHttps(body, imgsAmount);
+        expectImgsUrlsMatchHttps(body);
         if (textContent) {
           expect(body.content).toBe(textContent);
         }        
