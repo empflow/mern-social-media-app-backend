@@ -2,12 +2,16 @@ import { NextFunction } from "express";
 import Comment from "../../../models/Comment";
 import Post from "../../../models/Post";
 import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
-import { NotFoundErr } from "../../../utils/errs";
+import { BadRequestErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
 export default async function addCommentValidator(req: IReq, res: IRes, next: NextFunction) {
   const { postPath } = req.params;
-  const { replyTo } = req.body;
+  const { replyTo, content } = req.body;
+  const filesLen = req.files ? (req.files.length) : 0;
+
+  console.log(filesLen);
+  if (!content && !replyTo && !filesLen) throw new BadRequestErr("no data provided");
 
   await checkReplyToCommentExists(replyTo);
 
