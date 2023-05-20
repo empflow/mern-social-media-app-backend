@@ -1,6 +1,7 @@
 import requests from "supertest";
 import app from "../../../app";
-import { user1AuthHeader, jpegImgPath, user1 } from "../posts.test";
+import { jpegImgPath } from "../../utils/imgsPaths";
+import { user1AuthHeader, user1 } from "../posts.test";
 
 
 export default async function makeRequest(
