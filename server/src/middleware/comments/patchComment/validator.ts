@@ -5,7 +5,7 @@ import Comment, { IComment } from "../../../models/Comment";
 import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
 import deepCopy from "../../../utils/deepCopy";
 import doesArrHaveDuplicates from "../../../utils/doesArrHaveDuplicates";
-import { BadRequestErr, NotFoundErr } from "../../../utils/errs";
+import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import { imgsUploadLimit } from "../../../utils/s3";
 
@@ -16,11 +16,23 @@ export default async function patchCommentValidator(req: IReq, res: IRes, next: 
   const comment = await Comment.findById(commentId);
   if (!comment) throw new NotFoundErr("comment not found");
   
+  checkTryingToPatchOwnComment(req, comment);
   await checkReplyToCommentExists(replyTo);
   checkFilesCountExceedLimit(req, comment);
 
   req.data.comment = deepCopy(comment);
   next();
+}
+
+
+function checkTryingToPatchOwnComment(req: IReq, comment: IComment) {
+  const { userId } = req.data.user;
+  const { createdBy: createdByObj } = comment;
+  const createdBy = createdByObj.toString();
+
+  if (userId !== createdBy) {
+    throw new ForbiddenErr("you can only update your own comment");
+  }
 }
 
 
