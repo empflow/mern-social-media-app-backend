@@ -248,5 +248,21 @@ describe("comments", () => {
         expect(body.message).toBe(msgToExpect);
       })
     })
+
+    describe("given init comm has 9 img & given 1 invalid img to delete id", () => {
+      it("returns 400 bad request", async () => {
+        const imgObjs = getInitCommentImgObjects(9);
+        const commToPatch = await Comment.create({
+          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+        });
+        const { statusCode, body } = await requests(app)
+          .patch(`/comments/${commToPatch.id}`)
+          .field("filesToDeleteIds", "invalidId")
+          .set("Authorization", user1AuthHeader);
+
+        expect(statusCode).toBe(400);
+        expect(body.message).toMatch(/does not match any files/);
+      })
+    })
   })
 })
