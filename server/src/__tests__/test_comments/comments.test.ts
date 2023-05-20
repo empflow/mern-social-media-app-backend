@@ -14,6 +14,9 @@ import patchComment from "./patchComment";
 import Comment, { IComment } from "../../models/Comment";
 import { jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath, jpegImgPath } from "../utils/imgsPaths";
 import getInitCommentImgObjects from "./getInitCommentImgObjects";
+import attachNFiles from "../utils/attachNImgs";
+import { imgsUploadLimit } from "../../utils/s3";
+import { getFileCountExceedsLimitMsg } from "../../config/multer";
 
 let mongod: MongoMemoryServer;
 
@@ -191,6 +194,23 @@ describe("comments", () => {
 
         expect(statusCode).toBe(400);
         expect(body.message).toMatch(/does not match any files/);
+      })
+    })
+
+    describe("given init commment has 9 and given 2 new imgs", () => {
+      it("returns 400 bad request", async () => {
+        const imgObjs = getInitCommentImgObjects(9);
+        const commToPatch = await Comment.create({
+          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+        });
+        const req = requests(app)
+          .patch(`/comments/${commToPatch.id}`)
+          .set("Authorization", user1AuthHeader);
+        const { body, statusCode } = await attachNFiles("imgs", jpegImgPath, 2, req);
+
+        expect(statusCode).toBe(400);
+        const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+        expect(body.message).toBe(msgToExpect);
       })
     })
   })
