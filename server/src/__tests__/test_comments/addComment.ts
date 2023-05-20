@@ -2,24 +2,18 @@ import requests from "supertest";
 import app from "../../app";
 import attachNFiles from "../utils/attachNImgs";
 import { postByUser1, user1AuthHeader } from "./comments.test";
+import { IPatchCommentParams } from "./patchComment";
 
 
-interface IData {
-  content?: string,
-  replyTo?: string
-  media?: {
-    imgsAmount: number,
-    imgPath: string
-  },
-  authHeader?: string | null
-}
+type TAddCommentParams = Omit<IPatchCommentParams, "comment">;
 
-
-export default async function addComment(data: IData) {
+export default async function addComment(
+  data: TAddCommentParams, opts?: { authHeader?: string | null }
+) {
   validatePassedData(data);
 
-  const { media: { imgPath, imgsAmount } = {}, content, replyTo } = data;
-  let authHeader = data.authHeader;
+  const { newImgs: { path: imgsPath, amount: imgsAmount } = {}, content, replyTo } = data;
+  let authHeader = opts?.authHeader;
   if (authHeader === undefined) authHeader = user1AuthHeader;
   else if (authHeader === null) authHeader = "";
 
@@ -27,14 +21,14 @@ export default async function addComment(data: IData) {
     .post(`/posts/${postByUser1.postPath}/comments`)
     .send({ content, replyTo })
     .set("Authorization", authHeader);
-  if (imgsAmount) attachNFiles("imgs", imgPath as string, imgsAmount, request);
+  if (imgsAmount) attachNFiles("imgs", imgsPath as string, imgsAmount, request);
 
   return request;
 }
 
 
-function validatePassedData(data: IData) {
-  const { media: { imgPath, imgsAmount } = {} } = data;
+function validatePassedData(data: TAddCommentParams) {
+  const { newImgs: { path: imgPath, amount: imgsAmount } = {} } = data;
   if (
     (imgPath !== undefined && imgsAmount === undefined) ||
     (imgPath === undefined && imgsAmount !== undefined)
