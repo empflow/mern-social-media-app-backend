@@ -5,7 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
 import getAuthHeader from "../utils/getAuthHeader";
-import Post from "../../models/Post";
+import Post, { IPost } from "../../models/Post";
 import { imgsUploadLimit, vidsUploadLimit } from "../../utils/s3";
 import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
@@ -19,6 +19,7 @@ import attachNFiles from "../utils/attachNImgs";
 import createNUsers from "../utils/createNUsers";
 import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
+import { getPostPath } from "../../utils/pathsGenerators";
 
 
 export let user1: IUser;
@@ -27,6 +28,8 @@ export let userWithRestrictedPosting: IUser;
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let userWithRestrictedPostingAuthHeader: string;
+let postByUser1: IPost;
+let postByUser2: IPost;
 
 let mongod: MongoMemoryServer;
 const imgsLimitExceededMsgMatch = getFileCountExceedsLimitMsg(imgsUploadLimit);
@@ -270,6 +273,26 @@ describe("posts", () => {
           expect(statusCode).toBe(400);
           expect(body.message).toMatch(new RegExp(imgsLimitExceededMsgMatch));
         }, 10000)
+      })
+    })
+  })
+
+
+  describe("patch post", () => {
+    beforeEach(async () => {
+      const content = "foo bar";
+      postByUser1 = await Post.create({ onUser: user1.id, createdBy: user1.id, postPath: getPostPath(content) });
+      postByUser2 = await Post.create({ onUser: user2.id, createdBy: user2.id, postPath: getPostPath(content) });
+    })
+
+    describe("not given auth header", () => {
+      it("returns 401 unauthorized", async () => {
+        const { body, statusCode } = await requests(app)
+          .patch(`/posts/${postByUser1.id}`)
+          .send({ content: "new content" });
+
+        expect(statusCode).toBe(401);
+        expect(body.message).toMatch("unauthorized");
       })
     })
   })
