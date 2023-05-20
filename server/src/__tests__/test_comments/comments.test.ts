@@ -1,20 +1,19 @@
 import dotenv from "dotenv";
 dotenv.config();
-import mongoose, { HydratedDocument } from "mongoose"
-import User, { IUser } from "../../models/User"
+import { IUser } from "../../models/User"
 import createNUsers from "../utils/createNUsers";
 import requests from "supertest";
 import app from "../../app";
 import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
-import path from "path";
 import { IPost } from "../../models/Post";
 import addComment from "./addComment";
 import testAddCommentGiven from "./testAddCommentGiven";
 import patchComment from "./patchComment";
 import Comment, { IComment } from "../../models/Comment";
 import { jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath, jpegImgPath } from "../utils/imgsPaths";
+import getInitCommentImgObjects from "./getInitCommentImgObjects";
 
 let mongod: MongoMemoryServer;
 
@@ -146,6 +145,26 @@ describe("comments", () => {
     describe("given 11 new imgs and content", () => {
       it("returns 400 bad request", async () => {
         await patchComment({ comment: commToPatch, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
+      })
+    })
+    
+    describe("given init comment has 2 imgs and given 2 valid img ids to delete", () => {
+      it("returns 200 and comment with no imgs", async () => {
+        const imgObjs = getInitCommentImgObjects(2);
+        const commToPatch = await Comment.create({
+          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+        });
+        const imgsToDeleteIds = imgObjs.map(imgObj => imgObj._id);
+
+         const { body, statusCode } = await requests(app)
+          .patch(`/comments/${commToPatch._id}`)
+          .send({
+            filesToDeleteIds: imgsToDeleteIds
+          })
+          .set("Authorization", user1AuthHeader);
+
+        expect(statusCode).toBe(200);
+        expect(body.imgs.length).toBe(0);
       })
     })
   })
