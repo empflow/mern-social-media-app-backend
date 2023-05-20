@@ -28,7 +28,7 @@ export let user2AuthHeader: string;
 export let postByUser1: IPost;
 
 const content = "foo bar";
-const imgsObjs = getInitCommentImgObjects(10);
+const imgsObjsIds = getInitCommentImgObjects(10).map(obj => obj._id);
 
 
 describe("comments", () => {
@@ -158,9 +158,9 @@ describe("comments", () => {
     describe("given init comment has 2 imgs and given 2 valid img ids to delete", () => {
       it("returns 200 and comment with no imgs", async () => {
          const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commWith2Imgs._id}`)
+          .patch(`/comments/${commWith2Imgs.id}`)
           .send({
-            filesToDeleteIds: [imgsObjs[0]._id, imgsObjs[1]._id]
+            filesToDeleteIds: [imgsObjsIds[0], imgsObjsIds[1]]
           })
           .set("Authorization", user1AuthHeader);
 
@@ -172,13 +172,25 @@ describe("comments", () => {
     describe("given init comment has 2 imgs and given 2 new imgs", () => {
       it("returns 200 and comment with 4 imgs", async () => {
          const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commWith2Imgs._id}`)
+          .patch(`/comments/${commWith2Imgs.id}`)
           .attach("imgs", pngImgPath)
           .attach("imgs", pngImgPath)
           .set("Authorization", user1AuthHeader);
 
         expect(statusCode).toBe(200);
         expect(body.imgs.length).toBe(4);
+      })
+    })
+
+    describe("given init commment has no imgs and given 2 img ids to delete", () => {
+      it("retuns 400 bad request", async () => {
+        const { body, statusCode } = await requests(app)
+          .patch(`/comments/${commToPatch.id}`)
+          .send({ filesToDeleteIds: [imgsObjsIds[0], imgsObjsIds[1]] })
+          .set("Authorization", user1AuthHeader);
+
+        expect(statusCode).toBe(400);
+        expect(body.message).toMatch(/does not match any files/);
       })
     })
   })
