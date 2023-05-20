@@ -10,7 +10,7 @@ import { imgsUploadLimit } from "../../utils/s3";
 import { allowedFileExts, getFileCountExceedsLimitMsg } from "../../config/multer";
 
 
-export default async function addCommentGiven(
+export default async function testAddCommentGiven(
   data: { imgPath: string, imgsAmount: number, content: string | null }
 ) {
   const { imgPath, imgsAmount, content } = data;
