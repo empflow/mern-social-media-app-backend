@@ -213,5 +213,40 @@ describe("comments", () => {
         expect(body.message).toBe(msgToExpect);
       })
     })
+
+    describe("given init comm has 9 img & given 2 img to delete ids & given 3 new imgs", () => {
+      it("returns 200 and 10 imgs", async () => {
+        const imgObjs = getInitCommentImgObjects(9);
+        const commToPatch = await Comment.create({
+          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+        });
+        const req = requests(app)
+          .patch(`/comments/${commToPatch.id}`)
+          .field("filesToDeleteIds", [imgsObjsIds[0], imgsObjsIds[1]])
+          .set("Authorization", user1AuthHeader);
+        const { body, statusCode } = await attachNFiles("imgs", jpegImgPath, 3, req);
+
+        expect(statusCode).toBe(200);
+        expect(body.imgs.length).toBe(10);
+      })
+    })
+
+    describe("given init comm has 9 img & given 2 img to delete ids & given 4 new imgs", () => {
+      it("returns 400 bad request", async () => {
+        const imgObjs = getInitCommentImgObjects(9);
+        const commToPatch = await Comment.create({
+          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+        });
+        const req = requests(app)
+          .patch(`/comments/${commToPatch.id}`)
+          .field("filesToDeleteIds", [imgsObjsIds[0], imgsObjsIds[1]])
+          .set("Authorization", user1AuthHeader);
+        const { body, statusCode } = await attachNFiles("imgs", jpegImgPath, 4, req);
+
+        expect(statusCode).toBe(400);
+        const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+        expect(body.message).toBe(msgToExpect);
+      })
+    })
   })
 })
