@@ -22,9 +22,9 @@ let mongod: MongoMemoryServer;
 
 let user1: IUser;
 let user2: IUser;
-let commToPatch: IComment;
-let replyToComm: IComment;
-let commWith2Imgs: IComment;
+let commToPatchByUser1: IComment;
+let commWith2ImgsByUser1: IComment;
+let replyToCommByUser1: IComment;
 
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
@@ -48,9 +48,9 @@ describe("comments", () => {
 
     const imgObjs = getInitCommentImgObjects(2);
     postByUser1 = JSON.parse(JSON.stringify(body));
-    commToPatch = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-    replyToComm = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-    commWith2Imgs = await Comment.create({
+    commToPatchByUser1 = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+    replyToCommByUser1 = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+    commWith2ImgsByUser1 = await Comment.create({
       onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
     });
   });
@@ -130,38 +130,38 @@ describe("comments", () => {
     
     describe("given content", () => {
       it("returns comment with updated content", async () => {
-        await patchComment({ comment: commToPatch, content: "foo bar" });
+        await patchComment({ comment: commToPatchByUser1, content: "foo bar" });
       })
     })
 
     describe("given content and valid reply to", () => {
       it("returns comment with updated content and replyTo", async () => {
-        await patchComment({ comment: commToPatch, content: "foo bar", replyTo: replyToComm.id });
+        await patchComment({ comment: commToPatchByUser1, content: "foo bar", replyTo: replyToCommByUser1.id });
       })
     })
 
     describe("given content and invalid replyTo", () => {
       it("returns 400 bad request", async () => {
-        await patchComment({ comment: commToPatch, content: "foo bar", replyTo: "doesnotexist" });
+        await patchComment({ comment: commToPatchByUser1, content: "foo bar", replyTo: "doesnotexist" });
       })
     })
 
     describe("given 2 new imgs and content", () => {
       it("returns comment with 2 new imgs and content", async () => {
-        await patchComment({ comment: commToPatch, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
+        await patchComment({ comment: commToPatchByUser1, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
       })
     })
 
     describe("given 11 new imgs and content", () => {
       it("returns 400 bad request", async () => {
-        await patchComment({ comment: commToPatch, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
+        await patchComment({ comment: commToPatchByUser1, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
       })
     })
     
     describe("given init comment has 2 imgs and given 2 valid img ids to delete", () => {
       it("returns 200 and comment with no imgs", async () => {
          const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commWith2Imgs.id}`)
+          .patch(`/comments/${commWith2ImgsByUser1.id}`)
           .send({
             filesToDeleteIds: [imgsObjsIds[0], imgsObjsIds[1]]
           })
@@ -175,7 +175,7 @@ describe("comments", () => {
     describe("given init comment has 2 imgs and given 2 new imgs", () => {
       it("returns 200 and comment with 4 imgs", async () => {
          const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commWith2Imgs.id}`)
+          .patch(`/comments/${commWith2ImgsByUser1.id}`)
           .attach("imgs", pngImgPath)
           .attach("imgs", pngImgPath)
           .set("Authorization", user1AuthHeader);
@@ -188,7 +188,7 @@ describe("comments", () => {
     describe("given init commment has no imgs and given 2 img ids to delete", () => {
       it("retuns 400 bad request", async () => {
         const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commToPatch.id}`)
+          .patch(`/comments/${commToPatchByUser1.id}`)
           .send({ filesToDeleteIds: [imgsObjsIds[0], imgsObjsIds[1]] })
           .set("Authorization", user1AuthHeader);
 
@@ -262,6 +262,18 @@ describe("comments", () => {
 
         expect(statusCode).toBe(400);
         expect(body.message).toMatch(/does not match any files/);
+      })
+    })
+
+    describe("trying to patch another user's post", () => {
+      it("returns 403 forbidden", async () => {
+        const { statusCode, body } = await requests(app)
+          .patch(`/comments/${commToPatchByUser1.id}`)
+          .send({ content: "sdfds" })
+          .set("Authorization", user2AuthHeader);
+
+        console.log(body);
+        expect(statusCode).toBe(403);
       })
     })
   })
