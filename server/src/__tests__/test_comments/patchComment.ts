@@ -4,9 +4,10 @@ import app from "../../app";
 import { user1AuthHeader } from "./comments.test";
 import checkReplyToCommentExists from "../../utils/checkReplyToCommentExists";
 import request from "superagent";
+import { imgsUploadLimit } from "../../utils/s3";
 
 
-interface IParams {
+export interface IPatchCommentParams {
   content?: string,
   replyTo?: string,
   comment: IComment,
@@ -22,18 +23,18 @@ interface IExpecterFnParams {
 }
 
 
-export default async function patchComment(data: IParams) {
-  const comment = await data.comment;
+export default async function patchComment(data: IPatchCommentParams) {
+  const { comment } = data;
   const argsWithResolvedComm = { ...data, comment };
   const response = await sendReq(argsWithResolvedComm);
   runExpectations(argsWithResolvedComm, response);
 }
 
 
-function sendReq(data: IParams) {
+function sendReq(data: IPatchCommentParams) {
   const { comment, content, filesToDeleteIds, newImgs, replyTo } = data;
 
-  const req = requests(app).patch(`/comments/${comment.id}`);
+  const req = requests(app).patch(`/comments/${comment._id}`);
   if (content) req.field("content", content);
   if (replyTo) req.field("replyTo", replyTo);
   if (filesToDeleteIds) {
@@ -50,7 +51,7 @@ function sendReq(data: IParams) {
 }
 
 
-async function runExpectations(data: IParams, response: request.Response) {
+async function runExpectations(data: IPatchCommentParams, response: request.Response) {
   const { content, replyTo } = data;
   const replyToCommExists = await checkReplyToCommentExists(replyTo, { shouldReturnBool: true });
 
@@ -91,12 +92,21 @@ function contentExpecter({ response: { body }, content }: IExpecterFnParams) {
 
 
 function totalImgsAmountExpecter(
-  data: IParams, { response: { body } }: IExpecterFnParams
+  data: IPatchCommentParams, { response: { body, statusCode } }: IExpecterFnParams
 ) {
-  const { newImgs, filesToDeleteIds, comment } = data;
+  const amountToExpect = getImgsAmountToExpect(data);
+  if (amountToExpect > imgsUploadLimit) {
+    expect(statusCode).toBe(400);
+    expect(body.message).toMatch(/too many imgs/);
+  } else {
+    expect(statusCode).toBe(200);
+    expect(body.imgs.length).toBe(amountToExpect);
+  }
+}
 
+
+function getImgsAmountToExpect({ newImgs, filesToDeleteIds, comment }: IPatchCommentParams) {
   const newImgsAmount = newImgs?.amount ?? 0;
   const imgsToDeleteAmount = filesToDeleteIds?.length ?? 0;
-  const amountToExpect =  comment.imgs.length + newImgsAmount - imgsToDeleteAmount;
-  expect(body.imgs.length).toBe(amountToExpect);
+  return comment.imgs.length + newImgsAmount - imgsToDeleteAmount;
 }
