@@ -11,15 +11,18 @@ import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import path from "path";
 import { IPost } from "../../models/Post";
 import addComment from "./addComment";
-import addCommentGiven from "./addCommentGiven";
+import testAddCommentGiven from "./testAddCommentGiven";
 import patchComment from "./patchComment";
-import Comment from "../../models/Comment";
+import Comment, { IComment } from "../../models/Comment";
 import { jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath, jpegImgPath } from "../utils/imgsPaths";
 
 let mongod: MongoMemoryServer;
 
 let user1: IUser;
 let user2: IUser;
+let commToPatch: IComment;
+let replyToComm: IComment;
+
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let postByUser1: IPost;
@@ -28,6 +31,22 @@ const content = "foo bar";
 
 
 describe("comments", () => {
+  beforeAll(async () => {
+    mongod = await dbConnSetup();
+    [user1, user2] = await createNUsers(2);
+    [user1AuthHeader, user2AuthHeader] = getAuthHeadersForUsers(user1, user2);
+  });
+  beforeEach(async () => {
+    const { body } = await requests(app)
+      .post(`/users/${user1.profilePath}/posts`)
+      .send({ content: "hi" })
+      .set("Authorization", user1AuthHeader);
+    postByUser1 = JSON.parse(JSON.stringify(body));
+    commToPatch = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+    replyToComm = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+  });
+  afterAll(async () => await dbConnTeardown(mongod));
+
   describe("add comment", () => {
     describe("not given an auth header", () => {
       it("returns 401 unauthorized", async () => {
@@ -62,7 +81,6 @@ describe("comments", () => {
 
       describe("given reply to comment (which exists) & text content", () => {
         it("returns 201 & comment & reply to", async () => {
-          // const { body: body1 } = await requests(app).post(`/posts/${postByUser1.postPath}/comments`).send({ content: "foo" })
           const { body: comm1, statusCode: statusCodeComm1 } = await addComment({ content: "foo" });
           const { body: comm2, statusCode: statusCodeComm2 } = await addComment({ content: "bar", replyTo: comm1._id });
 
@@ -75,17 +93,17 @@ describe("comments", () => {
         })
       })
 
-      addCommentGiven({ imgPath: jpegImgPath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: pngImgPath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: webpImgPath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: svgImgPath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: textFilePath, imgsAmount: 1, content });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 10, content });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 11, content });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content: null });
-      addCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content: null });
+      testAddCommentGiven({ imgPath: jpegImgPath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: pngImgPath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: webpImgPath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: svgImgPath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: textFilePath, imgsAmount: 1, content });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 10, content });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 11, content });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 1, content: null });
+      testAddCommentGiven({ imgPath: jpgImgPath, imgsAmount: 0, content: null });
     })
   })
 
@@ -102,45 +120,33 @@ describe("comments", () => {
     })
     
     describe("given content", () => {
-      it("returns commment with updated content", async () => {
-        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-        patchComment({ comment, content: "foo bar" });
+      it("returns comment with updated content", async () => {
+        await patchComment({ comment: commToPatch, content: "foo bar" });
       })
     })
 
     describe("given content and valid reply to", () => {
       it("returns comment with updated content and replyTo", async () => {
-        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-        await patchComment({ comment, content: "foo bar", replyTo: comment.id });
+        await patchComment({ comment: commToPatch, content: "foo bar", replyTo: replyToComm.id });
       })
     })
 
-    describe("given replyTo of a non-existent comment and content", () => {
+    describe("given invalid replyTo and content", () => {
       it("returns 400 bad request", async () => {
-        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-        await patchComment({ comment, content: "foo bar", replyTo: "doesnotexist" });
+        await patchComment({ comment: commToPatch, content: "foo bar", replyTo: "doesnotexist" });
       })
     })
 
     describe("given 2 new imgs and content", () => {
       it("returns comment with 2 new imgs and content", async () => {
-        const comment = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
-        await patchComment({ comment, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
+        await patchComment({ comment: commToPatch, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
+      })
+    })
+
+    describe("given 11 new imgs and content", () => {
+      it("returns 400 bad request", async () => {
+        await patchComment({ comment: commToPatch, content: "foo bar", newImgs: { path: jpegImgPath, amount: 2 } });
       })
     })
   })
-
-  beforeAll(async () => {
-    mongod = await dbConnSetup();
-    [user1, user2] = await createNUsers(2);
-    [user1AuthHeader, user2AuthHeader] = getAuthHeadersForUsers(user1, user2);
-  });
-  beforeEach(async () => {
-    const { body } = await requests(app)
-      .post(`/users/${user1.profilePath}/posts`)
-      .send({ content: "hi" })
-      .set("Authorization", user1AuthHeader);
-    postByUser1 = JSON.parse(JSON.stringify(body));
-  });
-  afterAll(async () => await dbConnTeardown(mongod));
 })
