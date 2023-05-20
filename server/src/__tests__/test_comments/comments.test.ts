@@ -21,12 +21,14 @@ let user1: IUser;
 let user2: IUser;
 let commToPatch: IComment;
 let replyToComm: IComment;
+let commWith2Imgs: IComment;
 
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let postByUser1: IPost;
 
 const content = "foo bar";
+const imgsObjs = getInitCommentImgObjects(10);
 
 
 describe("comments", () => {
@@ -40,9 +42,14 @@ describe("comments", () => {
       .post(`/users/${user1.profilePath}/posts`)
       .send({ content: "hi" })
       .set("Authorization", user1AuthHeader);
+
+    const imgObjs = getInitCommentImgObjects(2);
     postByUser1 = JSON.parse(JSON.stringify(body));
     commToPatch = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
     replyToComm = await Comment.create({ onPost: postByUser1._id, createdBy: user1.id });
+    commWith2Imgs = await Comment.create({
+      onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
+    });
   });
   afterAll(async () => await dbConnTeardown(mongod));
 
@@ -150,21 +157,28 @@ describe("comments", () => {
     
     describe("given init comment has 2 imgs and given 2 valid img ids to delete", () => {
       it("returns 200 and comment with no imgs", async () => {
-        const imgObjs = getInitCommentImgObjects(2);
-        const commToPatch = await Comment.create({
-          onPost: postByUser1._id, createdBy: user1.id, imgs: imgObjs
-        });
-        const imgsToDeleteIds = imgObjs.map(imgObj => imgObj._id);
-
          const { body, statusCode } = await requests(app)
-          .patch(`/comments/${commToPatch._id}`)
+          .patch(`/comments/${commWith2Imgs._id}`)
           .send({
-            filesToDeleteIds: imgsToDeleteIds
+            filesToDeleteIds: [imgsObjs[0]._id, imgsObjs[1]._id]
           })
           .set("Authorization", user1AuthHeader);
 
         expect(statusCode).toBe(200);
         expect(body.imgs.length).toBe(0);
+      })
+    })
+
+    describe("given init comment has 2 imgs and given 2 new imgs", () => {
+      it("returns 200 and comment with 4 imgs", async () => {
+         const { body, statusCode } = await requests(app)
+          .patch(`/comments/${commWith2Imgs._id}`)
+          .attach("imgs", pngImgPath)
+          .attach("imgs", pngImgPath)
+          .set("Authorization", user1AuthHeader);
+
+        expect(statusCode).toBe(200);
+        expect(body.imgs.length).toBe(4);
       })
     })
   })
