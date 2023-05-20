@@ -272,8 +272,8 @@ describe("comments", () => {
           .send({ content: "sdfds" })
           .set("Authorization", user2AuthHeader);
 
-        console.log(body);
         expect(statusCode).toBe(403);
+        expect(body.message).toMatch(/you can only update your own comment/);
       })
     })
   })

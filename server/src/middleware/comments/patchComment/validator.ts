@@ -31,7 +31,7 @@ function checkTryingToPatchOwnComment(req: IReq, comment: IComment) {
   const createdBy = createdByObj.toString();
 
   if (userId !== createdBy) {
-    throw new ForbiddenErr("you can only update your own comment");
+    throw new ForbiddenErr("you can only update your own comments");
   }
 }
 
