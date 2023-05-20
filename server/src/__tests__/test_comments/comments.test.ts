@@ -110,9 +110,9 @@ describe("comments", () => {
   describe("patch comment", () => {
     describe("not given auth header", () => {
       it("returns 401 unauthorized", async () => {
-        const initComment = await addComment({ content });
+        const { body: initComment } = await addComment({ content });
         const { statusCode, body } = await requests(app)
-          .patch(`/comments/${initComment.body._id}`);
+          .patch(`/comments/${initComment._id}`);
 
         expect(statusCode).toBe(401);
         expect(body.message).toMatch(/unauthorized/);
@@ -131,7 +131,7 @@ describe("comments", () => {
       })
     })
 
-    describe("given invalid replyTo and content", () => {
+    describe("given content and invalid replyTo", () => {
       it("returns 400 bad request", async () => {
         await patchComment({ comment: commToPatch, content: "foo bar", replyTo: "doesnotexist" });
       })
