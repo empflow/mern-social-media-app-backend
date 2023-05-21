@@ -364,6 +364,7 @@ describe("posts", () => {
           expect(statusCode).toBe(200);
           expect(body.imgs.length).toBe(1);
           expectImgsUrlsMatchHttps(body);
+          expect(body.imgs[0]?._id).toBeDefined();
         })
       })
 
