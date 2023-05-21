@@ -326,6 +326,32 @@ describe("posts", () => {
           expectDates(updatedAt, postByUser1.updatedAt).notToBeEqual();
         })
       })
+
+      describe("given nothing", () => {
+        it("returns 200 and same post", async () => {
+          const { statusCode, body } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .set("Authorization", user1AuthHeader);
+
+          const {
+            content, onUser, createdBy, tinyPreview, imgs, comments, vids, createdAt, updatedAt, likes, dislikes, shares, views
+          } = body;
+          expect(statusCode).toBe(200);
+          expect(content).toBe(postByUser1.content);
+          expect(onUser).toBe(postByUser1.onUser.toString());
+          expect(createdBy).toBe(postByUser1.createdBy.toString());
+          expect(tinyPreview).toBe(postByUser1.tinyPreview);
+          expect(imgs).toEqual(postByUser1.imgs);
+          expect(comments).toEqual(postByUser1.comments);
+          expect(vids).toEqual(postByUser1.vids);
+          expectDates(createdAt, postByUser1.createdAt).toBeEqual();
+          expectDates(updatedAt, postByUser1.updatedAt).notToBeEqual();
+          expect(likes).toEqual(postByUser1.likes);
+          expect(dislikes).toEqual(postByUser1.dislikes);
+          expect(shares).toEqual(postByUser1.shares);
+          expect(views).toEqual(postByUser1.views);
+        })
+      })
     })
   })
   // TODO: test when trying to patch someone else's post
