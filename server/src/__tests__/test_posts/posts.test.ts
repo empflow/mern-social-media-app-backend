@@ -368,6 +368,19 @@ describe("posts", () => {
         })
       })
 
+      describe("given 11 .jpeg imgs", () => {
+        it("returns 400 bad request", async () => {
+          const req = requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .set("Authorization", user1AuthHeader);
+          const { statusCode, body } = await attachNFiles("imgs", jpegImgPath, 11, req);
+          
+          expect(statusCode).toBe(400);
+          const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+          expect(body.message).toBe(msgToExpect);
+        }, 10000)
+      })
+
       describe("given .jpeg img in an unexpected field", () => {
         it("returns 400 bad request", async () => {
           const { statusCode, body } = await requests(app)
