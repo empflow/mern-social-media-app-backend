@@ -21,9 +21,10 @@ import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 import { getPostPath } from "../../utils/pathsGenerators";
 import expectDates from "../utils/expectDates";
-import { jpegImgPath, pngImgPath, webpImgPath } from "../utils/imgsPaths";
+import { heicImgPath, jpegImgPath, jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath } from "../utils/imgsPaths";
 import getInitPostImgObjs from "./getInitPostImgObjs";
 import createPost from "./createPost";
+import testGivenFile from "./testGivenFile";
 
 
 export let user1: IUser;
@@ -32,8 +33,8 @@ export let userWithRestrictedPosting: IUser;
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;
 export let userWithRestrictedPostingAuthHeader: string;
-let postByUser1: IPost;
-let postByUser2: IPost;
+export let postByUser1: IPost;
+export let postByUser2: IPost;
 
 let mongod: MongoMemoryServer;
 const imgsLimitExceededMsgMatch = getFileCountExceedsLimitMsg(imgsUploadLimit);
@@ -442,6 +443,14 @@ describe("posts", () => {
           expect(body.message).toMatch(/does not match any files/);
         })
       })
+
+      testGivenFile(jpegImgPath);
+      testGivenFile(jpgImgPath);
+      testGivenFile(pngImgPath);
+      testGivenFile(webpImgPath);
+      testGivenFile(heicImgPath);
+      testGivenFile(svgImgPath);
+      testGivenFile(textFilePath);
     })
   })
   // TODO: test when trying to patch someone else's post
