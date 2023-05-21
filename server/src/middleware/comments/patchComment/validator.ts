@@ -1,13 +1,9 @@
 import { NextFunction } from "express";
-import { HydratedDocument } from "mongoose";
-import { getFileCountExceedsLimitMsg } from "../../../config/multer";
 import Comment, { IComment } from "../../../models/Comment";
 import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
 import deepCopy from "../../../utils/deepCopy";
-import doesArrHaveDuplicates from "../../../utils/doesArrHaveDuplicates";
-import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
+import { ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
-import { imgsUploadLimit } from "../../../utils/s3";
 import validateFileCount from "../../../utils/validateFileCount";
 
 
