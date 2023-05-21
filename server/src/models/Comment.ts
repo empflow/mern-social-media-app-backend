@@ -6,7 +6,8 @@ import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validato
 
 export interface ICommentImg {
   previewSize: string,
-  fullSize: string
+  fullSize: string,
+  id?: Types.ObjectId
 }
 
 export interface IComment extends mongoose.Document {

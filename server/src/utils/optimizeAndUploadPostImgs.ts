@@ -1,9 +1,10 @@
+import mongoose from "mongoose";
 import { optimizeImgForFeed, optimizeImgForPreview, optimizeImgForTinyPreview, optimizeImgForFullSize } from "./optimizeImg";
 import { s3Upload } from "./s3";
 import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
 
 
-interface IOptimizeAndUploadPostImgsReturnType {
+export interface IOptimizeAndUploadPostImgsReturnType {
   tinyPreview: string | undefined,
   imgs: IPostImgUploadResult[] | undefined
 }
@@ -16,7 +17,7 @@ export interface IPostImgUploadResult {
 }
 
 
-interface IImg {
+interface IImgBuffer {
   fullSize: Buffer,
   feedSize: Buffer,
   previewSize: Buffer
@@ -69,7 +70,7 @@ function getOptimziedImgsPromise(imgs: Buffer[]) {
 
 
 async function uploadOptimizedTinyPreviewAndImgs(
-  optimizedTinyPreview: Buffer, optimizedImgs: IImg[]
+  optimizedTinyPreview: Buffer, optimizedImgs: IImgBuffer[]
 ) {
   const optimizedTinyPreivewUploadPromise = s3Upload(optimizedTinyPreview);
   const optimizedImgsUploadsPromise = getOptimizedImgsUploadsPromise(optimizedImgs);
@@ -80,7 +81,7 @@ async function uploadOptimizedTinyPreviewAndImgs(
 }
 
 
-function getOptimizedImgsUploadsPromise(optimizedImgs: IImg[]) {
+function getOptimizedImgsUploadsPromise(optimizedImgs: IImgBuffer[]) {
   // need to use Promise.all to convert Promise<IImgUploadResult>[] (array of promises)
   // to Promise<IImgUploadResult[]> (promise array)
   return Promise.all(optimizedImgs.map(async imgObj => {

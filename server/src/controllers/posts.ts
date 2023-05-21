@@ -1,4 +1,5 @@
 import { Document, HydratedDocument } from "mongoose";
+import postUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
 import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { BadRequestErr, ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
@@ -11,20 +12,10 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 // TODO: add getFeed
 
 export async function addPost(req: IReq, res: IRes) {
-  const { profilePath } = req.params;
   const { content } = req.body;
   const createdBy: string = req.data.user.userId;
-
-  checkIfAnyContentIsProvided(req);
-
-  const userToPostTo = await User.findOne({ profilePath });
-  if (!userToPostTo) throw new NotFoundErr("user to post to not found");
-  await checkIfAllowedToPost(userToPostTo, createdBy);
-  
-  const poster = await User.findById(createdBy);
-  if (!poster) throw new NotFoundErr("poster not found");
-
-  const { tinyPreview, imgs } = await uploadImgsIfPresent(req.files);
+  const userToPostTo: IUser = req.data.userToPostTo;
+  const { tinyPreview, imgs } = req.data.upload;
 
   const postPath = getPostPath(content);
   const post = new Post({
@@ -33,32 +24,6 @@ export async function addPost(req: IReq, res: IRes) {
 
   await post.save();
   res.status(201).json(post);
-}
-
-
-function checkIfAnyContentIsProvided(req: IReq) {
-  if (!req.body.content && !req.file && !req.files) {
-    throw new BadRequestErr("no content was provided");
-  }
-}
-
-
-async function uploadImgsIfPresent(
-  imgs: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined
-) {
-  if (!imgs?.length) return { tinyPreview: undefined, imgs: undefined };
-
-  const buffers = (imgs as Express.Multer.File[]).map(img => img.buffer);
-  return optimizeAndUploadPostImgs(buffers);
-}
-
-
-async function checkIfAllowedToPost(userToPostTo: IUser, posterId: string) {
-  const userToPostToId = userToPostTo.id;
-
-  if (!userToPostTo.canAnyonePost && posterId !== userToPostToId) {
-    throw new ForbiddenErr("posting to this user's wall is not allowed");
-  }
 }
 
 
@@ -105,12 +70,12 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const { content } = req.body;
+  const post = req.data.post;
 
-  const update = { content };
-  const updatedPost = await Post.findOneAndUpdate(
+  const updatedPost = await findDocAndUpdate(
+    Post,
     { postPath },
-    update,
-    { new: true, runValidators: true }
+    { ...post, content }
   );
   res.status(200).json(updatedPost);
 }

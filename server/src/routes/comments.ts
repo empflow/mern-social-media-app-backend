@@ -1,7 +1,7 @@
 import express from "express";
 import { upload } from "../config/multer";
 import { deleteComment, patchComment } from "../controllers/comments";
-import patchCommentAppendNewImgsToCommentIfNeeded from "../middleware/comments/patchComment/appendNewImgs";
+import patchCommentAppendNewImgsToComment from "../middleware/comments/patchComment/appendNewImgs";
 import patchCommentDeleteImgsIfNeeded from "../middleware/comments/patchComment/deleteImgsIfNeeded";
 import patchCommentValidator from "../middleware/comments/patchComment/validator";
 import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent";
@@ -17,7 +17,7 @@ router.route("/:commentId")
     handleMulterUploadArray(uploadMw, imgsUploadLimit),
     patchCommentValidator,
     commentUploadImgsIfPresent,
-    patchCommentAppendNewImgsToCommentIfNeeded,
+    patchCommentAppendNewImgsToComment,
     patchCommentDeleteImgsIfNeeded,
     patchComment
   )

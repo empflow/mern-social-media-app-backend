@@ -23,7 +23,7 @@ export interface IPostImg {
   fullSize: string,
   previewSize: string,
   feedSize: string,
-  _id: string
+  _id?: mongoose.Types.ObjectId | string
 }
 
 export interface IVid {

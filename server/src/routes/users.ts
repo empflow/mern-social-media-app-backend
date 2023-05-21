@@ -6,6 +6,8 @@ const router = express.Router();
 import { upload } from "../config/multer";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
 import { imgsUploadLimit, vidsUploadLimit } from "../utils/s3";
+import addPostValidator from "../middleware/posts/addPost/validator";
+import postUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
 
 
 const uploadMw = upload.array("imgs");
@@ -17,6 +19,11 @@ router.get("/:profilePath/friends", getUserFriends)
 
 router.route("/:profilePath/posts")
   .get(getUserPosts)
-  .post(handleMulterUploadArray(uploadMw, imgsUploadLimit), addPost);
+  .post(
+    handleMulterUploadArray(uploadMw, imgsUploadLimit),
+    addPostValidator,
+    postUploadImgsIfPresent,
+    addPost
+  );
 
 export default router;

@@ -1,3 +1,5 @@
+import { IPostImg } from "../../models/Post";
+
 export default function getInitPostImgObjs(amount: number) {
   if (amount > 10) throw new RangeError("amount must be below 10");
 

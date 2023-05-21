@@ -5,11 +5,11 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
 import getAuthHeader from "../utils/getAuthHeader";
-import Post, { IPost } from "../../models/Post";
+import Post, { IPost, IPostImg } from "../../models/Post";
 import { imgsUploadLimit, vidsUploadLimit } from "../../utils/s3";
 import User, { IUser } from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
-import { HydratedDocument } from "mongoose";
+import mongoose, { HydratedDocument, ObjectId } from "mongoose";
 import path from "node:path";
 import { IPostImgUploadResult } from "../../utils/optimizeAndUploadPostImgs";
 import expectImgsUrlsMatchHttps from "../utils/expectImgsUrlsMatchHttps";
@@ -399,19 +399,19 @@ describe("posts", () => {
 
       describe("given init post has 2 imgs & given 2 img ids to delete & 2 new imgs", () => {
         it("returns 200 and post with 8 imgs", async () => {
-          const postImgs = getInitPostImgObjs(2);
+          const postImgs: IPostImg[] = getInitPostImgObjs(2);
           const post = await createPost({ imgs: postImgs });
-
           const req = requests(app)
             .patch(`/posts/${post.postPath}`)
-            .field("filesToDeleteIds", [postImgs[0]._id, postImgs[1]._id])
+            .field("filesToDeleteIds", [postImgs[0]._id as string, postImgs[1]._id as string])
             .set("Authorization", user1AuthHeader);
           const { statusCode, body } = await attachNFiles("imgs", webpImgPath, 2, req);
 
           expect(statusCode).toBe(200);
           expect(body.imgs.length).toBe(2);
-          expect(body.imgs[0]._id).not.toBe(post.imgs[0]._id.toString());
-          expect(body.imgs[1]._id).not.toBe(post.imgs[1]._id.toString());
+          console.log(post.imgs);
+          expect(body.imgs[0]._id).not.toBe(((post.imgs[0]._id as unknown) as ObjectId).toString());
+          expect(body.imgs[1]._id).not.toBe(((post.imgs[1]._id as unknown) as ObjectId).toString());
         })
       })
 

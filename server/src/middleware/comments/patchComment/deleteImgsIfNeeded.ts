@@ -22,7 +22,9 @@ export default async function patchCommentDeleteImgsIfNeeded(req: IReq, res: IRe
 
 
 function filterImgs(imgObj: ICommentImg, filesToDeleteIds: string[]) {
-  const id = (imgObj as any)._id;
-  if (filesToDeleteIds.includes(id)) return false;
-  return true;
+  const id = imgObj.id;
+
+  if (!id) return true; // include if the img is newly uploaded
+  if (filesToDeleteIds.includes(id.toString())) return false;
+  return true; // include if the img id is not contained in the array of ids of imgs to delete
 }

@@ -4,10 +4,12 @@ import { addComment, getComments } from "../controllers/comments";
 import { addPost, deleteUserPost, getPost, getUserPosts, patchPost } from "../controllers/posts";
 import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent";
 import addCommentValidator from "../middleware/comments/addComment/validator";
-import patchPostuploadNewImgsIfPresent from "../middleware/posts/patchPost/uploadNewImgsIfPresent";
 import patchPostValidator from "../middleware/posts/patchPost/validator";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
 import { imgsUploadLimit } from "../utils/s3";
+import postsUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
+import patchPostAppendNewImgs from "../middleware/posts/patchPost/appendNewImgs";
+import patchPostDeleteImgsIfNeeded from "../middleware/posts/patchPost/deleteImgsIfNeeded";
 const router = express.Router();
 
 const uploadMw = upload.array("imgs")
@@ -18,7 +20,9 @@ router.route("/:postPath")
   .patch(
     handleMulterUploadArray(uploadMw, imgsUploadLimit),
     patchPostValidator,
-    patchPostuploadNewImgsIfPresent,
+    postsUploadImgsIfPresent,
+    patchPostAppendNewImgs,
+    patchPostDeleteImgsIfNeeded,
     patchPost
   )
   .delete(deleteUserPost);
