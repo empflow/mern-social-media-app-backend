@@ -3,7 +3,6 @@ import requests from "supertest";
 import app from "../../app";
 import { user1AuthHeader } from "./comments.test";
 import checkReplyToCommentExists from "../../utils/checkReplyToCommentExists";
-import request from "superagent";
 import { imgsUploadLimit } from "../../utils/s3";
 
 
@@ -16,7 +15,7 @@ export interface IPatchCommentParams {
 };
 
 interface IExpecterFnParams {
-  response: request.Response,
+  response: requests.Response,
   replyTo: string | undefined,
   replyToCommExists: boolean | undefined,
   content: string | undefined
@@ -51,7 +50,7 @@ function sendReq(data: IPatchCommentParams) {
 }
 
 
-async function runExpectations(data: IPatchCommentParams, response: request.Response) {
+async function runExpectations(data: IPatchCommentParams, response: requests.Response) {
   const { content, replyTo } = data;
   const replyToCommExists = await checkReplyToCommentExists(replyTo, { shouldReturnBool: true });
 
