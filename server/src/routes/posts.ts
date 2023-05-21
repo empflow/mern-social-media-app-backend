@@ -15,7 +15,12 @@ const uploadMw = upload.array("imgs")
 
 router.route("/:postPath")
   .get(getPost)
-  .patch(patchPostValidator, patchPostuploadNewImgsIfPresent, patchPost)
+  .patch(
+    handleMulterUploadArray(uploadMw, imgsUploadLimit),
+    patchPostValidator,
+    patchPostuploadNewImgsIfPresent,
+    patchPost
+  )
   .delete(deleteUserPost);
 
 router.route("/:postPath/comments")
