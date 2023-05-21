@@ -20,6 +20,7 @@ import createNUsers from "../utils/createNUsers";
 import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 import { getPostPath } from "../../utils/pathsGenerators";
+import expectDates from "../utils/expectDates";
 
 
 export let user1: IUser;
@@ -33,6 +34,7 @@ let postByUser2: IPost;
 
 let mongod: MongoMemoryServer;
 const imgsLimitExceededMsgMatch = getFileCountExceedsLimitMsg(imgsUploadLimit);
+const content = "foo bar";
 
 
 describe("posts", () => {
@@ -288,11 +290,41 @@ describe("posts", () => {
     describe("not given auth header", () => {
       it("returns 401 unauthorized", async () => {
         const { body, statusCode } = await requests(app)
-          .patch(`/posts/${postByUser1.id}`)
+          .patch(`/posts/${postByUser1.postPath}`)
           .send({ content: "new content" });
 
         expect(statusCode).toBe(401);
         expect(body.message).toMatch("unauthorized");
+      })
+    })
+
+    describe("given auth header", () => {
+      describe("given content", () => {
+        it("returns 200 and post with updated content", async () => {
+          const { body, statusCode } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .send({ content })
+            .set("Authorization", user1AuthHeader);
+
+          const {
+            content: returnedContent, onUser, createdBy, tinyPreview, imgs, comments, vids, createdAt, updatedAt, likes, dislikes, shares, views
+          } = body;
+
+          expect(statusCode).toBe(200);
+          expect(returnedContent).toBe(content);
+          expect(onUser).toBe(postByUser1.onUser.toString());
+          expect(createdBy).toBe(postByUser1.createdBy.toString());
+          expect(tinyPreview).toBe(postByUser1.tinyPreview);
+          expect(imgs).toEqual(postByUser1.imgs);
+          expect(comments).toEqual(postByUser1.comments);
+          expect(vids).toEqual(postByUser1.vids);
+          expect(likes).toBe(postByUser1.likes);
+          expect(dislikes).toBe(postByUser1.dislikes);
+          expect(shares).toBe(postByUser1.shares);
+          expect(views).toBe(postByUser1.views);
+          expectDates(createdAt, postByUser1.createdAt).toBeEqual();
+          expectDates(updatedAt, postByUser1.updatedAt).notToBeEqual();
+        })
       })
     })
   })
