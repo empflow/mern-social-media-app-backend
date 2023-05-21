@@ -277,7 +277,7 @@ describe("comments", () => {
       })
     })
 
-    describe("trying to patch another user's post", () => {
+    describe("trying to patch another user's comment", () => {
       it("returns 403 forbidden", async () => {
         const { statusCode, body } = await requests(app)
           .patch(`/comments/${commToPatchByUser1.id}`)

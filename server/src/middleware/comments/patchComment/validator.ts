@@ -8,6 +8,7 @@ import doesArrHaveDuplicates from "../../../utils/doesArrHaveDuplicates";
 import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import { imgsUploadLimit } from "../../../utils/s3";
+import validateFileCount from "../../../utils/validateFileCount";
 
 
 export default async function patchCommentValidator(req: IReq, res: IRes, next: NextFunction) {
@@ -18,7 +19,7 @@ export default async function patchCommentValidator(req: IReq, res: IRes, next: 
   
   checkTryingToPatchOwnComment(req, comment);
   await checkReplyToCommentExists(replyTo);
-  checkFilesCountExceedLimit(req, comment);
+  validateFileCount(req, comment);
 
   req.data.comment = deepCopy(comment);
   next();
@@ -36,56 +37,6 @@ function checkTryingToPatchOwnComment(req: IReq, comment: IComment) {
 }
 
 
-function checkFilesCountExceedLimit(req: IReq, comment: IComment) {
-  const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
-  const files = req.files as Express.Multer.File[] | undefined;
-  validateFilesToDeleteIds(comment, filesToDeleteIds);
-
-  if (!files || !files.length) return; // impossible to exceed the limit if no new files are provided
-  const totalFileCount = getTotalFileCount(req, comment, files);
-  throwIfTotalFileCountOverLimit(totalFileCount, imgsUploadLimit);
-}
-
-
-function getTotalFileCount(req: IReq, comment: IComment, files: Express.Multer.File[]) {
-  const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
-
-  const filesToDeleteIdsLen = getFilesToDeleteIdsLen(filesToDeleteIds);
-  const newFilesLen = files.length ?? 0;
-  const existingImgsLen = comment.imgs.length;
-
-  return newFilesLen + existingImgsLen - filesToDeleteIdsLen;
-}
-
-
-function validateFilesToDeleteIds(
-  comment: IComment, filesToDeleteIds: string | string[] | undefined
-) {
-  if (typeof filesToDeleteIds === "string") {
-    filesToDeleteIds = [filesToDeleteIds];
-  } else if (!filesToDeleteIds) return;
-
-  if (doesArrHaveDuplicates(filesToDeleteIds)) {
-    throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
-  }
-
-  const existingImgsIds = comment.imgs.map(imgObj => (imgObj as any).id);
-  filesToDeleteIds.forEach(id => {
-    if (!existingImgsIds.includes(id)) {
-      throw new BadRequestErr(`${id} does not match any files`);
-    }
-  });
-}
-
-
-function getFilesToDeleteIdsLen(filesToDeleteIds: string | string[] | undefined) {
-  const filesToDeleteIdsLen = convertFilesToDeleteIdsToArr(
-    filesToDeleteIds
-  ).length;
-
-  return filesToDeleteIdsLen;
-}
-
 export function convertFilesToDeleteIdsToArr(filesToDeleteIds: string | string[] | undefined) {
   let result: string[];
 
@@ -98,12 +49,4 @@ export function convertFilesToDeleteIdsToArr(filesToDeleteIds: string | string[]
   }
 
   return result;
-}
-
-
-function throwIfTotalFileCountOverLimit(totalFileCount: number, limit: number) {
-  if (totalFileCount > limit) {
-    const msg = getFileCountExceedsLimitMsg(imgsUploadLimit);
-    throw new BadRequestErr(msg);
-  }
 }
