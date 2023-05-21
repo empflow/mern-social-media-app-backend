@@ -249,6 +249,18 @@ describe("comments", () => {
       })
     })
 
+    describe("given new imgs in an unexpected field", () => {
+      it("returns 400 bad request", async () => {
+        const { body, statusCode } = await requests(app)
+          .patch(`/comments/${commToPatchByUser1.id}`)
+          .attach("foo", jpegImgPath)
+          .set("Authorization", user1AuthHeader);
+
+        expect(statusCode).toBe(400);
+        expect(body.message).toMatch(/unexpected field/i);
+      })
+    })
+
     describe("given init comm has 9 img & given 1 invalid img to delete id", () => {
       it("returns 400 bad request", async () => {
         const imgObjs = getInitCommentImgObjects(9);
