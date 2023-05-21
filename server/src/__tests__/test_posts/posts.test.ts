@@ -21,6 +21,7 @@ import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 import { getPostPath } from "../../utils/pathsGenerators";
 import expectDates from "../utils/expectDates";
+import { jpegImgPath } from "../utils/imgsPaths";
 
 
 export let user1: IUser;
@@ -350,6 +351,31 @@ describe("posts", () => {
           expect(dislikes).toEqual(postByUser1.dislikes);
           expect(shares).toEqual(postByUser1.shares);
           expect(views).toEqual(postByUser1.views);
+        })
+      })
+
+      describe("given 1 .jpeg img", () => {
+        it("returns 200 & post with 1 img in imgs array", async () => {
+          const { statusCode, body } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .attach("imgs", jpegImgPath)
+            .set("Authorization", user1AuthHeader);
+
+          expect(statusCode).toBe(200);
+          expect(body.imgs.length).toBe(1);
+          expectImgsUrlsMatchHttps(body);
+        })
+      })
+
+      describe("given .jpeg img in an unexpected field", () => {
+        it("returns 400 bad request", async () => {
+          const { statusCode, body } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .attach("foo", jpegImgPath)
+            .set("Authorization", user1AuthHeader);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(/unexpected field/i);
         })
       })
     })
