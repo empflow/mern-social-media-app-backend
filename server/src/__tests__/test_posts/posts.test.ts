@@ -23,6 +23,7 @@ import { getPostPath } from "../../utils/pathsGenerators";
 import expectDates from "../utils/expectDates";
 import { jpegImgPath, webpImgPath } from "../utils/imgsPaths";
 import getInitPostImgObjs from "./getInitPostImgObjs";
+import createPost from "./createPost";
 
 
 export let user1: IUser;
@@ -300,7 +301,20 @@ describe("posts", () => {
       })
     })
 
+
     describe("given auth header", () => {
+      describe("given a .jpeg img in an unexpected field", () => {
+        it("returns 400 bad request", async () => {
+          const { statusCode, body } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .attach("foo", jpegImgPath)
+            .set("Authorization", user1AuthHeader);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(/unexpected field/i);
+        })
+      })
+
       describe("given content", () => {
         it("returns 200 and post with updated content", async () => {
           const { body, statusCode } = await requests(app)
@@ -385,35 +399,18 @@ describe("posts", () => {
       describe("given init post has 2 imgs & given 2 img ids to delete & 2 new imgs", () => {
         it("returns 200 and post with 8 imgs", async () => {
           const postImgs = getInitPostImgObjs(2);
-          const postToPatch = await Post.create({
-            onUser: user1.id,
-            createdBy: user1.id,
-            postPath: getPostPath(content),
-            imgs: postImgs
-          });
+          const post = await createPost({ imgs: postImgs });
 
           const req = requests(app)
-            .patch(`/posts/${postToPatch.postPath}`)
+            .patch(`/posts/${post.postPath}`)
             .field("filesToDeleteIds", [postImgs[0]._id, postImgs[1]._id])
             .set("Authorization", user1AuthHeader);
           const { statusCode, body } = await attachNFiles("imgs", webpImgPath, 2, req);
 
           expect(statusCode).toBe(200);
           expect(body.imgs.length).toBe(2);
-          expect(body.imgs[0]._id).not.toBe(postToPatch.imgs[0]._id.toString());
-          expect(body.imgs[1]._id).not.toBe(postToPatch.imgs[1]._id.toString());
-        })
-      })
-
-      describe("given .jpeg img in an unexpected field", () => {
-        it("returns 400 bad request", async () => {
-          const { statusCode, body } = await requests(app)
-            .patch(`/posts/${postByUser1.postPath}`)
-            .attach("foo", jpegImgPath)
-            .set("Authorization", user1AuthHeader);
-
-          expect(statusCode).toBe(400);
-          expect(body.message).toMatch(/unexpected field/i);
+          expect(body.imgs[0]._id).not.toBe(post.imgs[0]._id.toString());
+          expect(body.imgs[1]._id).not.toBe(post.imgs[1]._id.toString());
         })
       })
     })
