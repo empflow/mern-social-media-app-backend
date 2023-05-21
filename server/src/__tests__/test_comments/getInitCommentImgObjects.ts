@@ -6,6 +6,8 @@ interface IImgObj {
 
 
 export default function getInitCommentImgObjects(amount: number) {
+  if (amount > 10) throw new RangeError("amount must be below 10");
+
   const data = [
     {
         "previewSize": "https://s3.timeweb.com/3fc3a54c-e6e5e4d7-4608-419b-8acd-904bd53b1f22/NvCTb0eZNgQpTxlGW6pL-1684595774032.webp",
@@ -58,9 +60,6 @@ export default function getInitCommentImgObjects(amount: number) {
         "_id": "6468e442d64bb77a85ba9a5c"
     }
   ];
-
-  if (amount > 10) throw new RangeError("amount must be below 10");
-
 
   const result: IImgObj[] = [];
   for (let i = 0; i < amount; i++) {
