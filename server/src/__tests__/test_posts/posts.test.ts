@@ -429,6 +429,19 @@ describe("posts", () => {
           expect(body.message).toBe(msgToExpect);
         })
       })
+
+      describe("given init post has no imgs & given ids of imgs to delete", () => {
+        it("returns 400 bad request because there's nothing to delete", async () => {
+          const fileIdToDelete = getInitPostImgObjs(1)[0]._id;
+          const { statusCode, body } = await requests(app)
+            .patch(`/posts/${postByUser1.postPath}`)
+            .field("filesToDeleteIds", fileIdToDelete)
+            .set("Authorization", user1AuthHeader);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toMatch(/does not match any files/);
+        })
+      })
     })
   })
   // TODO: test when trying to patch someone else's post
