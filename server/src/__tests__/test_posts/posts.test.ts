@@ -21,7 +21,7 @@ import getAuthHeadersForUsers from "../utils/getAuthHeadersForUsers";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 import { getPostPath } from "../../utils/pathsGenerators";
 import expectDates from "../utils/expectDates";
-import { jpegImgPath, webpImgPath } from "../utils/imgsPaths";
+import { jpegImgPath, pngImgPath, webpImgPath } from "../utils/imgsPaths";
 import getInitPostImgObjs from "./getInitPostImgObjs";
 import createPost from "./createPost";
 
@@ -411,6 +411,22 @@ describe("posts", () => {
           expect(body.imgs.length).toBe(2);
           expect(body.imgs[0]._id).not.toBe(post.imgs[0]._id.toString());
           expect(body.imgs[1]._id).not.toBe(post.imgs[1]._id.toString());
+        })
+      })
+
+      describe("given init post has 9 imgs & given 2 new imgs", () => {
+        it("returns 400 bad request", async () => {
+          const postImgs = getInitPostImgObjs(9);
+          const post = await createPost({ imgs: postImgs });
+
+          const req = requests(app)
+            .patch(`/posts/${post.postPath}`)
+            .set("Authorization", user1AuthHeader);
+          const { statusCode, body } = await attachNFiles("imgs", pngImgPath, 2, req);
+
+          expect(statusCode).toBe(400);
+          const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+          expect(body.message).toBe(msgToExpect);
         })
       })
     })
