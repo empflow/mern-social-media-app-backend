@@ -22,7 +22,8 @@ export interface IPost extends mongoose.Document {
 export interface IPostImg {
   fullSize: string,
   previewSize: string,
-  feedSize: string
+  feedSize: string,
+  _id: string
 }
 
 export interface IVid {
@@ -36,7 +37,7 @@ export const ImgsSchema = new Schema<IPostImg>({
   fullSize: { type: String, required: true },
   feedSize: { type: String, required: true },
   previewSize: { type: String, required: true }
-}, { _id: false });
+});
 
 
 const PostSchema = new Schema<IPost>({
