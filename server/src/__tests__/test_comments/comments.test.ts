@@ -17,14 +17,15 @@ import getInitCommentImgObjects from "./getInitCommentImgObjects";
 import attachNFiles from "../utils/attachNImgs";
 import { imgsUploadLimit } from "../../utils/s3";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
+import { HydratedDocument } from "mongoose";
 
 let mongod: MongoMemoryServer;
 
-let user1: IUser;
-let user2: IUser;
-let commToPatchByUser1: IComment;
-let commWith2ImgsByUser1: IComment;
-let replyToCommByUser1: IComment;
+let user1: HydratedDocument<IUser>;
+let user2: HydratedDocument<IUser>;
+let commToPatchByUser1: HydratedDocument<IComment>;
+let commWith2ImgsByUser1: HydratedDocument<IComment>;
+let replyToCommByUser1: HydratedDocument<IComment>;
 
 export let user1AuthHeader: string;
 export let user2AuthHeader: string;

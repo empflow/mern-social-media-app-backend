@@ -1,17 +1,11 @@
 import s3 from "./s3";
-import { ICommentImg } from "../models/Comment";
+import { ICommentImg, ICommentImgNoId } from "../models/Comment";
 import { optimizeImgForFullSize, optimizeImgForPreview } from "./optimizeImg";
 import { s3Upload } from "./s3";
 import { S3 } from "aws-sdk";
 
-// export interface ICommentImg {
-//   previewSize: string,
-//   fullSize: string
-// }
 
-export default async function optimizeAndUploadCommentImgs(
-  imgs: Buffer[]
-): Promise<ICommentImg[] | undefined> {
+export default async function optimizeAndUploadCommentImgs(imgs: Buffer[]) {
   if (!imgs.length) return undefined;
 
   const optimizedPreviewImgs = await getOptimizedPreviewImgs(imgs);
@@ -55,7 +49,7 @@ function convertPreviewsAndFullSizeImgsUploadsToSingleArr(
   for (let i = 0; i < previewImgsUploads.length; i++) {
     const previewImg = previewImgsUploads[i];
     const fullSizeImg = fullSizeImgsUploads[i];
-    const imgObj: ICommentImg = {
+    const imgObj: ICommentImgNoId = {
       previewSize: previewImg.Location,
       fullSize: fullSizeImg.Location
     }

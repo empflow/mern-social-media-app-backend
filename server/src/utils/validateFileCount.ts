@@ -32,7 +32,7 @@ function validateFilesToDeleteIds(
     throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
   }
 
-  const existingImgsIds = comment.imgs.map(imgObj => (imgObj as any).id);
+  const existingImgsIds = comment.imgs.map(imgObj => imgObj._id.toString());
   filesToDeleteIds.forEach(id => {
     if (!existingImgsIds.includes(id)) {
       throw new BadRequestErr(`${id} does not match any files`);

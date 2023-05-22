@@ -1,4 +1,4 @@
-import mongoose, { Types, Schema } from "mongoose";
+import mongoose, { Types, Schema, HydratedDocument } from "mongoose";
 import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
 
 
@@ -23,7 +23,7 @@ export interface IPostImg {
   fullSize: string,
   previewSize: string,
   feedSize: string,
-  _id?: mongoose.Types.ObjectId | string
+  _id: Types.ObjectId
 }
 
 export interface IVid {

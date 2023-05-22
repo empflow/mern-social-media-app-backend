@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
-import { IPost } from "../../../models/Post";
-import deepCopy from "../../../utils/deepCopy";
+import mongoose, { Schema } from "mongoose";
+import { IPost, IPostImg } from "../../../models/Post";
 import { IOptimizeAndUploadPostImgsReturnType } from "../../../utils/optimizeAndUploadPostImgs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
@@ -10,8 +10,9 @@ export default function patchPostAppendNewImgs(req: IReq, res: IRes, next: NextF
 
   if (!upload.imgs) return next();
 
-  upload.imgs.forEach((upload) => {
-    post.imgs.push(upload);
+  upload.imgs.forEach((imgObj) => {
+    const imgObjWithId: IPostImg = { ...imgObj, _id: new mongoose.Types.ObjectId() }
+    post.imgs.push(imgObjWithId);
   });
 
   req.data.post = post;

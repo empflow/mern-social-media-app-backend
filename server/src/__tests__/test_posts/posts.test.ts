@@ -399,19 +399,21 @@ describe("posts", () => {
 
       describe("given init post has 2 imgs & given 2 img ids to delete & 2 new imgs", () => {
         it("returns 200 and post with 8 imgs", async () => {
-          const postImgs: IPostImg[] = getInitPostImgObjs(2);
+          const postImgs = getInitPostImgObjs(2);
           const post = await createPost({ imgs: postImgs });
+          const imgId1 = post.imgs[0]._id.toString();
+          const imgId2 = post.imgs[1]._id.toString();
+
           const req = requests(app)
             .patch(`/posts/${post.postPath}`)
-            .field("filesToDeleteIds", [postImgs[0]._id as string, postImgs[1]._id as string])
+            .field("filesToDeleteIds", [imgId1, imgId2])
             .set("Authorization", user1AuthHeader);
           const { statusCode, body } = await attachNFiles("imgs", webpImgPath, 2, req);
 
           expect(statusCode).toBe(200);
           expect(body.imgs.length).toBe(2);
-          console.log(post.imgs);
-          expect(body.imgs[0]._id).not.toBe(((post.imgs[0]._id as unknown) as ObjectId).toString());
-          expect(body.imgs[1]._id).not.toBe(((post.imgs[1]._id as unknown) as ObjectId).toString());
+          expect(body.imgs[0]._id).not.toBe(imgId1);
+          expect(body.imgs[1]._id).not.toBe(imgId2);
         })
       })
 
@@ -433,7 +435,7 @@ describe("posts", () => {
 
       describe("given init post has no imgs & given ids of imgs to delete", () => {
         it("returns 400 bad request because there's nothing to delete", async () => {
-          const fileIdToDelete = getInitPostImgObjs(1)[0]._id;
+          const fileIdToDelete = new mongoose.Types.ObjectId().toString();
           const { statusCode, body } = await requests(app)
             .patch(`/posts/${postByUser1.postPath}`)
             .field("filesToDeleteIds", fileIdToDelete)
