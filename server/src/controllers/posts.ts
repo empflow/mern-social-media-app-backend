@@ -70,7 +70,7 @@ export async function deleteUserPost(req: IReq, res: IRes) {
 export async function patchPost(req: IReq, res: IRes) {
   const { postPath } = req.params;
   const { content } = req.body;
-  const post = req.data.post;
+  const post = req.data.post.toObject();
 
   const updatedPost = await findDocAndUpdate(
     Post,
