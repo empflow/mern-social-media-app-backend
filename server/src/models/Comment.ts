@@ -1,5 +1,15 @@
 import mongoose, { Types } from "mongoose";
 import { Schema } from "mongoose";
+import { IVid } from "./Post";
+import { imageAttachmentsValidator, videoAttachmentsValidator } from "./validators";
+
+
+export interface ICommentImg {
+  previewSize: string,
+  fullSize: string,
+  _id: Types.ObjectId
+}
+export type ICommentImgNoId = Omit<ICommentImg, "_id">;
 
 export interface IComment {
   createdBy: Types.ObjectId,
@@ -8,11 +18,23 @@ export interface IComment {
   likes: number,
   dislikes: number,
   replyTo: null | Types.ObjectId,
-  imageAttachments: string[],
-  videoAttachments: string[],
+  imgs: ICommentImg[],
+  vids: IVid[],
   createdAt: Date,
   updatedAt: Date
 }
+
+const ImgsSchema = new Schema<ICommentImg>({
+  previewSize: {
+    type: String,
+    required: true
+  },
+  fullSize: {
+    type: String,
+    required: true
+  }
+});
+
 
 const CommentSchema = new Schema<IComment>({
   createdBy: {
@@ -26,7 +48,7 @@ const CommentSchema = new Schema<IComment>({
   },
   content: {
     type: String,
-    required: true
+    default: null
   },
   likes: { type: Number, default: 0 },
   dislikes: { type: Number, default: 0 },
@@ -35,15 +57,18 @@ const CommentSchema = new Schema<IComment>({
     type: Schema.Types.ObjectId,
     ref: "Comment"
   },
-  imageAttachments: {
-    type: [String],
+  imgs: {
+    type: [ImgsSchema],
+    validate: imageAttachmentsValidator,
     default: []
   },
-  videoAttachments: {
-    type: [String],
+  vids: {
+    type: [{ preview: String, vid: String }],
+    validate: videoAttachmentsValidator,
     default: []
-  }
+  },
 }, { timestamps: true });
+
 
 const Comment = mongoose.model<IComment>("Comment", CommentSchema);
 export default Comment;

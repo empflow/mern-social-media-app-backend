@@ -1,18 +1,39 @@
-import { DiskStorageOptions } from "multer";
+import { Options } from "multer";
 import path from "node:path";
-import mkdirIfDoesntExist from "../utils/mkdirIfDoesntExist";
+import { BadRequestErr } from "../utils/errs";
+import multer from "multer";
 
-const uploadPath = path.join(__dirname, "../../uploads");
 
-const multerDiskStorageConf: DiskStorageOptions = {
-  destination(req, file, cb) {
-    mkdirIfDoesntExist(uploadPath);
-    cb(null, uploadPath);
-  },
-  filename(req, file, cb) {
-    const fileName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, fileName);
-  },
+const multerOptions: Options = {
+  fileFilter(req, file, callback) {
+    const fileExt = path.extname(file.originalname);
+
+    if (allowedFileExts.includes(fileExt)) {
+      callback(null, true);
+    } else {
+      const formattedAllowedFileExts = getFormattedAllowedFileExts();
+      const err = new BadRequestErr(
+        `Forbidden file extension. You can only use ${formattedAllowedFileExts} extensions`
+      );
+      callback(err);
+    }
+  }
 }
 
-export default multerDiskStorageConf;
+export const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
+function getFormattedAllowedFileExts() {
+  let result = "";
+  allowedFileExts.forEach((ext, i) => (
+    result += `${ext}${allowedFileExts.length - 1 === i ? "" : " "}`
+  ));
+  
+  return result;
+}
+
+export function getFileCountExceedsLimitMsg(limit: number) {
+  return `you've exceeded the limit of ${limit} files`;
+}
+
+
+export const upload = multer(multerOptions);
+export default multerOptions;

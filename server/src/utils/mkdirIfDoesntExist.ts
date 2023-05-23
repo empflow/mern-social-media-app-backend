@@ -1,5 +1,6 @@
 import fs from "node:fs";
-import throwIfPathNotAbsolute from "./throwIfPathNotAbsolute";
+import path from "node:path";
+
 
 export default function mkdirIfDoesntExist(dirPath: string) {
   throwIfPathNotAbsolute(dirPath);
@@ -8,5 +9,12 @@ export default function mkdirIfDoesntExist(dirPath: string) {
     fs.mkdir(dirPath, (err) => {
       if (err) throw err;
     });
+  }
+}
+
+
+function throwIfPathNotAbsolute(pathToCheck: string) {
+  if (!path.isAbsolute(pathToCheck)) {
+    throw new Error("path must be absolute");
   }
 }

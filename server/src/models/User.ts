@@ -1,7 +1,9 @@
-import mongoose, { Types, Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { friendsValidator } from "./validators";
+import getEnvVar from "../utils/getEnvVar";
+
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -11,7 +13,7 @@ export const maxLengths: Record<string, any> = {
   profilePath: 30,
   email: 254,
   password: 100,
-  pictureUrl: 1000,
+  avatarUrl: 1000,
   city: 100,
   occupation: 300,
   status: 300
@@ -25,14 +27,14 @@ export const minLengths: Record<string, any> = {
   password: 10
 }
 
-export interface IUser {
+export interface IUser extends mongoose.Document {
   firstName: string,
   lastName: string,
   email: string,
   password: string,
-  pictureUrl50px: string,
-  pictureUrl100px: string,
-  pictureUrl400px: string,
+  avatarUrl400px: string,
+  avatarUrl200px: string,
+  avatarUrl100px: string,
   profilePath: string,
   friends: object[],
   friendRequestsReceived: object[],
@@ -46,14 +48,25 @@ export interface IUser {
   updatedAt: string
 }
 
+export interface IAvatarUrls {
+  avatarUrl400px: string,
+  avatarUrl200px: string,
+  avatarUrl100px: string
+}
+
+const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
+const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
+const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
+
+
 const UserSchema = new Schema<IUser>({
   firstName: { type: String, required: true, minlength: minLengths.firstName, maxlength: maxLengths.firstName },
   lastName: { type: String, required: true, minlength: minLengths.lastName, maxlength: maxLengths.lastName },
   email: { type: String, required: true, unique: true, match: emailRegex, maxlength: maxLengths.email },
   password: { type: String, required: true },
-  pictureUrl50px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
-  pictureUrl100px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
-  pictureUrl400px: { type: String, default: "assets/pictures/default.svg", maxlength: maxLengths.pictureUrl },
+  avatarUrl400px: { type: String, default: defaultAvatarUrl400px, maxlength: maxLengths.pictureUrl },
+  avatarUrl200px: { type: String, default: defaultAvatarUrl200px, maxlength: maxLengths.pictureUrl },
+  avatarUrl100px: { type: String, default: defaultAvatarUrl100px, maxlength: maxLengths.pictureUrl },
   profilePath: {
     type: String,
     maxlength: maxLengths.profilePath,
@@ -98,10 +111,13 @@ UserSchema.methods.comparePasswords = async function (candidatePassword: string)
 }
 
 UserSchema.methods.createJwt = async function () {
+  const JWT_SECRET = getEnvVar("JWT_SECRET");
+  const JWT_EXPIRES_IN = getEnvVar("JWT_EXPIRES_IN");
+
   return jwt.sign(
     { userId: this._id },
-    process.env.JWT_SECRET as string,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
   )
 }
 

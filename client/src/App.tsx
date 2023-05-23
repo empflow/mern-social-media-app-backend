@@ -14,8 +14,6 @@ function App() {
         "email": `gmail${count}@gmail.com`,
         "password": "1234567890"
       });
-      console.log(data);
-      console.log(data.token);
     } catch (err) {
       console.error(err);
     }

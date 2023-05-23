@@ -40,6 +40,7 @@ export default function testSignUpFieldIsOfLength(
   })
 }
 
+
 function getExpectedStatusCodeBasedOnFieldLength(
   length: number, maxAllowedLength: number, minAllowedLength: number = 0
 ) {
@@ -51,6 +52,7 @@ function getExpectedStatusCodeBasedOnFieldLength(
 
   return statusCode;
 }
+
 
 function getTestContentBasedOnFieldLength(
   field: string, length: number, maxAllowedLength: number, minAllowedLength: number
@@ -81,6 +83,7 @@ function getTestContentBasedOnFieldLength(
 
   return [describeContent, itContent];
 }
+
 
 function getPayload(field: keyof ISignUpData, length: number) {
   const payload = { ...getSignUpData() };

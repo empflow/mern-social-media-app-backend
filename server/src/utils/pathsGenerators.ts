@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 
+
 export function getRandomProfilePath() {
   const randomCharsLength = 9;
   return `user-${nanoid(randomCharsLength)}`;
@@ -7,7 +8,7 @@ export function getRandomProfilePath() {
 
 export function getPostPath(content: string | undefined | null) {
   if (typeof content === "string") {
-    content = toLowerCaseAndSlice(content);
+    content = toLowerCaseAndLimitChars(content, 70);
     content = removeSpecialChars(content);
     content = removeLastWord(content);
     content = replaceSpacesWithDashes(content);
@@ -19,9 +20,9 @@ export function getPostPath(content: string | undefined | null) {
   return nanoid();
 }
 
-function toLowerCaseAndSlice(str: string) {
+function toLowerCaseAndLimitChars(str: string, charsLimit: number) {
   str = str.toLowerCase();
-  return str.slice(0, 70);
+  return str.slice(0, charsLimit);
 }
 
 function removeSpecialChars(str: string) {

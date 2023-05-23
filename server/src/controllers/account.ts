@@ -6,16 +6,22 @@ import { findDocByIdAndUpdate } from "../utils/findDocs";
 import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
+
 export async function patchAccount(req: IReq, res: IRes) {
   const { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost } = req.body;
-  const update = { firstName, lastName, email, profilePath, birthday, city, occupation, status, canAnyonePost };
+  const { avatarUrl400px, avatarUrl200px, avatarUrl100px } = req.data.avatarUrls ?? {};
+  const update: Partial<IUser> = {
+    firstName, lastName, email, profilePath,
+    birthday, city, occupation, status, canAnyonePost,
+    avatarUrl400px, avatarUrl200px, avatarUrl100px
+  };
   const userId: string = req.data.user.userId;
   const patchedAccount = await findDocByIdAndUpdate(
     User, userId, update, userProjection
   );
-  if (!patchedAccount) throw new NotFoundErr("account not found");
   res.status(200).json(patchedAccount);
 }
+
 
 export async function getOwnAccount(req: IReq, res: IRes) {
   const userId = req.data.user.userId;
@@ -24,6 +30,7 @@ export async function getOwnAccount(req: IReq, res: IRes) {
   if (!user) throw new NotFoundErr("user not found");
   res.status(200).json(user);
 }
+
 
 export async function deleteAccount(req: IReq, res: IRes) {
   // TODO: deactivate account instead of removing from db entirely
@@ -34,6 +41,7 @@ export async function deleteAccount(req: IReq, res: IRes) {
   await Post.deleteMany({ createdBy: deletedAccount.id });
   res.status(200).json(deletedAccount);
 }
+
 
 export async function sendFriendRequest(req: IReq, res: IRes) {
   const { friendId: receiverId } = req.params;
@@ -53,6 +61,7 @@ export async function sendFriendRequest(req: IReq, res: IRes) {
 
   res.status(200).json({ updatedSender, updatedReceiver });
 }
+
 
 export async function acceptFriendRequest(req: IReq, res: IRes) {
   const { friendId: senderId } = req.params;
@@ -76,9 +85,10 @@ export async function acceptFriendRequest(req: IReq, res: IRes) {
   res.send({ updatedSender, updatedReceiver });
 }
 
+
 export async function rejectFriendRequest(req: IReq, res: IRes) {
-  const sender: HydratedDocument<IUser> = req.data.sender;
-  const receiver: HydratedDocument<IUser> = req.data.receiver;
+  const sender: IUser = req.data.sender;
+  const receiver: IUser = req.data.receiver;
 
   const hasReqBeenSent = receiver.friendRequestsReceived.indexOf(sender.id) !== -1;
   if (!hasReqBeenSent) {
@@ -97,6 +107,7 @@ export async function rejectFriendRequest(req: IReq, res: IRes) {
 
   res.status(200).json({ updatedSender, updatedReceiver });
 }
+
 
 export async function deleteFriend(req: IReq, res: IRes) {
   const { friendId: friendToDeleteId } = req.params;

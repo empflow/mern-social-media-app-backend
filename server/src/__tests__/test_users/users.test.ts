@@ -2,13 +2,14 @@ import requests from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import app from "../../app";
-import getAuthHeader from "../utils/getToken";
+import getAuthHeader from "../utils/getAuthHeader";
 import getSignUpData from "../utils/getSignUpData";
-import User, { IUser } from "../../models/User";
-import { userDataForModel } from "../test_auth/auth.test";
-import mongoose, { Document } from "mongoose";
+import User from "../../models/User";
 import getUserDataForModel from "../utils/getUserDataForModel";
+import mongoose from "mongoose";
 
+
+const userDataForModel = getUserDataForModel();
 
 describe("users", () => {
   let mongod: MongoMemoryServer;

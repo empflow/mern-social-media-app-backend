@@ -7,6 +7,7 @@ export enum ErrCodes {
   InternalServer = 500
 }
 
+
 export default class ApiErr extends Error {
   protected constructor (
     message: string,

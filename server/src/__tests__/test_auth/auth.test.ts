@@ -5,7 +5,6 @@ import app from "../../app";
 import getSignUpData from "../utils/getSignUpData";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import testMissingSignUpData from "./testMissingSignUpData";
-import { getRandomProfilePath } from "../../utils/pathsGenerators";
 import convertSignUpDataToSignInData from "../utils/convertSignUpDataToSignInData";
 import User from "../../models/User";
 import testSignUpFieldIsOfLength from "./testSignUpFieldIsOfLength";
@@ -14,6 +13,11 @@ import getStrOfLength from "../../utils/getStrOfLength";
 import testMissingSignInData from "./testMissingSignInData";
 import { dbConnSetup, dbConnTeardown } from "../utils/db";
 import getUserDataForModel from "../utils/getUserDataForModel";
+import path from "node:path";
+import getEnvVar from "../../utils/getEnvVar";
+import { testSignUpWithSupportedAvatarExt, testSignUpWithUnsupportedAvatarExt } from "./testSignUpWithAvatar";
+import attachAvatarToSignUpReq from "./attachAvatarToSignUpReq";
+import testAvatarUrlsDontMatchDefaultUrls from "./testAvatarUrlsDontMatchDefaultUrls";
 
 // tests seem to be running twice or more
 // weird behavior, but couldn't fix
@@ -21,27 +25,105 @@ import getUserDataForModel from "../utils/getUserDataForModel";
 
 export const signUpData = getSignUpData();
 export const signInData = convertSignUpDataToSignInData(signUpData);
+const defaultAvatarUrl400px = getEnvVar("DEFAULT_AVATAR_URL_400_PX");
+const defaultAvatarUrl200px = getEnvVar("DEFAULT_AVATAR_URL_200_PX");
+const defaultAvatarUrl100px = getEnvVar("DEFAULT_AVATAR_URL_100_PX");
 
-export const userDataForModel = getUserDataForModel();
+const userDataForModel = getUserDataForModel();
 
 describe("auth", () => {
   let mongod: MongoMemoryServer;
-
+  
   beforeAll(async () => mongod = await dbConnSetup());
-  afterEach(async () => User.deleteMany({}));
+  afterEach(async () => await User.deleteMany({}));
   afterAll(async () => await dbConnTeardown(mongod));
-
+  
   describe("sign-up", () => {
-    describe("given all correct sign-up data", () => {
-      it("returns 201 created user and token (no password)", async () => {
-        const { body, statusCode } = await requests(app)
-          .post("/auth/sign-up")
-          .send(signUpData);
+    describe("given all correct sign-up string data", () => {
+      describe("no avatar attached", () => {
+        it("returns 201 created user and token (no password)", async () => {
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .send(signUpData);
+    
+            expect(statusCode).toBe(201);
+            expect(body.user).toBeDefined();
+            expect(body.token).toBeDefined();
+            expect(body.password).toBeUndefined();
+            expect(body.user.avatarUrl400px).toBe(defaultAvatarUrl400px);
+            expect(body.user.avatarUrl200px).toBe(defaultAvatarUrl200px);
+            expect(body.user.avatarUrl100px).toBe(defaultAvatarUrl100px);
+        })
+      })
+
+      // these may occasionally throw `write EPIPE` error (couldn't fix)
+      testSignUpWithSupportedAvatarExt("../data/avatar.jpg");
+      testSignUpWithSupportedAvatarExt("../data/avatar.jpeg"); // timed out once
+      testSignUpWithSupportedAvatarExt("../data/avatar.webp");
+      testSignUpWithSupportedAvatarExt("../data/avatar.png");
+
+      testSignUpWithUnsupportedAvatarExt("../data/avatar.heic");
+      testSignUpWithUnsupportedAvatarExt("../data/avatar.svg");
+      testSignUpWithUnsupportedAvatarExt("../data/file.txt");
+
+      describe("given an avatar that's just below the size limit", () => {
+        it("returns 201 created", async () => {
+          const avatarPath = path.join(__dirname, "../data/7.99mb.jpeg");
+          const { body, statusCode } = await attachAvatarToSignUpReq(avatarPath);
 
           expect(statusCode).toBe(201);
-          expect(body.user).toBeDefined();
-          expect(body.token).toBeDefined();
-          expect(body.password).toBeUndefined();
+          testAvatarUrlsDontMatchDefaultUrls(body.user);
+        })
+      })
+
+      describe("given an avatar that's above the size limit", () => {
+        it("returns 400 bad request", async () => {
+          const avatarPath = path.join(__dirname, "../data/9mb.jpeg");
+          const { body, statusCode } = await attachAvatarToSignUpReq(avatarPath);
+
+          expect(statusCode).toBe(400);
+          expect(body.user).toBeUndefined();
+          expect(body.message).toMatch(/File too large/);
+        })
+      })
+
+      describe("given an avatar in an unexpected field", () => {
+        it("returns 400 bad request", async () => {
+          // .jpg image in an unexpected field almost always causes `write EPIPE` error (couldn't fix)
+          // so using .jpeg instead
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+    
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("foo", imgPath);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe("Unexpected field");
+        })
+      })
+
+      describe("given 2 avatars in the correct field", () => {
+        it("returns 400 bad request", async () => {
+          // .jpg image in an unexpected field almost always causes `write EPIPE` error (couldn't fix)
+          // so using .jpeg instead
+          const imgPath = path.join(__dirname, "../data/avatar.jpeg");
+
+          const { body, statusCode } = await requests(app)
+            .post("/auth/sign-up")
+            .field("firstName", signUpData.firstName)
+            .field("lastName", signUpData.lastName)
+            .field("email", signUpData.email)
+            .field("password", signUpData.password)
+            .attach("avatar", imgPath)
+            .attach("avatar", imgPath);
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe("Unexpected field");
+        })
       })
     })
 
@@ -61,13 +143,14 @@ describe("auth", () => {
 
     describe("given profilePath", () => {
       it("ignores it and returns 201 and a user with a random profilePath", async () => {
-        const profilePath = "empflow";
+        const profilePath = "foobar";
 
         const { body, statusCode } = await requests(app)
           .post("/auth/sign-up")
           .send({ ...signUpData, profilePath });
 
         expect(body.profilePath).not.toBe(profilePath);
+        expect(statusCode).toBe(201);
       })
     })
 
@@ -76,25 +159,25 @@ describe("auth", () => {
     testMissingSignUpData("email");
     testMissingSignUpData("password");
 
-    testSignUpFieldIsOfLength("firstName", 30, { shouldLog: true });
+    testSignUpFieldIsOfLength("firstName", 30);
     testSignUpFieldIsOfLength("firstName", 29);
     testSignUpFieldIsOfLength("firstName", 31);
     testSignUpFieldIsOfLength("firstName", 3);
     testSignUpFieldIsOfLength("firstName", 2);
 
-    testSignUpFieldIsOfLength("lastName", 30, { shouldLog: true });
+    testSignUpFieldIsOfLength("lastName", 30);
     testSignUpFieldIsOfLength("lastName", 29);
     testSignUpFieldIsOfLength("lastName", 31);
     testSignUpFieldIsOfLength("lastName", 3);
     testSignUpFieldIsOfLength("lastName", 2);
 
-    testSignUpFieldIsOfLength("email", 254, { shouldLog: true });
+    testSignUpFieldIsOfLength("email", 254);
     testSignUpFieldIsOfLength("email", 253);
     testSignUpFieldIsOfLength("email", 255);
     testSignUpFieldIsOfLength("email", 7);
     testSignUpFieldIsOfLength("email", 6);
 
-    testSignUpFieldIsOfLength("password", 100, { shouldLog: true });
+    testSignUpFieldIsOfLength("password", 100);
     testSignUpFieldIsOfLength("password", 99);
     testSignUpFieldIsOfLength("password", 101);
     testSignUpFieldIsOfLength("password", 10);

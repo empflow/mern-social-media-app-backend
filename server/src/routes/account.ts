@@ -1,12 +1,24 @@
 import express from "express";
 import { acceptFriendRequest, deleteAccount, deleteFriend, getOwnAccount, patchAccount, rejectFriendRequest, sendFriendRequest } from "../controllers/account";
-import validateAcceptingFriendRequest from "../middleware/validateAcceptingFriendRequest";
-import validateRejectingFriendRequest from "../middleware/validateRejectingFriendRequest";
-import { validateSendingFriendRequest } from "../middleware/validateSendingFriendRequest";
+import checkProfilePathAvailable from "../middleware/account/checkProfilePathAvailable";
+import validateAcceptingFriendRequest from "../middleware/account/validateAcceptingFriendRequest";
+import validateRejectingFriendRequest from "../middleware/account/validateRejectingFriendRequest";
+import { validateSendingFriendRequest } from "../middleware/account/validateSendingFriendRequest";
 const router = express.Router();
+import { upload } from "../config/multer";
+import uploadAvatarIfPresent from "../middleware/account/uploadAvatarIfPresent";
+import checkUserExists from "../middleware/account/checkUserExists";
+
 
 router.get("/", getOwnAccount);
-router.patch("/", patchAccount);
+router.patch(
+  "/",
+  upload.single("avatar"),
+  checkUserExists,
+  checkProfilePathAvailable,
+  uploadAvatarIfPresent,
+  patchAccount
+);
 router.delete("/", deleteAccount);
 
 router.route("/friends/:friendId")
