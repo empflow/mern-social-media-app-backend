@@ -8,13 +8,14 @@ import handleMulterUploadArray from "../utils/handleMulterUpload";
 import { imgsUploadLimit, vidsUploadLimit } from "../utils/s3";
 import addPostValidator from "../middleware/posts/addPost/validator";
 import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
+import getUserByIdValidator from "../middleware/users/getUserById/validator";
 
 
 const uploadMw = upload.array("imgs");
 
 router.get("/", getUsers);
 router.get("/:profilePath", getUser);
-router.get("/id/:userId", getUserById);
+router.get("/id/:userId", getUserByIdValidator, getUserById);
 router.get("/:profilePath/friends", getUserFriends)
 
 router.route("/:profilePath/posts")

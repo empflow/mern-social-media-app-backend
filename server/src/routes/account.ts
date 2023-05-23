@@ -8,6 +8,7 @@ const router = express.Router();
 import { upload } from "../config/multer";
 import uploadAvatarIfPresent from "../middleware/account/uploadAvatarIfPresent";
 import checkUserExists from "../middleware/account/checkUserExists";
+import deleteFriendValidator from "../middleware/account/deleteFriend/validator";
 
 
 router.get("/", getOwnAccount);
@@ -22,7 +23,10 @@ router.patch(
 router.delete("/", deleteAccount);
 
 router.route("/friends/:friendId")
-  .delete(deleteFriend);
+  .delete(
+    deleteFriendValidator,
+    deleteFriend
+  );
 
 router.post(
   "/friends/sendRequest/:friendId",

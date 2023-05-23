@@ -1,6 +1,7 @@
 import express from "express";
 import { upload } from "../config/multer";
 import { deleteComment, patchComment } from "../controllers/comments";
+import deleteCommentValidator from "../middleware/comments/deleteComment/validator";
 import patchCommentAppendNewImgsToComment from "../middleware/comments/patchComment/appendNewImgs";
 import patchCommentDeleteImgsIfNeeded from "../middleware/comments/patchComment/deleteImgsIfNeeded";
 import patchCommentValidator from "../middleware/comments/patchComment/validator";
@@ -21,6 +22,9 @@ router.route("/:commentId")
     patchCommentDeleteImgsIfNeeded,
     patchComment
   )
-  .delete(deleteComment);
+  .delete(
+    deleteCommentValidator,
+    deleteComment
+  );
 
 export default router;

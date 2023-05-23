@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import { HydratedDocument } from "mongoose";
 import User, { IUser } from "../../models/User";
 import arrToString from "../../utils/arrToString";
+import validateObjectId from "../../utils/validateObjectId";
 import { ConflictErr, ForbiddenErr, NotFoundErr } from "../../utils/errs";
 import { findDocsByIds } from "../../utils/findDocs";
 import idExistsInIdsArr from "../../utils/idAlreadyExistsInArrayOfIds";
@@ -25,6 +26,7 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
 
 
 function validateIds(senderId: string, receiverId: string) {
+  validateObjectId(senderId);
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot accept a friend request from yourself");
   }
