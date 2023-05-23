@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
 import Comment, { IComment } from "../../../models/Comment";
-import checkObjectIdValid from "../../../utils/checkObjectIdValid";
+import validateObjectId from "../../../utils/validateObjectId";
 import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
 import deepCopy from "../../../utils/deepCopy";
 import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
@@ -11,7 +11,7 @@ import validateFileCount from "../../../utils/validateFileCount";
 export default async function patchCommentValidator(req: IReq, res: IRes, next: NextFunction) {
   const { commentId } = req.params;
   const { replyTo } = req.body;
-  checkObjectIdValid(commentId);
+  validateObjectId(commentId);
 
   const comment = await Comment.findById(commentId);
   if (!comment) throw new NotFoundErr("comment not found");

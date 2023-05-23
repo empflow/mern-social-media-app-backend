@@ -8,7 +8,7 @@ import { findDocsByIds, findDocs } from "../../utils/findDocs";
 import { HydratedDocument } from "mongoose";
 import userProjection from "../../utils/projections/userProjection";
 import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
-import checkObjectIdValid from "../../utils/checkObjectIdValid";
+import validateObjectId from "../../utils/validateObjectId";
 
 
 export async function validateSendingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
@@ -27,8 +27,8 @@ export async function validateSendingFriendRequest(req: IReq, res: IRes, next: N
 
 
 function validateIds(senderId: string, receiverId: string) {
-  checkObjectIdValid(senderId);
-  checkObjectIdValid(receiverId);
+  validateObjectId(senderId);
+  validateObjectId(receiverId);
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot send a friend request to yourself");
   }
