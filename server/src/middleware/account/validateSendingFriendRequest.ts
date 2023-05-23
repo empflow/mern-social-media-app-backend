@@ -27,7 +27,6 @@ export async function validateSendingFriendRequest(req: IReq, res: IRes, next: N
 
 
 function validateIds(senderId: string, receiverId: string) {
-  validateObjectId(senderId);
   validateObjectId(receiverId);
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot send a friend request to yourself");

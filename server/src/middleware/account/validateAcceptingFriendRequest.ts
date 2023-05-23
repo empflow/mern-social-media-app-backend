@@ -27,7 +27,6 @@ export default async function validateAcceptingFriendRequest(req: IReq, res: IRe
 
 function validateIds(senderId: string, receiverId: string) {
   validateObjectId(senderId);
-  validateObjectId(receiverId);
   if (senderId === receiverId) {
     throw new ForbiddenErr("you cannot accept a friend request from yourself");
   }
