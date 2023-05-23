@@ -5,17 +5,13 @@ import { NextFunction } from "express";
 import { ForbiddenErr, NotFoundErr } from "../../utils/errs";
 import userProjection from "../../utils/projections/userProjection";
 import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
+import checkObjectIdValid from "../../utils/checkObjectIdValid";
 
 
-export default async function validateRejectingFriendRequest(
-  req: IReq, res: IRes, next: NextFunction
-) {
+export default async function validateRejectingFriendRequest(req: IReq, res: IRes, next: NextFunction) {
   const { friendId: senderId } = req.params;
   const receiverId = req.data.user.userId;
-
-  if (senderId === receiverId) {
-    throw new ForbiddenErr("you cannot reject a friend request from yourself");
-  }
+  validateIds(senderId, receiverId);
 
   const [sender, receiver] = await findFriendInFriendRequestsContext(senderId, receiverId);
 
@@ -26,4 +22,13 @@ export default async function validateRejectingFriendRequest(
   req.data.receiver = receiver;
 
   next();
+}
+
+
+function validateIds(senderId: string, receiverId: string) {
+  checkObjectIdValid(senderId);
+  checkObjectIdValid(receiverId);
+  if (senderId === receiverId) {
+    throw new ForbiddenErr("you cannot accept a friend request from yourself");
+  }
 }
