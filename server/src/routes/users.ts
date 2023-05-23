@@ -7,7 +7,7 @@ import { upload } from "../config/multer";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
 import { imgsUploadLimit, vidsUploadLimit } from "../utils/s3";
 import addPostValidator from "../middleware/posts/addPost/validator";
-import postUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
+import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 
 
 const uploadMw = upload.array("imgs");

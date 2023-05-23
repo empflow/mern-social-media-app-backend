@@ -7,7 +7,7 @@ import addCommentValidator from "../middleware/comments/addComment/validator";
 import patchPostValidator from "../middleware/posts/patchPost/validator";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
 import { imgsUploadLimit } from "../utils/s3";
-import postsUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
+import postsUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import patchPostAppendNewImgs from "../middleware/posts/patchPost/appendNewImgs";
 import patchPostDeleteImgsIfNeeded from "../middleware/posts/patchPost/deleteImgsIfNeeded";
 const router = express.Router();

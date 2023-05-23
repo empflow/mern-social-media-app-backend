@@ -1,5 +1,5 @@
 import { Document, HydratedDocument } from "mongoose";
-import postUploadImgsIfPresent from "../middleware/posts/uploadImgsIfPresent";
+import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { BadRequestErr, ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";

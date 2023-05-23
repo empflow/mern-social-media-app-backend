@@ -8,12 +8,16 @@ import { IReq, IRes } from "../../../utils/reqResInterfaces";
 export default function patchPostAppendNewImgs(req: IReq, res: IRes, next: NextFunction) {
   const { upload, post }: { upload: IOptimizeAndUploadPostImgsReturnType, post: IPost } = req.data;
 
-  if (!upload.imgs) return next();
+  if (upload.tinyPreview !== undefined) {
+    post.tinyPreview = upload.tinyPreview;
+  }
 
-  upload.imgs.forEach((imgObj) => {
-    const imgObjWithId: IPostImg = { ...imgObj, _id: new mongoose.Types.ObjectId() }
-    post.imgs.push(imgObjWithId);
-  });
+  if (upload.imgs) {
+    upload.imgs.forEach((imgObj) => {
+      const imgObjWithId: IPostImg = { ...imgObj, _id: new mongoose.Types.ObjectId() }
+      post.imgs.push(imgObjWithId);
+    });
+  }
 
   req.data.post = post;
   next();

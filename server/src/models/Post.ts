@@ -7,7 +7,7 @@ export interface IPost extends mongoose.Document {
   createdBy: Types.ObjectId,
   content: null | string,
   postPath: string,
-  tinyPreview: string,
+  tinyPreview: null | string,
   imgs: IPostImg[],
   vids: IVid[],
   views: number,
