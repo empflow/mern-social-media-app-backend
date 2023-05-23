@@ -1,8 +1,9 @@
 import { NextFunction } from "express";
+import { isValidObjectId } from "mongoose";
 import Comment, { IComment } from "../../../models/Comment";
 import checkReplyToCommentExists from "../../../utils/checkReplyToCommentExists";
 import deepCopy from "../../../utils/deepCopy";
-import { ForbiddenErr, NotFoundErr } from "../../../utils/errs";
+import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import validateFileCount from "../../../utils/validateFileCount";
 
@@ -10,15 +11,23 @@ import validateFileCount from "../../../utils/validateFileCount";
 export default async function patchCommentValidator(req: IReq, res: IRes, next: NextFunction) {
   const { commentId } = req.params;
   const { replyTo } = req.body;
+  checkIsIdValid(commentId);
+
   const comment = await Comment.findById(commentId);
   if (!comment) throw new NotFoundErr("comment not found");
-  
+
   checkTryingToPatchOwnComment(req, comment);
   await checkReplyToCommentExists(replyTo);
   validateFileCount(req, comment);
 
   req.data.comment = deepCopy(comment);
   next();
+}
+
+function checkIsIdValid(commentId: string) {
+  if (!isValidObjectId(commentId)) {
+    throw new BadRequestErr("invalid id");
+  }
 }
 
 
