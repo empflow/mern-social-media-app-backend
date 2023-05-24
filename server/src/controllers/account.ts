@@ -3,6 +3,7 @@ import Post from "../models/Post";
 import User, { IUser } from "../models/User";
 import { ForbiddenErr, NotFoundErr } from "../utils/errs";
 import { findDocByIdAndUpdate } from "../utils/findDocs";
+import friendReqUserProjection from "../utils/projections/friendReqUserProjection";
 import userProjection from "../utils/projections/userProjection";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
@@ -117,7 +118,7 @@ export async function deleteFriend(req: IReq, res: IRes) {
     User,
     accountToDeleteFromId,
     { $pull: { friends: friendToDeleteId }},
-    { ...userProjection, friends: 1 , friendRequestsSent: 1, friendRequestsReceived: 1 }
+    friendReqUserProjection
   )
   if (!account) throw new NotFoundErr("account not found");
   res.status(200).json(account);

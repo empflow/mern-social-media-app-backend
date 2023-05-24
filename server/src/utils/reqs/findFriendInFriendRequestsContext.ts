@@ -1,5 +1,6 @@
 import User from "../../models/User";
 import { findDocsByIds } from "../findDocs";
+import friendReqUserProjection from "../projections/friendReqUserProjection";
 import userProjection from "../projections/userProjection";
 
 
@@ -7,7 +8,7 @@ export default async function findFriendReqSenderAndReceiver(senderId: string, r
   const [sender, receiver] = await findDocsByIds(
     User,
     [senderId, receiverId],
-    { ...userProjection, friends: 1, friendRequestsSent: 1, friendRequestsReceived: 1 }
+    friendReqUserProjection
   );
 
   return [sender, receiver];
