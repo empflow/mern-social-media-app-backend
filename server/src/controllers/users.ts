@@ -32,8 +32,8 @@ export async function getUserFriends(req: IReq, res: IRes) {
   const user = await User.findOne({ profilePath }, { friends: 1 });
   if (!user) throw new NotFoundErr("user not found");
   const friendsIds = user.friends;
-  const friendsDocs = await User.find(
+  const friends = await User.find(
     { _id: { $in: friendsIds } }, friendProjection
   );
-  res.status(200).json(friendsDocs);
+  res.status(200).json(friends);
 }
