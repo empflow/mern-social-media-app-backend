@@ -5,12 +5,14 @@ import corsConf from "../config/cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { IReq, IRes } from "../utils/reqResInterfaces";
+import rateLimiter from "../config/rateLimit";
 
 
 router.use(setDataPropertyOnReqObject);
 router.use(express.json({ limit: "5mb" }));
 router.use(express.urlencoded({ extended: true }));
 router.use(cors(corsConf));
+router.use(rateLimiter);
 router.use(helmet());
 router.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 router.use(morgan("dev"));
