@@ -4,7 +4,7 @@ import { IReq, IRes } from "../../utils/reqResInterfaces";
 import { NextFunction } from "express";
 import { ForbiddenErr, NotFoundErr } from "../../utils/errs";
 import userProjection from "../../utils/projections/userProjection";
-import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
+import findFriendInFriendReqsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
 import validateObjectId from "../../utils/validateObjectId";
 
 
@@ -13,7 +13,7 @@ export default async function validateRejectingFriendRequest(req: IReq, res: IRe
   const receiverId = req.data.user.userId;
   validateIds(senderId, receiverId);
 
-  const [sender, receiver] = await findFriendInFriendRequestsContext(senderId, receiverId);
+  const [sender, receiver] = await findFriendInFriendReqsContext(senderId, receiverId);
 
   if (!sender) throw new NotFoundErr("sender not found");
   if (!receiver) throw new NotFoundErr("receiver not found");
