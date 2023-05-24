@@ -7,7 +7,7 @@ import { IUser } from "../../models/User";
 import { findDocsByIds, findDocs } from "../../utils/findDocs";
 import { HydratedDocument } from "mongoose";
 import userProjection from "../../utils/projections/userProjection";
-import findFriendInFriendRequestsContext from "../../utils/reqs/findFriendInFriendRequestsContext";
+import findFriendReqSenderAndReceiver from "../../utils/reqs/findFriendInFriendRequestsContext";
 import validateObjectId from "../../utils/validateObjectId";
 
 
@@ -16,7 +16,7 @@ export async function validateSendingFriendRequest(req: IReq, res: IRes, next: N
   const senderId: string = req.data.user.userId;
   validateIds(senderId, receiverId);
 
-  const [sender, receiver] = await findFriendInFriendRequestsContext(senderId, receiverId);
+  const [sender, receiver] = await findFriendReqSenderAndReceiver(senderId, receiverId);
   validateSenderAndReceiver(sender, receiver);
 
   req.data.sender = sender;
