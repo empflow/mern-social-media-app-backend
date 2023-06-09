@@ -9,7 +9,10 @@ import { getPostPath } from "../utils/pathsGenerators";
 import { IReq, IRes } from "../utils/reqResInterfaces";
 
 
-// TODO: add getFeed
+export async function getFeed(req: IReq, res: IRes) {
+  
+}
+
 
 export async function addPost(req: IReq, res: IRes) {
   const { content } = req.body;

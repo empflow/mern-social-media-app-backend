@@ -33,7 +33,7 @@ export default async function patchComment(data: IPatchCommentParams) {
 function sendReq(data: IPatchCommentParams) {
   const { comment, content, filesToDeleteIds, newImgs, replyTo } = data;
 
-  const req = requests(app).patch(`/comments/${comment._id}`);
+  const req = requests(app).patch(`/comments/${(comment as any)._id}`);
   if (content) req.field("content", content);
   if (replyTo) req.field("replyTo", replyTo);
   if (filesToDeleteIds) {
