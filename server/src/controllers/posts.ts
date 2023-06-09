@@ -81,16 +81,35 @@ export async function patchPost(req: IReq, res: IRes) {
 }
 
 
-export default async function likePost(req: IReq, res: IRes) {
+export async function likePost(req: IReq, res: IRes) {
   const post: IPost = req.data.post;
   const { user }: { user: IUser } = req.data;
+  const dislikedByStrIds = post.dislikedBy.map(id => id.toString());
   
-  if (post.dislikedBy.includes(user.id)) {
+  if (dislikedByStrIds.includes(user.id)) {
     post.dislikes -= 1;
     post.dislikedBy.filter(id => id.toString() !== user.id);
   }
   post.likes += 1;
   post.likedBy.push(user.id);
+  await post.save();
+
+  res.status(200).json(post);
+}
+
+
+export async function dislikePost(req: IReq, res: IRes) {
+  const post: IPost = req.data.post;
+  const { user }: { user: IUser } = req.data;
+  const likedByStrIds = post.likedBy.map(id => id.toString());
+
+  console.log(post);
+  if (likedByStrIds.includes(user.id)) {
+    post.likes -= 1;
+    post.likedBy.filter(id => id.toString() !== user.id);
+  }
+  post.dislikes += 1;
+  post.dislikedBy.push(user.id);
   await post.save();
 
   res.status(200).json(post);
