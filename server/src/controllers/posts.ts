@@ -1,4 +1,4 @@
-import { Document, HydratedDocument } from "mongoose";
+import { Document, HydratedDocument, Types } from "mongoose";
 import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import Post, { IPost } from "../models/Post";
 import User, { IUser } from "../models/User";
@@ -83,12 +83,11 @@ export async function patchPost(req: IReq, res: IRes) {
 
 export async function likePost(req: IReq, res: IRes) {
   const post: IPost = req.data.post;
-  const { user }: { user: IUser } = req.data;
-  const dislikedByStrIds = post.dislikedBy.map(id => id.toString());
+  const { user, dislikedByStrIds }: { user: IUser, dislikedByStrIds: string[] } = req.data;
   
   if (dislikedByStrIds.includes(user.id)) {
     post.dislikes -= 1;
-    post.dislikedBy = post.dislikedBy.filter(id => id.toString() !== user.id);
+    post.dislikedBy = filterOutId(post.dislikedBy, user.id);
   }
   post.likes += 1;
   post.likedBy.push(user.id);
@@ -100,12 +99,11 @@ export async function likePost(req: IReq, res: IRes) {
 
 export async function dislikePost(req: IReq, res: IRes) {
   const post: IPost = req.data.post;
-  const { user }: { user: IUser } = req.data;
-  const likedByStrIds = post.likedBy.map(id => id.toString());
+  const { user, likedByStrIds }: { user: IUser, likedByStrIds: string[] } = req.data;
 
   if (likedByStrIds.includes(user.id)) {
     post.likes -= 1;
-    post.likedBy = post.likedBy.filter(id => id.toString() !== user.id);
+    post.likedBy = filterOutId(post.likedBy, user.id);
   }
   post.dislikes += 1;
   post.dislikedBy.push(user.id);
@@ -114,3 +112,26 @@ export async function dislikePost(req: IReq, res: IRes) {
   res.status(200).json(post);
 }
 
+
+export async function removeReaction(req: IReq, res: IRes) {
+  const post: IPost = req.data.post;
+  const user: IUser = req.data.user;
+  const { likedByStrIds, dislikedByStrIds }: { likedByStrIds: string[], dislikedByStrIds: string[] } = req.data;
+
+  if (likedByStrIds.includes(user.id)) {
+    post.likedBy = filterOutId(post.likedBy, user.id);
+    post.likes -= 1;
+  }
+  if (dislikedByStrIds.includes(user.id)) {
+    post.dislikedBy = filterOutId(post.dislikedBy, user.id);
+    post.dislikes -= 1;
+  }
+
+  await post.save();
+  res.status(200).json(post);
+}
+
+
+function filterOutId(arr: Types.ObjectId[], idToFilterOut: string | Types.ObjectId) {
+  return arr.filter(id => id.toString() !== idToFilterOut.toString());
+}

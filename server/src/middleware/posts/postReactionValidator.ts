@@ -13,6 +13,8 @@ export default async function postReactionValidator(req: IReq, res: IRes, next: 
   if (!post) throw new NotFoundErr("post not found");
   req.data.post = post;
   req.data.user = user;
+  req.data.likedByStrIds = post.likedBy.map(id => id.toString());
+  req.data.dislikedByStrIds = post.dislikedBy.map(id => id.toString());
 
   next();
 }

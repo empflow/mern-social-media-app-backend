@@ -8,7 +8,7 @@ import { IReq, IRes } from "../../../utils/reqResInterfaces";
 export default async function dislikePostValidator(req: IReq, res: IRes, next: NextFunction) {
   const post: IPost = req.data.post;
   const { user }: { user: IUser } = req.data;
-  const dislikedByStrIds = post.dislikedBy.map(id => id.toString());
+  const { dislikedByStrIds }: { dislikedByStrIds: string[] } = req.data;
 
   if (dislikedByStrIds.includes(user.id)) {
     throw new BadRequestErr("you have already disliked this post");

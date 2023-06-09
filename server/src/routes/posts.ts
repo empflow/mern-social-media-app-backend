@@ -1,7 +1,7 @@
 import express from "express";
 import { upload } from "../config/multer";
 import { addComment, getComments } from "../controllers/comments";
-import { deleteUserPost, getPost, patchPost, likePost, dislikePost } from "../controllers/posts";
+import { deleteUserPost, getPost, patchPost, likePost, dislikePost, removeReaction } from "../controllers/posts";
 import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent";
 import addCommentValidator from "../middleware/comments/addComment/validator";
 import patchPostValidator from "../middleware/posts/patchPost/validator";
@@ -13,6 +13,7 @@ import patchPostDeleteImgsIfNeeded from "../middleware/posts/patchPost/deleteImg
 import likePostValidator from "../middleware/posts/likePost/validator";
 import postReactionValidator from "../middleware/posts/postReactionValidator";
 import dislikePostValidator from "../middleware/posts/dislikePost/validator";
+import removeReactionValidator from "../middleware/posts/removeReaction/validator";
 const router = express.Router();
 
 const uploadMw = upload.array("imgs")
@@ -33,6 +34,7 @@ router.route("/:postPath")
 router.use("/:postPath/reaction", postReactionValidator);
 router.post("/:postPath/reaction/like", likePostValidator, likePost);
 router.post("/:postPath/reaction/dislike", dislikePostValidator, dislikePost);
+router.post("/:postPath/reaction/remove", removeReactionValidator, removeReaction);
 
 
 router.route("/:postPath/comments")
