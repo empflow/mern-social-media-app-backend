@@ -12,10 +12,11 @@ import commentsRoute from "./comments";
 router.use("/auth", authRoute);
 
 // routes that do require authorization
-router.use("/users", authorize, usersRoute);
-router.use("/account", authorize, accountRoute);
-router.use("/posts", authorize, postsRoute);
-router.use("/comments", authorize, commentsRoute);
+router.use(authorize);
+router.use("/users", usersRoute);
+router.use("/account", accountRoute);
+router.use("/posts", postsRoute);
+router.use("/comments", commentsRoute);
 
 
 export default router;

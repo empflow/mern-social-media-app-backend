@@ -150,7 +150,7 @@ describe("users", () => {
             .set("Authorization", authHeader);
 
           expect(statusCode).toBe(400);
-          expect(body.message).toMatch(/Cast to ObjectId failed for value.+at path "_id" for model "User"/)
+          expect(body.message).toMatch(/invalid id/)
         })
       })
     })
@@ -201,7 +201,7 @@ describe("users", () => {
               .set("Authorization", authHeader);
             
             expect(statusCode).toBe(400);
-            expect(body.message).toMatch(/Cast to ObjectId failed for value.+at path "_id" for model "User"/);
+            expect(body.message).toMatch(/invalid id/);
           })
         })
       })
