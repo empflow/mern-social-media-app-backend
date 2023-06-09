@@ -11,6 +11,7 @@ import postsUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresen
 import patchPostAppendNewImgs from "../middleware/posts/patchPost/appendNewImgs";
 import patchPostDeleteImgsIfNeeded from "../middleware/posts/patchPost/deleteImgsIfNeeded";
 import likePostValidator from "../middleware/posts/likePost/validator";
+import postReactionValidator from "../middleware/posts/postReactionValidator";
 const router = express.Router();
 
 const uploadMw = upload.array("imgs")
@@ -28,8 +29,9 @@ router.route("/:postPath")
   )
   .delete(deleteUserPost);
 
-router.route("/:postPath/like")
-    .post(likePostValidator, likePost)
+router.use("/:postPath/reaction", postReactionValidator);
+router.post("/:postPath/reaction/like", likePostValidator, likePost);
+
 
 router.route("/:postPath/comments")
   .get(getComments)

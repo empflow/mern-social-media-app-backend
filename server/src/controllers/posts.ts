@@ -83,7 +83,7 @@ export async function patchPost(req: IReq, res: IRes) {
 
 export default async function likePost(req: IReq, res: IRes) {
   const post: IPost = req.data.post;
-  const user: IUser = req.data.user;
+  const { user }: { user: IUser } = req.data;
   
   if (post.dislikedBy.includes(user.id)) {
     post.dislikes -= 1;
