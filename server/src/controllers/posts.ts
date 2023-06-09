@@ -1,6 +1,7 @@
 import { Document, HydratedDocument, Types } from "mongoose";
 import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import Post, { IPost } from "../models/Post";
+import PostView from "../models/PostView";
 import User, { IUser } from "../models/User";
 import { BadRequestErr, ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
@@ -144,7 +145,18 @@ export async function removeReaction(req: IReq, res: IRes) {
   res.status(200).json(post);
 }
 
-
 function filterOutId(arr: Types.ObjectId[], idToFilterOut: string | Types.ObjectId) {
   return arr.filter(id => id.toString() !== idToFilterOut.toString());
+}
+
+
+export async function viewPost(req: IReq, res: IRes) {
+  const { postId } = req.params;
+  const { userId } = req.data.user;
+
+  const updatedPost = await findDocByIdAndUpdate(Post, postId, { $inc: { views: 1 }});
+  if (!updatedPost) throw new NotFoundErr("post not found");
+  const postView = await PostView.create({ postId, userId });
+
+  res.status(200).json({ updatedPost, postView });
 }
