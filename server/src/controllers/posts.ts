@@ -10,7 +10,17 @@ import { IReq, IRes } from "../utils/reqResInterfaces";
 
 
 export async function getFeed(req: IReq, res: IRes) {
-  
+  const { page } = req.body;
+  const postsPerReq = 6;
+  const postsToSkip = (page - 1) * postsPerReq;
+
+  const posts = await Post
+    .find()
+    .skip(postsToSkip)
+    .limit(postsPerReq)
+    .sort({ createdAt: -1 });
+
+  res.status(200).json(posts);
 }
 
 
