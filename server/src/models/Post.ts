@@ -12,7 +12,9 @@ export interface IPost extends mongoose.Document {
   vids: IVid[],
   views: number,
   likes: number,
+  likedBy: Types.ObjectId[]
   dislikes: number,
+  dislikedBy: Types.ObjectId[],
   shares: number,
   comments: Types.ObjectId[],
   createdAt: Date,
@@ -66,12 +68,11 @@ const PostSchema = new Schema<IPost>({
   },
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
+  likedBy: { type: [{ type: Schema.Types.ObjectId, ref: "User" }], default: [] },
   dislikes: { type: Number, default: 0 },
+  dislikedBy: { type: [{ type: Schema.Types.ObjectId, ref: "User" }], default: [] },
   shares: { type: Number, default: 0 },
-  comments: {
-    type: [{ type: Types.ObjectId, ref: "Comment" }],
-    default: []
-  }
+  comments: { type: [{ type: Schema.Types.ObjectId, ref: "Comment" }], default: [] }
 }, { timestamps: true });
 
 

@@ -8,8 +8,8 @@ export default async function postUploadImgsIfPresent(
 ) {
   const imgs = req.files;
 
-  const wereNoImagesProvided = !imgs?.length;
-  if (wereNoImagesProvided) {
+  const noImagesProvided = !imgs?.length;
+  if (noImagesProvided) {
     req.data.upload = { tinyPreview: undefined, imgs: undefined };
   } else {
     const buffers = (imgs as Express.Multer.File[]).map(img => img.buffer);

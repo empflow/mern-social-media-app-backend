@@ -1,6 +1,6 @@
 import { Document, HydratedDocument } from "mongoose";
 import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
-import Post from "../models/Post";
+import Post, { IPost } from "../models/Post";
 import User, { IUser } from "../models/User";
 import { BadRequestErr, ForbiddenErr, NotFoundErr, UnauthorizedErr } from "../utils/errs";
 import { findDocAndUpdate, findDocByIdAndUpdate } from "../utils/findDocs";
@@ -79,3 +79,20 @@ export async function patchPost(req: IReq, res: IRes) {
   );
   res.status(200).json(updatedPost);
 }
+
+
+export default async function likePost(req: IReq, res: IRes) {
+  const post: IPost = req.data.post;
+  const user: IUser = req.data.user;
+  
+  if (post.dislikedBy.includes(user.id)) {
+    post.dislikes -= 1;
+    post.dislikedBy.filter(id => id.toString() !== user.id);
+  }
+  post.likes += 1;
+  post.likedBy.push(user.id);
+  await post.save();
+
+  res.status(200).json(post);
+}
+

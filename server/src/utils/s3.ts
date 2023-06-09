@@ -25,9 +25,14 @@ const s3 = new S3({
 });
 
 
-export async function s3Upload(body: Buffer | Uint8Array | Blob | string) {
-  const key = getS3FileName() as string;
-  return s3.upload({ Bucket: bucketName, Key: key, Body: body }).promise();
+export async function s3Upload(body: Buffer | Uint8Array | Blob | string): Promise<any> {
+  try {
+    const key = getS3FileName() as string;
+    const result = await s3.upload({ Bucket: bucketName, Key: key, Body: body }).promise();
+    return result;
+  } catch (err) {
+    throw new Error("upload error")
+  }
 }
 
 
