@@ -1,4 +1,4 @@
-import { Document, HydratedDocument } from "mongoose";
+import { Document, HydratedDocument, Types } from "mongoose";
 import postUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import Post, { IPost } from "../models/Post";
 import User, { IUser } from "../models/User";
@@ -81,13 +81,13 @@ export async function patchPost(req: IReq, res: IRes) {
 }
 
 
-export default async function likePost(req: IReq, res: IRes) {
+export async function likePost(req: IReq, res: IRes) {
   const post: IPost = req.data.post;
-  const user: IUser = req.data.user;
+  const { user, dislikedByStrIds }: { user: IUser, dislikedByStrIds: string[] } = req.data;
   
-  if (post.dislikedBy.includes(user.id)) {
+  if (dislikedByStrIds.includes(user.id)) {
     post.dislikes -= 1;
-    post.dislikedBy.filter(id => id.toString() !== user.id);
+    post.dislikedBy = filterOutId(post.dislikedBy, user.id);
   }
   post.likes += 1;
   post.likedBy.push(user.id);
@@ -96,3 +96,42 @@ export default async function likePost(req: IReq, res: IRes) {
   res.status(200).json(post);
 }
 
+
+export async function dislikePost(req: IReq, res: IRes) {
+  const post: IPost = req.data.post;
+  const { user, likedByStrIds }: { user: IUser, likedByStrIds: string[] } = req.data;
+
+  if (likedByStrIds.includes(user.id)) {
+    post.likes -= 1;
+    post.likedBy = filterOutId(post.likedBy, user.id);
+  }
+  post.dislikes += 1;
+  post.dislikedBy.push(user.id);
+  await post.save();
+
+  res.status(200).json(post);
+}
+
+
+export async function removeReaction(req: IReq, res: IRes) {
+  const post: IPost = req.data.post;
+  const user: IUser = req.data.user;
+  const { likedByStrIds, dislikedByStrIds }: { likedByStrIds: string[], dislikedByStrIds: string[] } = req.data;
+
+  if (likedByStrIds.includes(user.id)) {
+    post.likedBy = filterOutId(post.likedBy, user.id);
+    post.likes -= 1;
+  }
+  if (dislikedByStrIds.includes(user.id)) {
+    post.dislikedBy = filterOutId(post.dislikedBy, user.id);
+    post.dislikes -= 1;
+  }
+
+  await post.save();
+  res.status(200).json(post);
+}
+
+
+function filterOutId(arr: Types.ObjectId[], idToFilterOut: string | Types.ObjectId) {
+  return arr.filter(id => id.toString() !== idToFilterOut.toString());
+}
