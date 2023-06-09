@@ -88,7 +88,7 @@ export async function likePost(req: IReq, res: IRes) {
   
   if (dislikedByStrIds.includes(user.id)) {
     post.dislikes -= 1;
-    post.dislikedBy.filter(id => id.toString() !== user.id);
+    post.dislikedBy = post.dislikedBy.filter(id => id.toString() !== user.id);
   }
   post.likes += 1;
   post.likedBy.push(user.id);
@@ -103,10 +103,9 @@ export async function dislikePost(req: IReq, res: IRes) {
   const { user }: { user: IUser } = req.data;
   const likedByStrIds = post.likedBy.map(id => id.toString());
 
-  console.log(post);
   if (likedByStrIds.includes(user.id)) {
     post.likes -= 1;
-    post.likedBy.filter(id => id.toString() !== user.id);
+    post.likedBy = post.likedBy.filter(id => id.toString() !== user.id);
   }
   post.dislikes += 1;
   post.dislikedBy.push(user.id);
