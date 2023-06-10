@@ -455,7 +455,6 @@ describe("posts", () => {
       testGivenFile(textFilePath);
     })
   })
-  // TODO: test when trying to patch someone else's post
 })
 
 
