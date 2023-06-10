@@ -1,10 +1,10 @@
 import { NextFunction } from "express";
 import { Document, HydratedDocument } from "mongoose";
 import Comment, { IComment, ICommentImg } from "../../../models/Comment";
+import convertFilesToDeleteIdsToArr from "../../../utils/convertFilesToDeleteIdsToArr";
 import deepCopy from "../../../utils/deepCopy";
 import { findDocByIdAndUpdate } from "../../../utils/findDocs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
-import { convertFilesToDeleteIdsToArr } from "./validator";
 
 
 interface IReqBody {

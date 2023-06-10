@@ -34,18 +34,3 @@ function checkTryingToPatchOwnComment(req: IReq, comment: IComment) {
     throw new ForbiddenErr("you can only update your own comments");
   }
 }
-
-
-export function convertFilesToDeleteIdsToArr(filesToDeleteIds: string | string[] | undefined) {
-  let result: string[];
-
-  if (typeof filesToDeleteIds === "string") {
-    result = [filesToDeleteIds];
-  } else if (!filesToDeleteIds) {
-    result = [];
-  } else {
-    result = JSON.parse(JSON.stringify(filesToDeleteIds));
-  }
-
-  return result;
-}

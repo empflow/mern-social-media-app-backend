@@ -1,7 +1,8 @@
 import { NextFunction } from "express";
 import { IPost, IPostImg } from "../../../models/Post";
+import convertFilesToDeleteIdsToArr from "../../../utils/convertFilesToDeleteIdsToArr";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
-import { convertFilesToDeleteIdsToArr } from "../../comments/patchComment/validator";
+
 
 export default function patchPostDeleteImgsIfNeeded(req: IReq, res: IRes, next: NextFunction) {
   const { filesToDeleteIds } = req.body;
