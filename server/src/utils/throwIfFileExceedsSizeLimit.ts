@@ -13,7 +13,7 @@ export default function throwIfFileExceedsSizeLimit(
 
 
 function checkAndThrowIfNeeded(file: Buffer, limitInMb: number) {
-  const sizeInMb = file.byteLength / 1000000;
+  const sizeInMb = file.byteLength / 1_000_000;
   if (sizeInMb > limitInMb) {
     const sizeInMbFixed = sizeInMb.toFixed(2);
     throw new BadRequestErr(`File too large (${sizeInMbFixed}mb)`);

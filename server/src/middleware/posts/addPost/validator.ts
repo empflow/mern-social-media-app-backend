@@ -16,7 +16,7 @@ export default async function addPostValidator(req: IReq, res: IRes, next: NextF
     getAndCheckUserToPostTo(req),
     checkAndGetPoster(req)
   ]);
-  
+
   checkIfAllowedToPost(req, userToPostTo);
 
   req.data.userToPostTo = userToPostTo;

@@ -12,7 +12,7 @@ export default function handleMulterUploadArray(
         const filesLen = req.files.length;
           if (filesLen > limit) {
             const msg = getFileCountExceedsLimitMsg(limit);
-            next(new BadRequestErr(msg));
+            return next(new BadRequestErr(msg));
           }
       }
 
