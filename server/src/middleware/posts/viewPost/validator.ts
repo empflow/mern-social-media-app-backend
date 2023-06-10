@@ -11,7 +11,7 @@ export default async function viewPostValidator(req: IReq, res: IRes, next: Next
 
   if (!isValidObjectId(postId)) throw new BadRequestErr("invalid post id");
   const alreadyViewed = await PostView.findOne({ userId, postId });
-  if (alreadyViewed) throw new BadRequestErr("Post already viewed");
+  if (alreadyViewed) throw new BadRequestErr("post already viewed");
 
   next();
 }
