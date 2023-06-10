@@ -23,18 +23,3 @@ function filterImgs(imgObj: IPostImg, filesToDeleteIds: string[]) {
   if (filesToDeleteIds.includes(id.toString())) return false;
   return true;
 }
-
-
-/*
-const { filesToDeleteIds } = req.body;
-const { commentId } = req.params;
-const filesToDeleteIdsArr = convertFilesToDeleteIdsToArr(filesToDeleteIds);
-const comment: IComment = deepCopy(req.data.comment);
-const updatedImgsArr = deepCopy(comment.imgs)
-  .filter(imgObj => filterImgs(imgObj, filesToDeleteIdsArr));
-
-comment.imgs = updatedImgsArr;
-
-req.data.comment = deepCopy(comment);
-next();
-*/
