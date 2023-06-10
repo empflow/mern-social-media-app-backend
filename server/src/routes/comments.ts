@@ -7,7 +7,7 @@ import patchCommentDeleteImgsIfNeeded from "../middleware/comments/patchComment/
 import patchCommentValidator from "../middleware/comments/patchComment/validator";
 import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
-import { imgsUploadLimit } from "../utils/s3";
+import { imgsAmountUploadLimit } from "../config/global";
 const router = express.Router();
 
 const uploadMw = upload.array("imgs");
@@ -15,7 +15,7 @@ const uploadMw = upload.array("imgs");
 
 router.route("/:commentId")
   .patch(
-    handleMulterUploadArray(uploadMw, imgsUploadLimit),
+    handleMulterUploadArray(uploadMw, imgsAmountUploadLimit),
     patchCommentValidator,
     commentUploadImgsIfPresent,
     patchCommentAppendNewImgsToComment,

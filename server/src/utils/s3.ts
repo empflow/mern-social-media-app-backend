@@ -3,9 +3,6 @@ import getEnvVar from "./getEnvVar";
 import getS3FileName from "./getS3FileNames";
 
 
-export const imgsUploadLimit = 10;
-export const vidsUploadLimit = 2;
-
 export const bucketName = getEnvVar("S3_BUCKET_NAME");
 export const region = getEnvVar("S3_REGION");
 export const endpoint = getEnvVar("S3_ENDPOINT");

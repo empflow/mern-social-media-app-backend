@@ -1,47 +1,25 @@
 import { getFileCountExceedsLimitMsg } from "../config/multer";
-import { convertFilesToDeleteIdsToArr } from "../middleware/comments/patchComment/validator";
 import { IComment } from "../models/Comment";
 import { IPost } from "../models/Post";
 import doesArrHaveDuplicates from "./doesArrHaveDuplicates";
 import { BadRequestErr } from "./errs";
 import { IReq } from "./reqResInterfaces";
-import { imgsUploadLimit } from "./s3";
+import { imgsAmountUploadLimit } from "../config/global";
+import convertFilesToDeleteIdsToArr from "./convertFilesToDeleteIdsToArr";
 
 
-type TDoc = IComment | IPost;
+type TDocWithMedia = IComment | IPost;
 
-export default function validateFileCount(req: IReq, doc: TDoc) {
-  const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
+export default function validateFileCount(req: IReq, docWithMedia: TDocWithMedia) {
   const files = req.files as Express.Multer.File[] | undefined;
-  validateFilesToDeleteIds(doc, filesToDeleteIds);
 
   if (!files || !files.length) return; // impossible to exceed the limit if no new files are provided
-  const totalFileCount = getTotalFileCount(req, doc, files);
-  throwIfTotalFileCountOverLimit(totalFileCount, imgsUploadLimit);
+  const totalFileCount = getTotalFileCount(req, docWithMedia, files);
+  throwIfNeeded(totalFileCount, imgsAmountUploadLimit);
 }
 
 
-function validateFilesToDeleteIds(
-  comment: TDoc, filesToDeleteIds: string | string[] | undefined
-) {
-  if (typeof filesToDeleteIds === "string") {
-    filesToDeleteIds = [filesToDeleteIds];
-  } else if (!filesToDeleteIds) return;
-
-  if (doesArrHaveDuplicates(filesToDeleteIds)) {
-    throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
-  }
-
-  const existingImgsIds = comment.imgs.map(imgObj => imgObj._id.toString());
-  filesToDeleteIds.forEach(id => {
-    if (!existingImgsIds.includes(id)) {
-      throw new BadRequestErr(`${id} does not match any files`);
-    }
-  });
-}
-
-
-function getTotalFileCount(req: IReq, comment: TDoc, files: Express.Multer.File[]) {
+function getTotalFileCount(req: IReq, comment: TDocWithMedia, files: Express.Multer.File[]) {
   const { filesToDeleteIds }: { filesToDeleteIds: string | string[] | undefined } = req.body;
 
   const filesToDeleteIdsLen = getFilesToDeleteIdsLen(filesToDeleteIds);
@@ -61,10 +39,9 @@ function getFilesToDeleteIdsLen(filesToDeleteIds: string | string[] | undefined)
 }
 
 
-function throwIfTotalFileCountOverLimit(totalFileCount: number, limit: number) {
+function throwIfNeeded(totalFileCount: number, limit: number) {
   if (totalFileCount > limit) {
-    const msg = getFileCountExceedsLimitMsg(imgsUploadLimit);
+    const msg = getFileCountExceedsLimitMsg(imgsAmountUploadLimit);
     throw new BadRequestErr(msg);
   }
 }
-

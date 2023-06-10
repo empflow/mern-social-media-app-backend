@@ -15,7 +15,7 @@ import Comment, { IComment } from "../../models/Comment";
 import { jpgImgPath, pngImgPath, svgImgPath, textFilePath, webpImgPath, jpegImgPath } from "../utils/imgsPaths";
 import getInitCommentImgObjects from "./getInitCommentImgObjects";
 import attachNFiles from "../utils/attachNImgs";
-import { imgsUploadLimit } from "../../utils/s3";
+import { imgsAmountUploadLimit } from "../../config/global";
 import { getFileCountExceedsLimitMsg } from "../../config/multer";
 import { HydratedDocument } from "mongoose";
 
@@ -210,7 +210,7 @@ describe("comments", () => {
         const { body, statusCode } = await attachNFiles("imgs", jpegImgPath, 2, req);
 
         expect(statusCode).toBe(400);
-        const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+        const msgToExpect = getFileCountExceedsLimitMsg(imgsAmountUploadLimit);
         expect(body.message).toBe(msgToExpect);
       })
     })
@@ -245,7 +245,7 @@ describe("comments", () => {
         const { body, statusCode } = await attachNFiles("imgs", jpegImgPath, 4, req);
 
         expect(statusCode).toBe(400);
-        const msgToExpect = getFileCountExceedsLimitMsg(imgsUploadLimit);
+        const msgToExpect = getFileCountExceedsLimitMsg(imgsAmountUploadLimit);
         expect(body.message).toBe(msgToExpect);
       })
     })

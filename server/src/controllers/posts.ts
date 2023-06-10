@@ -32,11 +32,10 @@ export async function addPost(req: IReq, res: IRes) {
   const { tinyPreview, imgs } = req.data.upload;
 
   const postPath = getPostPath(content);
-  const post = new Post({
+  const post = await Post.create({
     onUser: userToPostTo.id, createdBy, content, postPath, tinyPreview, imgs
   });
 
-  await post.save();
   res.status(201).json(post);
 }
 
@@ -154,9 +153,11 @@ export async function viewPost(req: IReq, res: IRes) {
   const { postId } = req.params;
   const { userId } = req.data.user;
 
-  const postUpdateMsg = await Post.updateOne({ _id: postId }, { $inc: { views: 1 }});
+  const postUpdateMsgPromise = Post.updateOne({ _id: postId }, { $inc: { views: 1 }});
+  const postViewPromise = PostView.create({ postId, userId });
+  
+  const [postUpdateMsg] = await Promise.all([postUpdateMsgPromise, postViewPromise]);
   if (!postUpdateMsg.modifiedCount) throw new NotFoundErr("post not found");
-  await PostView.create({ postId, userId });
 
   res.status(200).json({ ok: true });
 }

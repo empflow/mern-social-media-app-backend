@@ -1,13 +1,13 @@
 import { IAvatarUrls } from "../models/User";
 import { optimizeImgForAvatar, optimizeImgForPreview, optimizeImgForTinyPreview } from "./optimizeImg";
 import { s3Upload } from "./s3";
-import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
+import throwIfFileExceedsSizeLimit from "./throwIfFileExceedsSizeLimit";
 
 
 export default async function optimizeAvatarAndUploadIn3Sizes(
   img: Buffer
 ): Promise<IAvatarUrls> {
-  throwIfFileSizeOverLimit(img, 8);
+  throwIfFileExceedsSizeLimit(img, 8);
 
   const [avatarImg, previewImg, tinyPreviewImg] = await Promise.all([
     optimizeImgForAvatar(img),
@@ -15,9 +15,9 @@ export default async function optimizeAvatarAndUploadIn3Sizes(
     optimizeImgForTinyPreview(img)
   ]);
 
-  throwIfFileSizeOverLimit(avatarImg, 1);
-  throwIfFileSizeOverLimit(previewImg, 0.5);
-  throwIfFileSizeOverLimit(tinyPreviewImg, 0.2);
+  throwIfFileExceedsSizeLimit(avatarImg, 1);
+  throwIfFileExceedsSizeLimit(previewImg, 0.5);
+  throwIfFileExceedsSizeLimit(tinyPreviewImg, 0.2);
 
   const [avatarImgUpload, previewImgUpload, tinyPreviewImgUpload] = await Promise.all([
     s3Upload(avatarImg),

@@ -1,4 +1,3 @@
-import multer from "multer";
 import { BadRequestErr } from "./errs";
 import express from "express";
 import { getFileCountExceedsLimitMsg } from "../config/multer";
@@ -13,7 +12,7 @@ export default function handleMulterUploadArray(
         const filesLen = req.files.length;
           if (filesLen > limit) {
             const msg = getFileCountExceedsLimitMsg(limit);
-            next(new BadRequestErr(msg));
+            return next(new BadRequestErr(msg));
           }
       }
 

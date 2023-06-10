@@ -21,6 +21,7 @@ export async function addComment(req: IReq, res: IRes) {
   const comment = await Comment.create({
     createdBy: userId, onPost: postPath, content, replyTo, imgs: imgsUpload
   });
+
   res.status(201).json(comment);
 }
 

@@ -2,6 +2,7 @@ import { Options } from "multer";
 import path from "node:path";
 import { BadRequestErr } from "../utils/errs";
 import multer from "multer";
+import { allowedFileExts } from "./global";
 
 
 const multerOptions: Options = {
@@ -20,7 +21,6 @@ const multerOptions: Options = {
   }
 }
 
-export const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 function getFormattedAllowedFileExts() {
   let result = "";
   allowedFileExts.forEach((ext, i) => (
