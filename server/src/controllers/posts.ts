@@ -154,9 +154,11 @@ export async function viewPost(req: IReq, res: IRes) {
   const { postId } = req.params;
   const { userId } = req.data.user;
 
-  const postUpdateMsg = await Post.updateOne({ _id: postId }, { $inc: { views: 1 }});
+  const postUpdateMsgPromise = Post.updateOne({ _id: postId }, { $inc: { views: 1 }});
+  const postViewPromise = PostView.create({ postId, userId });
+  
+  const [postUpdateMsg] = await Promise.all([postUpdateMsgPromise, postViewPromise]);
   if (!postUpdateMsg.modifiedCount) throw new NotFoundErr("post not found");
-  await PostView.create({ postId, userId });
 
   res.status(200).json({ ok: true });
 }
