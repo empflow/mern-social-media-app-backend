@@ -32,11 +32,10 @@ export async function addPost(req: IReq, res: IRes) {
   const { tinyPreview, imgs } = req.data.upload;
 
   const postPath = getPostPath(content);
-  const post = new Post({
+  const post = await Post.create({
     onUser: userToPostTo.id, createdBy, content, postPath, tinyPreview, imgs
   });
 
-  await post.save();
   res.status(201).json(post);
 }
 

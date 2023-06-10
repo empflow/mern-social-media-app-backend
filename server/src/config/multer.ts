@@ -20,7 +20,6 @@ const multerOptions: Options = {
   }
 }
 
-export const allowedFileExts = [".png", ".jpg", ".jpeg", ".webp"];
 function getFormattedAllowedFileExts() {
   let result = "";
   allowedFileExts.forEach((ext, i) => (

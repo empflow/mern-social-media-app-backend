@@ -1,4 +1,3 @@
-import multer from "multer";
 import { BadRequestErr } from "./errs";
 import express from "express";
 import { getFileCountExceedsLimitMsg } from "../config/multer";

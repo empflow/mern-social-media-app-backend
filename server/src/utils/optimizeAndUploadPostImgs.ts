@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import { imgSizeLimitInMb } from "../config/global";
 import { optimizeImgForFeed, optimizeImgForPreview, optimizeImgForTinyPreview, optimizeImgForFullSize } from "./optimizeImg";
 import { s3Upload } from "./s3";
-import throwIfFileSizeOverLimit from "./throwIfFileSizeOverLimit";
+import throwIfFileExceedsSizeLimit from "./throwIfFileExceedsSizeLimit";
 
 
 export interface IOptimizeAndUploadPostImgsReturnType {
@@ -28,7 +29,7 @@ export default async function optimizeAndUploadPostImgs(
   imgs: Buffer[]
 ): Promise<IOptimizeAndUploadPostImgsReturnType> {
   if (!imgs.length) return { tinyPreview: undefined, imgs: undefined };
-  checkImgsSizesBelowLimit(imgs, 8);
+  throwIfFileExceedsSizeLimit(imgs, imgSizeLimitInMb);
 
   const [optimizedTinyPreview, optimizedImgs] = await getOptimizedTinyPreviewAndImgs(imgs);
   const [optimizedTinyPreviewUpload, optimizedImgsUploads] = await uploadOptimizedTinyPreviewAndImgs(
@@ -39,11 +40,6 @@ export default async function optimizeAndUploadPostImgs(
     tinyPreview: optimizedTinyPreviewUpload.Location,
     imgs: optimizedImgsUploads
   }
-}
-
-
-function checkImgsSizesBelowLimit(imgs: Buffer[], limitInMb: number) {
-  imgs.forEach(img => throwIfFileSizeOverLimit(img, limitInMb));
 }
 
 
