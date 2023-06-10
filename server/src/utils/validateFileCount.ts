@@ -5,7 +5,7 @@ import { IPost } from "../models/Post";
 import doesArrHaveDuplicates from "./doesArrHaveDuplicates";
 import { BadRequestErr } from "./errs";
 import { IReq } from "./reqResInterfaces";
-import { imgsUploadLimit } from "./s3";
+import { imgsAmountUploadLimit } from "../config/global";
 
 
 type TDoc = IComment | IPost;
@@ -17,7 +17,7 @@ export default function validateFileCount(req: IReq, doc: TDoc) {
 
   if (!files || !files.length) return; // impossible to exceed the limit if no new files are provided
   const totalFileCount = getTotalFileCount(req, doc, files);
-  throwIfTotalFileCountOverLimit(totalFileCount, imgsUploadLimit);
+  throwIfTotalFileCountOverLimit(totalFileCount, imgsAmountUploadLimit);
 }
 
 
@@ -63,7 +63,7 @@ function getFilesToDeleteIdsLen(filesToDeleteIds: string | string[] | undefined)
 
 function throwIfTotalFileCountOverLimit(totalFileCount: number, limit: number) {
   if (totalFileCount > limit) {
-    const msg = getFileCountExceedsLimitMsg(imgsUploadLimit);
+    const msg = getFileCountExceedsLimitMsg(imgsAmountUploadLimit);
     throw new BadRequestErr(msg);
   }
 }

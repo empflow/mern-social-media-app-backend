@@ -2,6 +2,7 @@ import { Options } from "multer";
 import path from "node:path";
 import { BadRequestErr } from "../utils/errs";
 import multer from "multer";
+import { allowedFileExts } from "./global";
 
 
 const multerOptions: Options = {

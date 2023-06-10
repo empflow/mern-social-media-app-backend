@@ -3,7 +3,7 @@ import requests from "supertest";
 import app from "../../app";
 import { user1AuthHeader } from "./comments.test";
 import checkReplyToCommentExists from "../../utils/checkReplyToCommentExists";
-import { imgsUploadLimit } from "../../utils/s3";
+import { imgsAmountUploadLimit } from "../../config/global";
 
 
 export interface IPatchCommentParams {
@@ -94,7 +94,7 @@ function totalImgsAmountExpecter(
   data: IPatchCommentParams, { response: { body, statusCode } }: IExpecterFnParams
 ) {
   const amountToExpect = getImgsAmountToExpect(data);
-  if (amountToExpect > imgsUploadLimit) {
+  if (amountToExpect > imgsAmountUploadLimit) {
     expect(statusCode).toBe(400);
     expect(body.message).toMatch(/too many imgs/);
   } else {

@@ -6,7 +6,7 @@ import commentUploadImgsIfPresent from "../middleware/commentUploadImgsIfPresent
 import addCommentValidator from "../middleware/comments/addComment/validator";
 import patchPostValidator from "../middleware/posts/patchPost/validator";
 import handleMulterUploadArray from "../utils/handleMulterUpload";
-import { imgsUploadLimit } from "../utils/s3";
+import { imgsAmountUploadLimit } from "../config/global";
 import postsUploadImgsIfPresent from "../middleware/posts/postUploadImgsIfPresent";
 import patchPostAppendNewImgs from "../middleware/posts/patchPost/appendNewImgs";
 import patchPostDeleteImgsIfNeeded from "../middleware/posts/patchPost/deleteImgsIfNeeded";
@@ -27,7 +27,7 @@ router.post("/:postId/view", viewPostValidator, viewPost);
 router.route("/:postPath")
   .get(getPost)
   .patch(
-    handleMulterUploadArray(uploadMw, imgsUploadLimit),
+    handleMulterUploadArray(uploadMw, imgsAmountUploadLimit),
     patchPostValidator,
     postsUploadImgsIfPresent,
     patchPostAppendNewImgs,
@@ -45,7 +45,7 @@ router.post("/:postPath/reaction/remove", removeReactionValidator, removeReactio
 router.route("/:postPath/comments")
   .get(getComments)
   .post(
-    handleMulterUploadArray(uploadMw, imgsUploadLimit),
+    handleMulterUploadArray(uploadMw, imgsAmountUploadLimit),
     addCommentValidator,
     commentUploadImgsIfPresent,
     addComment
