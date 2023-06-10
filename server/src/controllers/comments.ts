@@ -28,8 +28,8 @@ export async function addComment(req: IReq, res: IRes) {
 
 export async function patchComment(req: IReq, res: IRes) {
   const { commentId } = req.params;
-  const { content, replyTo } = req.body;
-  const comment = deepCopy(req.data.comment);
+  const { replyTo } = req.body;
+  const { content, comment } = req.data;
   
   const updatedComment = await findDocByIdAndUpdate(
     Comment,
