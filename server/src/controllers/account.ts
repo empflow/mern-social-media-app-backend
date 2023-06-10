@@ -25,7 +25,7 @@ export async function patchAccount(req: IReq, res: IRes) {
 
 
 export async function getOwnAccount(req: IReq, res: IRes) {
-  const userId = req.data.user.userId;
+  const { userId } = req.data.user;
   // { password: -1 } projection didn't work here :/
   const user = await User.findById(userId, "-password");
   if (!user) throw new NotFoundErr("user not found");
