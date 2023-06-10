@@ -6,7 +6,6 @@ import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
 
 export default async function dislikePostValidator(req: IReq, res: IRes, next: NextFunction) {
-  const post: IPost = req.data.post;
   const { user }: { user: IUser } = req.data;
   const { dislikedByStrIds }: { dislikedByStrIds: string[] } = req.data;
 

@@ -6,7 +6,6 @@ import { IReq, IRes } from "../../../utils/reqResInterfaces";
 
 
 export default async function likePostValidator(req: IReq, res: IRes, next: NextFunction) {
-  const post: IPost = req.data.post;
   const { user }: { user: IUser } = req.data;
   const { likedByStrIds }: { likedByStrIds: string[] } = req.data;
 
