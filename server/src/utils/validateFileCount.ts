@@ -45,4 +45,3 @@ function throwIfNeeded(totalFileCount: number, limit: number) {
     throw new BadRequestErr(msg);
   }
 }
-

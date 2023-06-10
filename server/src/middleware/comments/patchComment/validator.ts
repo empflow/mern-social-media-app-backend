@@ -6,19 +6,23 @@ import deepCopy from "../../../utils/deepCopy";
 import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import validateFileCount from "../../../utils/validateFileCount";
+import validateFilesToDeleteIds from "../../../utils/validateFilesToDeleteIds";
 
 
 export default async function patchCommentValidator(req: IReq, res: IRes, next: NextFunction) {
   const { commentId } = req.params;
-  const { replyTo } = req.body;
+  const { replyTo: replyToCommentId } = req.body;
   validateObjectId(commentId);
 
-  const comment = await Comment.findById(commentId);
+  const [comment] = await Promise.all([
+    Comment.findById(commentId),
+    checkReplyToCommentExists(replyToCommentId)
+  ])
   if (!comment) throw new NotFoundErr("comment not found");
 
   checkTryingToPatchOwnComment(req, comment);
-  await checkReplyToCommentExists(replyTo);
   validateFileCount(req, comment);
+  validateFilesToDeleteIds(req, comment);
 
   req.data.comment = deepCopy(comment);
   next();

@@ -3,11 +3,13 @@ import Post, { IPost } from "../../../models/Post";
 import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import validateFileCount from "../../../utils/validateFileCount";
+import validateFilesToDeleteIds from "../../../utils/validateFilesToDeleteIds";
 
 export default async function patchPostValidator(req: IReq, res: IRes, next: NextFunction) {
   const post = await getPostAndCheckItExists(req);
   validatePatchingOwnPost(req, post);
   validateFileCount(req, post);
+  validateFilesToDeleteIds(req, post);
 
   req.data.post = post;
   next();
