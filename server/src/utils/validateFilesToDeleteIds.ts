@@ -1,3 +1,4 @@
+import { isValidObjectId } from "mongoose";
 import { TDocWithMedia } from "../config/global";
 import doesArrHaveDuplicates from "./doesArrHaveDuplicates";
 import { BadRequestErr } from "./errs";
@@ -11,7 +12,7 @@ export default function validateFilesToDeleteIds(req: IReq, doc: TDocWithMedia) 
     filesToDeleteIds = [filesToDeleteIds];
   } else if (!filesToDeleteIds) return;
 
-  throwIfArrContainsDuplicates(filesToDeleteIds);
+  throwIfArrContainsDuplicatesOrInvalidIds(filesToDeleteIds);
   throwIfSomeIdsToDeleteDontMatchExistingImgIds(filesToDeleteIds, doc);
 }
 
@@ -26,7 +27,11 @@ function throwIfSomeIdsToDeleteDontMatchExistingImgIds(filesToDeleteIds: string[
 }
 
 
-function throwIfArrContainsDuplicates(filesToDeleteIds: string[]) {
+function throwIfArrContainsDuplicatesOrInvalidIds(filesToDeleteIds: string[]) {
+  filesToDeleteIds.forEach(fileId => {
+    if (!isValidObjectId(fileId)) throw new BadRequestErr(`${fileId} is invalid`)
+  });
+
   if (doesArrHaveDuplicates(filesToDeleteIds)) {
     throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
   }
