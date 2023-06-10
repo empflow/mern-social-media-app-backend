@@ -22,7 +22,7 @@ export default function validateFileCount(req: IReq, doc: TDoc) {
 
 
 function validateFilesToDeleteIds(
-  comment: TDoc, filesToDeleteIds: string | string[] | undefined
+  doc: TDoc, filesToDeleteIds: string | string[] | undefined
 ) {
   if (typeof filesToDeleteIds === "string") {
     filesToDeleteIds = [filesToDeleteIds];
@@ -32,7 +32,7 @@ function validateFilesToDeleteIds(
     throw new BadRequestErr(`array of ids of files to delete contains duplicates`);
   }
 
-  const existingImgsIds = comment.imgs.map(imgObj => imgObj._id.toString());
+  const existingImgsIds = doc.imgs.map(imgObj => imgObj._id.toString());
   filesToDeleteIds.forEach(id => {
     if (!existingImgsIds.includes(id)) {
       throw new BadRequestErr(`${id} does not match any files`);

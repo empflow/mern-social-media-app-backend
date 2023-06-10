@@ -2,13 +2,14 @@ import { NextFunction, Request } from "express";
 import { imgSizeLimitInMb } from "../../../config/global";
 import User, { IUser } from "../../../models/User";
 import { BadRequestErr, ForbiddenErr, NotFoundErr } from "../../../utils/errs";
+import fileArrToBuffers from "../../../utils/fileArrToBuffers";
 import { IReq, IRes } from "../../../utils/reqResInterfaces";
 import throwIfFileExceedsSizeLimit from "../../../utils/throwIfFileExceedsSizeLimit";
 
 
 export default async function addPostValidator(req: IReq, res: IRes, next: NextFunction) {
   throwIfNoContentProvided(req);
-  const buffers = (req.files as Express.Multer.File[]).map(file => file.buffer);
+  const buffers = fileArrToBuffers(req.files as Express.Multer.File[]);
   throwIfFileExceedsSizeLimit(buffers, imgSizeLimitInMb);
 
   const [userToPostTo] = await Promise.all([
