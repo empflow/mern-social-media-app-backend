@@ -13,7 +13,7 @@ export default async function patchPostValidator(req: IReq, res: IRes, next: Nex
   validatePatchingOwnPost(req, post);
   validateFileCount(req, post);
   validateFilesToDeleteIds(req, post);
-  
+
   req.data.content = getNewContentOnUpdate(req);
   req.data.post = post;
   next();
