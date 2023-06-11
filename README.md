@@ -1,4 +1,5 @@
-MERN social media app backend
+# MERN social media app backend repo
+(haven't come up with a real name yet)
 
 .env variables required to run:
 ```
