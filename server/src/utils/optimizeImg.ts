@@ -2,7 +2,7 @@ import sharp from "sharp";
 
 
 export async function optimizeImgForFullSize(buffer: Buffer) {
-  const quality = getCompressionQualityFullSize(buffer.byteLength);
+  const quality = getCompressionQualityFullSize();
   const { width, height } = await getWidthAndHeightForFullSizeImg(buffer);
 
   return sharp(buffer)
@@ -46,19 +46,10 @@ export async function optimizeImgForTinyPreview(buffer: Buffer) {
 }
 
 
-function getCompressionQualityFullSize(byteLength: number) {
-  // const sizeInMb = byteLength / 1000000;
-
-  // let quality: number;
-  // if (sizeInMb > 5) quality = 1;
-  // else if (sizeInMb > 3) quality = 5;
-  // else if (sizeInMb > 2) quality = 40;
-  // else if (sizeInMb > 1) quality = 45;
-  // else if (sizeInMb > 0.5) quality = 60;
-  // else quality = 70;
-
+function getCompressionQualityFullSize() {
   return 75;
 }
+
 
 function getCompressionQualityForFeed(byteLength: number) {
   const sizeInMb = byteLength / 1000000;
@@ -72,9 +63,11 @@ function getCompressionQualityForFeed(byteLength: number) {
   return quality;
 }
 
+
 function getCompressionQualityForAvatar(byteLength: number) {
   return getCompressionQualityForFeed(byteLength);
 }
+
 
 function getCompressionQualityForPreview(byteLength: number) {
   const sizeInMb = byteLength / 1000000;
