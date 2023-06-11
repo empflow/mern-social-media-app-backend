@@ -3,8 +3,8 @@
 
 
 ## Steps to run:
-1. Clone the repy by running `git clone https://github.com/empflow/mern-social-media-app-backend.git`
-2. Run `npm i`
+1. Run `git clone https://github.com/empflow/mern-social-media-app-backend.git` to clone the repo
+2. Run `npm i` to install all dependencies
 3. Create a file called `.env` in the root of the project
 4. Add the following variables inside the `.env` file (I've provided defaults for some of them):
 
