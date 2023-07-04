@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { HydratedDocument } from "mongoose"
-import User, { IUser } from "../../models/User"
+import { IUser } from "../../models/User"
 import createNUsers from "../utils/createNUsers";
 import requests from "supertest";
 import app from "../../app";
