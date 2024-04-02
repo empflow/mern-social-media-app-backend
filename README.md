@@ -1,6 +1,4 @@
 # MERN social media app backend
-(haven't come up with a real name yet)
-
 
 ## Getting started:
 1. Run `git clone https://github.com/empflow/mern-social-media-app-backend.git` to clone the repo
